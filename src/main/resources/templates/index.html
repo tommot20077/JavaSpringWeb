@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>主頁</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">我的Blog Web</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">首頁 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/login">登入</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">註冊</a>
+            </li>
+            <!-- 其他你可能想加的鏈接 -->
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="jumbotron">
+        <h1 class="display-4">歡迎來到我的部落格!</h1>
+        <p class="lead">這是一個簡易實作部落格首頁。</p>
+        <hr class="my-4">
+        <p>其中主要使用Java Spring boot最為後端架構</p>
+        <a class="btn btn-primary btn-lg" href="/register" role="button">立即註冊</a>
+        <a class="btn btn-secondary btn-lg" href="/login" role="button">登入</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
