@@ -19,7 +19,8 @@ public class RegisterException extends Exception {
         PASSWORD_LENGTH_INVALID("密碼長度不符合要求"),
         PASSWORD_CONTAINS_USERNAME("密碼不能包含用戶名"),
         PASSWORD_COMPLEXITY_INSUFFICIENT("密碼複雜度不足"),
-        PASSWORD_NOT_MATCH("輸入的密碼不一致");
+        PASSWORD_NOT_MATCH("輸入的密碼不一致"),
+        EMAIL_ALREADY_EXISTS("電子郵件已經存在");
 
 
 

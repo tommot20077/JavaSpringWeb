@@ -13,10 +13,11 @@ import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService{
 
     private final UserRepository userRepository;
     private final UserInspection userInspection;
@@ -31,10 +32,12 @@ public class UserService {
         if (userInspection.isValidUsername(user.getUsername())){
             if (userInspection.isValidPassword(user.getPassword(), user.getUsername())){
                 user.setPassword(UserHashMethod.hashPassword(user.getPassword()));
-                userRepository.save(user);
             }
+            user.setEmail(userInspection.hasEmail(user.getEmail()));
+
 
         }
+        userRepository.save(user);
     }
 
     public Boolean authenticate(String username, String password){
@@ -51,6 +54,8 @@ public class UserService {
                 .orElse(false);
 
     }
+
+
 
 
 
@@ -92,4 +97,5 @@ public class UserService {
             throw new UsernameNotFoundException("找不到ID為" + id + "的使用者。");
         }
     }
+
 }

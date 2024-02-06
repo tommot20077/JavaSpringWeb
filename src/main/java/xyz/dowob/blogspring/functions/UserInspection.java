@@ -44,5 +44,19 @@ public class UserInspection {
         }
         return true;
     }
+
+
+    public String hasEmail(String email) throws RegisterException {
+        if (email != null && !email.trim().isEmpty()) {
+            if (userRepository.findByEmail(email).isPresent()){
+                throw new RegisterException(RegisterException.ErrorCode.EMAIL_ALREADY_EXISTS);
+            }
+            return email;
+        } else {
+           return null;
+        }
     }
+
+
+}
 

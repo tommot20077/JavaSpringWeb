@@ -22,7 +22,7 @@ public class User {
     @NotBlank(message = "密碼為必填選項")
     private String password;
 
-    @Column(unique = true)
+    @Column
     @Email(message = "請輸入有效的E-mail")
     private String email;
 

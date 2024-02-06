@@ -44,6 +44,7 @@ public class UserController {
                 case PASSWORD_CONTAINS_USERNAME -> "密碼不能包含用戶名!";
                 case PASSWORD_COMPLEXITY_INSUFFICIENT -> "密碼複雜度不足!";
                 case PASSWORD_NOT_MATCH -> "輸入的密碼不一致!";
+                case EMAIL_ALREADY_EXISTS -> "Email已經存在!";
 
             };
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
@@ -64,11 +65,14 @@ public class UserController {
         return "login";
     }
 
+    @GetMapping("/login_success")
+    public String showLogin_success(Model model) {return "login_success";}
+
     @PostMapping("/login")
         public String performLogin(@ModelAttribute User user, HttpServletRequest request, RedirectAttributes redirectAttributes){
             if(userService.authenticate(user.getUsername(), user.getPassword())){
                 redirectAttributes.addFlashAttribute("success","登入成功");
-                return "redirect:/";
+                return "redirect:/login_success";
             }
             else{
                 redirectAttributes.addFlashAttribute("errorMessage","帳號或密碼錯誤");
