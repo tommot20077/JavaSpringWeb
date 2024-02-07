@@ -16,6 +16,7 @@ public class UserInspection {
 
 
     public boolean isValidPassword(String password,String username) throws RegisterException {
+        if(password == null || password.trim().isEmpty()) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_LENGTH_INVALID);
         if(password.length() < 8) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_LENGTH_INVALID);
         if(password.equals(username)) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_CONTAINS_USERNAME);
         boolean hasUpper = false, hasLower = false, hasDigit = false;

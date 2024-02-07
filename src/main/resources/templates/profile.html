@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" th:with="userLoggedIn=${session.currentUser != null}">
+<head>
+    <meta charset="UTF-8">
+    <title>更新資料</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 400px;
+            margin-top: 50px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-header {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-control {
+            width: 100%;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>更新個人資料</h1>
+<form th:action="@{/profile}" th:object="${user}" method="post">
+    <div class="form-group">
+        <label for="password">密碼</label>
+        <input type="password" class="form-control" id="password" th:field="*{password}">
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">重複密碼</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" th:field="*{email}">
+    </div>
+    <div class="form-group">
+        <label for="birthdate">生日</label>
+        <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" >
+    </div>
+
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <span th:text="${success}"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">更新</button>
+    <a href="/" class="btn btn-secondary">回到首頁</a>
+
+</form>
+</div>
+</body>
+</html>
