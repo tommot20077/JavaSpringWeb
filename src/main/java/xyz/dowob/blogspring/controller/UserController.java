@@ -1,6 +1,5 @@
 package xyz.dowob.blogspring.controller;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,19 +65,27 @@ public class UserController {
     }
 
     @GetMapping("/login_success")
-    public String showLogin_success(Model model) {return "login_success";}
+    public String showLogin_success() {return "login_success";}
 
     @PostMapping("/login")
-        public String performLogin(@ModelAttribute User user, HttpServletRequest request, RedirectAttributes redirectAttributes){
-            if(userService.authenticate(user.getUsername(), user.getPassword())){
-                redirectAttributes.addFlashAttribute("success","登入成功");
-                return "redirect:/login_success";
-            }
-            else{
-                redirectAttributes.addFlashAttribute("errorMessage","帳號或密碼錯誤");
-                return "redirect:/login";
-            }
+    public String performLogin(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes){
+        if(userService.authenticate(user.getUsername(), user.getPassword())){
+            redirectAttributes.addFlashAttribute("success","登入成功");
+            session.setAttribute("currentUser", user.getUsername());
+            return "redirect:/login_success";
         }
+        else{
+            redirectAttributes.addFlashAttribute("errorMessage","帳號或密碼錯誤");
+            return "redirect:/login";
+        }
+    }
 
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
+        session.invalidate();
+        redirectAttributes.addFlashAttribute("success","登出成功");
+        return "redirect:/";
+    }
 
 }
