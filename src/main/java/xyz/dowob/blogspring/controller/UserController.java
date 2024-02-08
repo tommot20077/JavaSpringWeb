@@ -1,13 +1,13 @@
 package xyz.dowob.blogspring.controller;
-import io.micrometer.common.util.StringUtils;
+
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.UserException.RegisterException;
-import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.repository.UserRepository;
@@ -15,15 +15,15 @@ import xyz.dowob.blogspring.service.UserService;
 
 @Controller
 public class UserController {
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
     private final UserService userService;
-    private final UserInspection userInspection;
+    //private final UserInspection userInspection;
 
     @Autowired
     public UserController(UserInspection userInspection,UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
+        //this.userRepository = userRepository;
         this.userService = userService;
-        this.userInspection = userInspection;
+        //this.userInspection = userInspection;
     }
 
     @GetMapping("/register")
@@ -37,8 +37,7 @@ public class UserController {
     public String processRegistrationForm(@ModelAttribute User user, RedirectAttributes redirectAttributes,@RequestParam("confirmPassword") String confirmPassword) {
         // 呼叫 service 層來處理用戶注冊
         try {
-            if(!user.getPassword().equals(confirmPassword)) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
-            userService.registerUser(user);
+            userService.registerUser(user ,confirmPassword);
             redirectAttributes.addFlashAttribute("success", "注冊成功!");
             return "redirect:/register_success"; // 重導到注冊成功頁面
         }catch (RegisterException e){
@@ -96,41 +95,24 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showProfileForm(Model model, HttpSession session) {
-        String username = (String) session.getAttribute("currentUser");
-        User user = userService.getUserByUsername(username);
-        model.addAttribute("user", user);
-        return "profile";
+        try {
+            String username = (String) session.getAttribute("currentUser");
+            User user = userService.getUserByUsername(username);
+            model.addAttribute("user", user);
+            return "profile";
+        } catch (UsernameNotFoundException e) {
+            return "redirect:/login";
+        }
+
     }
 
     @PostMapping("/profile")
-    public String processProfileForm(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword) throws RegisterException {
+    public String processProfileForm(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword){
         String username = (String) session.getAttribute("currentUser");
         User repositoryUser = userService.getUserByUsername(username);
         try {
-            if (StringUtils.isNotBlank(user.getPassword()) && user.getPassword().equals(confirmPassword)) {
-                if (userInspection.isValidPassword(user.getPassword(), username)) {
-                    repositoryUser.setPassword(UserHashMethod.hashPassword(user.getPassword()));
-                }
-            } else if (StringUtils.isNotBlank(user.getPassword())) {
-                throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
-            }
-
-            if (StringUtils.isNotBlank(user.getEmail()) && !user.getEmail().equals(repositoryUser.getEmail())) {
-                if (userInspection.hasEmail(user.getEmail()) != null) {
-                    repositoryUser.setEmail(user.getEmail());
-                } else {
-                    throw new RegisterException(RegisterException.ErrorCode.EMAIL_ALREADY_EXISTS);
-                }
-            }
-
-            if (user.getBirthdate() != null && !user.getBirthdate().equals(repositoryUser.getBirthdate())) {
-                repositoryUser.setBirthdate(user.getBirthdate());
-            }
-
-            userService.updateUser(repositoryUser);
+            userService.updateUser(user, repositoryUser, confirmPassword);
             redirectAttributes.addFlashAttribute("success", "更新成功");
-
-
 
         } catch (RegisterException e) {
             String errorMessage = switch (e.getErrorCode()) {

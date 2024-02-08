@@ -3,10 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>註冊成功</title>
+    <!-- Bootstrap的CSS檔案 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- 自訂的CSS樣式 -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .card {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h2>用戶帳號註冊成功</h2>
-<a href="login">點擊進入登入頁面</a>
+<div class="container">
+    <div class="card text-center">
+        <div class="card-body">
+            <h2 class="card-title">用戶帳號註冊成功</h2>
+            <p class="card-text">您現在可以通過點擊下方按鈕，登入您的帳戶。</p>
+            <a href="login" class="btn btn-primary">點擊進入登入頁面</a>
+        </div>
+    </div>
+</div>
 
+<!-- Bootstrap的JavaScript檔案 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.15.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
