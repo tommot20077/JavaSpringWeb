@@ -6,16 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import xyz.dowob.blogspring.UserException.RegisterException;
+import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.repository.UserRepository;
-
-import java.util.Collections;
-import java.util.Optional;
 
 @Service
 public class UserService{
@@ -24,13 +21,13 @@ public class UserService{
     private final UserInspection userInspection;
 
     @Autowired
-    public UserService(UserInspection userInspection,UserRepository userRepository) {
+    public UserService(UserInspection userInspection, UserRepository userRepository) {
         this.userInspection = userInspection;
         this.userRepository = userRepository;
     }
 
-    public void registerUser(User user, String confirmPassword) throws RegisterException {
-        if(!user.getPassword().equals(confirmPassword)) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
+    public void registerUser(User user, String confirmPassword) throws Userdata_UpdateException {
+        if(!user.getPassword().equals(confirmPassword)) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
         if (userInspection.isValidUsername(user.getUsername())){
             if (userInspection.isValidPassword(user.getPassword(), user.getUsername())){
                 user.setPassword(UserHashMethod.hashPassword(user.getPassword()));
@@ -57,17 +54,15 @@ public class UserService{
 
     }
 
-    public void updateUser(User newInputUser, User repositoryUser, String confirmPassword) throws RegisterException {
+    public void updateUser(User newInputUser, User repositoryUser, String confirmPassword) throws Userdata_UpdateException {
 
         if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
             if (userInspection.isValidPassword(newInputUser.getPassword(), newInputUser.getUsername())) {
                 repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
             }
         } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
-            throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
         }
-
-
 
 
         if(StringUtils.isNotBlank(newInputUser.getEmail()) && !newInputUser.getEmail().equals(repositoryUser.getEmail())){
@@ -75,7 +70,7 @@ public class UserService{
             if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
                 repositoryUser.setEmail(newInputUser.getEmail());
             } else {
-                throw new RegisterException(RegisterException.ErrorCode.EMAIL_ALREADY_EXISTS);
+                throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.EMAIL_ALREADY_EXISTS);
             }
         }
 

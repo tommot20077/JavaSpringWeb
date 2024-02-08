@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import xyz.dowob.blogspring.UserException.RegisterException;
+import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.repository.UserRepository;
@@ -38,9 +38,8 @@ public class UserController {
         // 呼叫 service 層來處理用戶注冊
         try {
             userService.registerUser(user ,confirmPassword);
-            redirectAttributes.addFlashAttribute("success", "注冊成功!");
             return "redirect:/register_success"; // 重導到注冊成功頁面
-        }catch (RegisterException e){
+        }catch (Userdata_UpdateException e){
             String errorMessage = switch (e.getErrorCode()) {
                 case USERNAME_ALREADY_EXISTS -> "用戶名已經存在!";
                 case USERNAME_CONTAINS_ILLEGAL_CHARACTERS -> "用戶名包含非法字符!";
@@ -75,8 +74,8 @@ public class UserController {
     @PostMapping("/login")
     public String performLogin(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes){
         if(userService.authenticate(user.getUsername(), user.getPassword())){
-            redirectAttributes.addFlashAttribute("success","登入成功");
-            session.setAttribute("currentUser", user.getUsername());
+            session.setAttribute("currentUsername", user.getUsername());
+            session.setAttribute("currentUserId", user.getId());
             return "redirect:/login_success";
         }
         else{
@@ -89,14 +88,13 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
         session.invalidate();
-        redirectAttributes.addFlashAttribute("success","登出成功");
         return "redirect:/";
     }
 
     @GetMapping("/profile")
     public String showProfileForm(Model model, HttpSession session) {
         try {
-            String username = (String) session.getAttribute("currentUser");
+            String username = (String) session.getAttribute("currentUsername");
             User user = userService.getUserByUsername(username);
             model.addAttribute("user", user);
             return "profile";
@@ -108,13 +106,13 @@ public class UserController {
 
     @PostMapping("/profile")
     public String processProfileForm(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword){
-        String username = (String) session.getAttribute("currentUser");
+        String username = (String) session.getAttribute("currentUsername");
         User repositoryUser = userService.getUserByUsername(username);
         try {
             userService.updateUser(user, repositoryUser, confirmPassword);
             redirectAttributes.addFlashAttribute("success", "更新成功");
 
-        } catch (RegisterException e) {
+        } catch (Userdata_UpdateException e) {
             String errorMessage = switch (e.getErrorCode()) {
                 case PASSWORD_LENGTH_INVALID -> "密碼長度不符合要求!";
                 case PASSWORD_CONTAINS_USERNAME -> "密碼不能包含用戶名!";

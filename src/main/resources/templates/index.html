@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUser != null}">
+<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
     <title>主頁</title>
@@ -13,13 +13,19 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
+
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    歡迎 [[${session.currentUser}]]!
+                    歡迎 [[${session.currentUsername}]]!
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/profile">更新資料</a>
+                    <a class="dropdown-item" href="/new_article">新增文章</a>
                 </div>
+
+
+
+
             </li>
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
@@ -45,7 +51,7 @@
     </div>
 
     <div class="jumbotron" th:if="${userLoggedIn}">
-        <h1 class="display-4">歡迎 [[${session.currentUser}]]!</h1>
+        <h1 class="display-4">歡迎 [[${session.currentUsername}]]!</h1>
         <p class="lead">這是一個簡易實作部落格首頁。</p>
         <hr class="my-4">
         <p>其中主要使用Java Spring boot最為後端架構</p>

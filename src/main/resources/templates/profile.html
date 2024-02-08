@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUser != null}">
+<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
     <title>更新資料</title>
@@ -30,6 +30,12 @@
     </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">我的Blog Web</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
 <div class="container">
 <h1>更新個人資料</h1>
 <form th:action="@{/profile}" th:object="${user}" method="post">

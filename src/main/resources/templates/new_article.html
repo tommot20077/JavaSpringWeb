@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>新增文章</title>
+    <!-- Bootstrap的CSS檔案 -->
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">我的Blog Web</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ml-auto">
+
+            <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    歡迎 [[${session.currentUsername}]]!
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/profile">更新資料</a>
+                    <a class="dropdown-item" href="/new_article">新增文章</a>
+                </div>
+            </li>
+            <li class="nav-item" th:if="${userLoggedIn}">
+                <a class="nav-link" href="/logout">登出</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<br><br><br>
+<div class="container">
+    <h2>發表新文章</h2>
+    <form action="#" method="post" th:action="@{/new_article}" th:object="${post}" >
+    <div class="form-group">
+      <label for="title">標題:</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+      <label for="content">內容:</label>
+      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">提交</button>
+    <button type="submit" class="btn btn-secondary btn-primary">取消</button>
+    </form>
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+</div>
+
+<!-- Bootstrap的JavaScript檔案 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.15.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

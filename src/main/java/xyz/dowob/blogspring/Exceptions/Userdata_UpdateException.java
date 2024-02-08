@@ -1,18 +1,18 @@
-package xyz.dowob.blogspring.UserException;
+package xyz.dowob.blogspring.Exceptions;
 
-public class RegisterException extends Exception {
+public class Userdata_UpdateException extends Exception {
 
-    private final ErrorCode errorCode;
-    public RegisterException(ErrorCode errorCode) {
-        super(errorCode.getErrorMessage());
-        this.errorCode = errorCode;
-    }
     public ErrorCode getErrorCode() {
         return errorCode;
     }
+    private final ErrorCode errorCode;
 
 
 
+    public Userdata_UpdateException(ErrorCode errorCode) {
+        super(errorCode.getErrorMessage());
+        this.errorCode = errorCode;
+    }
 
     public enum  ErrorCode {
         USERNAME_ALREADY_EXISTS("用戶名已經存在"),
