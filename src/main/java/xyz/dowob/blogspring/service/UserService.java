@@ -29,7 +29,8 @@ public class UserService{
         this.userRepository = userRepository;
     }
 
-    public void registerUser(User user) throws RegisterException {
+    public void registerUser(User user, String confirmPassword) throws RegisterException {
+        if(!user.getPassword().equals(confirmPassword)) throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
         if (userInspection.isValidUsername(user.getUsername())){
             if (userInspection.isValidPassword(user.getPassword(), user.getUsername())){
                 user.setPassword(UserHashMethod.hashPassword(user.getPassword()));
@@ -56,34 +57,30 @@ public class UserService{
 
     }
 
-    public void updateUser(User currentUser) throws RegisterException {
+    public void updateUser(User newInputUser, User repositoryUser, String confirmPassword) throws RegisterException {
 
-        User repositoryUser = userRepository.findByUsername(currentUser.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("找不到名為" + currentUser.getUsername() + "的使用者。"));
-
-        if(StringUtils.isNotBlank(currentUser.getPassword())) {
-            if(!currentUser.getPassword().equals(repositoryUser.getPassword())) {
-                if (userInspection.isValidPassword(currentUser.getPassword(), currentUser.getUsername())) {
-                    repositoryUser.setPassword(UserHashMethod.hashPassword(currentUser.getPassword()));
-                }else {
-                    throw new RegisterException(RegisterException.ErrorCode.PASSWORD_COMPLEXITY_INSUFFICIENT);
-                }
-
+        if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
+            if (userInspection.isValidPassword(newInputUser.getPassword(), newInputUser.getUsername())) {
+                repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
             }
-
+        } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
+            throw new RegisterException(RegisterException.ErrorCode.PASSWORD_NOT_MATCH);
         }
 
-        if(StringUtils.isNotBlank(currentUser.getEmail()) && !currentUser.getEmail().equals(repositoryUser.getEmail())){
+
+
+
+        if(StringUtils.isNotBlank(newInputUser.getEmail()) && !newInputUser.getEmail().equals(repositoryUser.getEmail())){
             // 如果電子郵件在資料庫中不存在，則不應拋出異常
-            if(userRepository.findByEmail(currentUser.getEmail()).isEmpty() || currentUser.getEmail().equals(repositoryUser.getEmail())) {
-                repositoryUser.setEmail(currentUser.getEmail());
-            }else {
+            if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
+                repositoryUser.setEmail(newInputUser.getEmail());
+            } else {
                 throw new RegisterException(RegisterException.ErrorCode.EMAIL_ALREADY_EXISTS);
             }
         }
 
-        if (currentUser.getBirthdate() != null) {
-            repositoryUser.setBirthdate(currentUser.getBirthdate());
+        if (newInputUser.getBirthdate() != null && !newInputUser.getBirthdate().equals(repositoryUser.getBirthdate())) {
+            repositoryUser.setBirthdate(newInputUser.getBirthdate());
         }
         userRepository.save(repositoryUser);
     }

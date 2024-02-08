@@ -13,6 +13,7 @@ public class RegisterException extends Exception {
 
 
 
+
     public enum  ErrorCode {
         USERNAME_ALREADY_EXISTS("用戶名已經存在"),
         USERNAME_CONTAINS_ILLEGAL_CHARACTERS("用戶名包含非法字符"),
@@ -33,3 +34,4 @@ public class RegisterException extends Exception {
         }
     }
 }
+
