@@ -2,17 +2,13 @@
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
-    <title>新增文章</title>
-    <!-- Bootstrap的CSS檔案 -->
-    <style>
-        .error {
-            color: red;
-        }
-    </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title th:text="${post.title}">文章標題</title>
+    <!-- 加入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- 其他的head內容 -->
 </head>
-
 <body>
+<!-- Navbar等其他內容 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +25,16 @@
                     <a class="dropdown-item" href="/profile">更新資料</a>
                     <a class="dropdown-item" href="/new_article">新增文章</a>
                 </div>
+
+
+
+
+            </li>
+            <li class="nav-item" th:if="${!userLoggedIn}">
+                <a class="nav-link" href="/login">登入</a>
+            </li>
+            <li class="nav-item" th:if="${!userLoggedIn}">
+                <a class="nav-link" href="/register">註冊</a>
             </li>
             <li class="nav-item" th:if="${userLoggedIn}">
                 <a class="nav-link" href="/logout">登出</a>
@@ -36,27 +42,24 @@
         </ul>
     </div>
 </nav>
-<br><br><br>
-<div class="container">
-    <h2>發表新文章</h2>
-    <form action="#" method="post" th:action="@{/new_article}" th:object="${post}" >
-    <div class="form-group">
-      <label for="title">標題:</label>
-      <input type="text" class="form-control" id="title" name="title" required>
+
+<!-- 文章內容 -->
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title" th:text="${post.title}">文章標題</h1>
+        </div>
+        <div class="card-body">
+            <h5 class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |">作者名稱</h5>
+            <p class="card-text" th:text="${post.content}">文章內容</p>
+        </div>
     </div>
-    <div class="form-group">
-      <label for="content">內容:</label>
-      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">提交</button>
-        <a href="/" class="btn btn-secondary">取消</a>
-    </form>
-    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+    <!-- 根據需要添加其他內容 -->
 </div>
 
-<!-- Bootstrap的JavaScript檔案 -->
+<!-- 加入 Bootstrap JavaScript 和其依賴 -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.15.7/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>

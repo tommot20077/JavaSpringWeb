@@ -14,7 +14,10 @@ public class Postdata_UpdateException extends Exception{
         TITLE_TOO_LONG("標題太長"),
         CONTENT_TOO_LONG("內容太長"),
         POSTDATA_UPDATE_FAILED("文章發表失敗"),
-        DID_NOT_LOGIN("未登錄");
+        DID_NOT_LOGIN("未登錄"),
+        POST_NOT_FOUND("找不到文章");
+
+
 
         private final String errorMessage;
         ErrorCode(String errorMessage) {

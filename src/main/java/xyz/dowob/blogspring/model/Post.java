@@ -8,14 +8,14 @@ import java.util.Date;
 @Entity
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long article_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long articleId;
 
     @Column(nullable = false)
     @NotBlank(message = "標題為必填選項")
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false , columnDefinition = "TEXT")
     @NotBlank(message = "文章內容為必填選項")
     private String content;
 
@@ -28,8 +28,8 @@ public class Post {
     private Date creation_time;
 
 
-    public Long getArticle_id() {
-        return article_id;
+    public Long getArticleId() {
+        return articleId;
     }
     public String getTitle() {
         return title;

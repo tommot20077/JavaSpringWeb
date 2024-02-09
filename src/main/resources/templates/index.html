@@ -57,6 +57,31 @@
         <p>其中主要使用Java Spring boot最為後端架構</p>
     </div>
 
+
+    <!-- 在HTML模板的合適位置 -->
+    <div class="container mt-4">
+        <!-- 省略其他代碼 -->
+        <div th:if="${posts}">
+            <div th:each="post, iterStat : ${posts}" th:if="${iterStat.count <= 5}">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <!-- 點擊標題直接跳轉到文章詳情頁面 -->
+                        <h5 class="card-title">
+                            <a th:text="${post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
+                        </h5>
+                        <p class="card-text" th:text="${post.content}">文章內容預覽</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 只有當文章多於五篇時才顯示"查看更多文章"按鈕 -->
+            <div th:if="${posts.size() > 5}" class="text-center">
+                <a href="/article" class="btn btn-info">更多文章</a>
+            </div>
+        </div>
+        <!-- 省略其他代碼 -->
+    </div>
+
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
