@@ -8,27 +8,37 @@ import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.repository.PostRepository;
+import xyz.dowob.blogspring.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository){
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
 
     }
 
-    public void addNewPost(Post post, User author) throws Postdata_UpdateException {
-        if (post.getTitle().isEmpty() || post.getContent().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POSTDATA_UPDATE_FAILED);
-        if (post.getTitle().length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
-        if (post.getContent().length() > 21000) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
+    public void addNewPost(Post post, String username) throws Postdata_UpdateException {
+        if (username == null || username.trim().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.DID_NOT_LOGIN);
+
+        User author = userRepository.findByUsername(username).orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.NOT_FOUND_USER));
         post.setAuthor(author);
+
+        if (post.getTitle().isEmpty() || post.getContent().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_UPDATE_FAILED);
+        if (post.getTitle().length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
         post.setTitle(post.getTitle());
+
+        if (post.getContent().length() > 21000) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
         post.setContent(post.getContent());
+
+
         postRepository.save(post);
 
     }
@@ -37,14 +47,16 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Page<Post> allPostsByPage(Pageable pageable){
-        return postRepository.findAll(pageable);
-    }
+
 
     public Post findPostByArticle_id(Long articleId) throws Postdata_UpdateException {
 
         return postRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
+    }
+
+    public Page<Post> allPostsByPage(Pageable pageable){
+        return postRepository.findAll(pageable);
     }
 
 }

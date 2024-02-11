@@ -1,29 +1,28 @@
 package xyz.dowob.blogspring.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
-import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.model.User;
-import xyz.dowob.blogspring.repository.UserRepository;
 import xyz.dowob.blogspring.service.UserService;
 
 @Controller
 public class UserController {
-    //private final UserRepository userRepository;
+
     private final UserService userService;
-    //private final UserInspection userInspection;
 
     @Autowired
-    public UserController(UserInspection userInspection,UserRepository userRepository, UserService userService) {
-        //this.userRepository = userRepository;
+    public UserController(UserService userService) {
         this.userService = userService;
-        //this.userInspection = userInspection;
     }
 
     @GetMapping("/register")
@@ -54,6 +53,28 @@ public class UserController {
             return "redirect:/register";
         }
 
+    }
+    @GetMapping("/verify")
+    public ModelAndView verifyEmail(@RequestParam String token) {
+        ModelAndView modelAndView = new ModelAndView("verify"); // verify.html模板的名称
+
+        try {
+            if (userService.verifyToken(token)) {
+                modelAndView.addObject("message", "驗證成功"); // 待显示的成功消息
+                modelAndView.addObject("verified", true);
+            } else {
+                modelAndView.addObject("message", "驗證失敗：無效的token或token已過期"); // 待显示的失败消息
+                modelAndView.addObject("verified", false);
+            }
+        } catch (UsernameNotFoundException e) {
+            modelAndView.addObject("message", e.getMessage());
+            modelAndView.addObject("verified", false);
+        } catch (Exception e) {
+            modelAndView.addObject("message", "驗證過程中出現了問題：" + e.getMessage());
+            modelAndView.addObject("verified", false);
+        }
+
+        return modelAndView;
     }
 
     @GetMapping("/register_success")
@@ -86,7 +107,7 @@ public class UserController {
 
 
     @GetMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
+    public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }

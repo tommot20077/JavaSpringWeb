@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.model.Post;
-import xyz.dowob.blogspring.model.User;
-import xyz.dowob.blogspring.repository.UserRepository;
 import xyz.dowob.blogspring.service.PostService;
 
 import java.util.List;
@@ -22,13 +20,14 @@ import java.util.List;
 
 
 public class PostController {
-    @Autowired
+
     private final PostService postService;
-    private final UserRepository userRepository;
+
 //userRepository處理
-    public PostController(PostService postService,UserRepository userRepository) {
+@Autowired
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.userRepository = userRepository;
+
     }
 
 
@@ -49,18 +48,16 @@ public class PostController {
     public String processPostForm(@ModelAttribute Post post, RedirectAttributes redirectAttributes, HttpSession session) {
         try {
             String username = (String) session.getAttribute("currentUsername");
-            if (username == null || username.trim().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.DID_NOT_LOGIN);
-            else {
-                User author = userRepository.findByUsername(username).orElseThrow();
-                postService.addNewPost(post, author);
-                return "redirect:/new_article_success";
-            }
+            postService.addNewPost(post,username);
+            return "redirect:/new_article_success";
+
         }catch (Postdata_UpdateException e){
             String errorMessage = switch (e.getErrorCode()) {
                 case DID_NOT_LOGIN -> "請先登入!";
-                case POSTDATA_UPDATE_FAILED -> "文章發布失敗!";
+                case POST_UPDATE_FAILED -> "文章發布失敗!";
                 case CONTENT_TOO_LONG -> "內容太長!";
                 case TITLE_TOO_LONG -> "標題太長!";
+                case NOT_FOUND_USER -> "找不到用戶!";
                 default -> "未知錯誤!";
 
             };
@@ -77,7 +74,8 @@ public class PostController {
 
     @GetMapping("/article/{id}")
     public String articleDetail(@PathVariable Long id, Model model){
-        try {Post post = postService.findPostByArticle_id(id);
+        try {
+            Post post = postService.findPostByArticle_id(id);
             model.addAttribute("post", post);
             return "article_detail";
         } catch (Postdata_UpdateException e) {
@@ -93,12 +91,12 @@ public class PostController {
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("pageNum", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
-        if (request.getParameterMap().containsKey("page") && page < 1) {
+
+
+        if (!request.getParameterMap().containsKey("page") && (request.getParameterMap().containsKey("page") && page < 1)) {
             return "redirect:/article?page=1";
         } else if (request.getParameterMap().containsKey("page") && page > postPage.getTotalPages()) {
             return "redirect:/article?page=" + postPage.getTotalPages();
-        } else if (!request.getParameterMap().containsKey("page")) {
-            return "redirect:/article?page=1";
         }
         return "article";
     }

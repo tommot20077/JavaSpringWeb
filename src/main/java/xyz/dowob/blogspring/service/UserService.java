@@ -1,43 +1,59 @@
 package xyz.dowob.blogspring.service;
+
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import io.micrometer.common.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
-import xyz.dowob.blogspring.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
+import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.model.VerificationToken;
+import xyz.dowob.blogspring.repository.TokenRepository;
 import xyz.dowob.blogspring.repository.UserRepository;
+
+import java.util.Date;
 
 @Service
 public class UserService{
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
     private final UserInspection userInspection;
+    private final EmailService emailService;
+
 
     @Autowired
-    public UserService(UserInspection userInspection, UserRepository userRepository) {
+    public UserService(UserInspection userInspection, UserRepository userRepository, TokenRepository tokenRepository, EmailService emailService) {
         this.userInspection = userInspection;
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.emailService = emailService;
     }
 
     public void registerUser(User user, String confirmPassword) throws Userdata_UpdateException {
-        if(!user.getPassword().equals(confirmPassword)) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
-        if (userInspection.isValidUsername(user.getUsername())){
-            if (userInspection.isValidPassword(user.getPassword(), user.getUsername())){
+        if (!user.getPassword().equals(confirmPassword)) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
+        }
+        if (userInspection.isValidUsername(user.getUsername())) {
+            if (userInspection.isValidPassword(user.getPassword(), user.getUsername())) {
                 user.setPassword(UserHashMethod.hashPassword(user.getPassword()));
             }
             user.setEmail(userInspection.hasEmail(user.getEmail()));
+            userRepository.save(user);
 
-
+            String token = emailService.createVerificationCode(user);
+            String verificationLink = "http://localhost:8080/verify?token=" + token;
+            emailService.sendVerificationEmail(user.getEmail(), "請驗證您的電子郵件", verificationLink);
         }
-        userRepository.save(user);
     }
+
+
 
     public Boolean authenticate(String username, String password){
         return userRepository.findByUsername(username)
@@ -90,6 +106,32 @@ public class UserService{
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("找不到名為" + username + "的使用者。"));
+    }
+
+    public VerificationToken getVerificationToken(String token) {
+        return tokenRepository.findByToken(token);
+    }
+    public boolean checkEmailIsVerified(String email, String token) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("找不到電子郵件為" + email + "的使用者。"));
+        if (user.isActive()) {
+            throw new UsernameNotFoundException("電子郵件為" + email + "的使用者已經驗證。");
+        } else {
+            return verifyToken(token);
+        }
+    }
+    public boolean verifyToken(String token){
+        VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken != null && verificationToken.getExpiryDate().after(new Date())) {
+            User user = verificationToken.getUser();
+            if(user != null && !user.isActive()){
+                user.setActive(true);
+                userRepository.save(user);
+                tokenRepository.delete(verificationToken);
+                return true;
+            }
+        }
+        return false;
     }
 
     public Page<User> getAllUsersWithPge(int page, int size) {

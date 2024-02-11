@@ -42,7 +42,7 @@
     <h2>文章列表</h2>
     <div class="list-group">
         <th:block th:each="post : ${posts}">
-            <a th:href="@{/article/{id}(id=${post.articleId})}" class="list-group-item list-group-item-action" th:text="${post.title}">文章標題</a>
+            <a th:href="@{/article/{id}(id=${post.articleId})}" class="list-group-item list-group-item-action" th:text="${post.title.length() > 50 ? #strings.substring(post.title, 0, 50) + '...' : post.title}">文章標題</a>
         </th:block>
     </div>
 

@@ -33,6 +33,13 @@ public class User {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthdate;
 
+    @Column(name= "active", nullable = false)
+    private boolean isActive;
+
+    public User() {
+        this.isActive = false;
+    }
+
 
     public Long getId() {
         return id;
@@ -63,4 +70,10 @@ public class User {
         this.birthdate = birthdate;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 }
