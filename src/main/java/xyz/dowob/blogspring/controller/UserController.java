@@ -13,16 +13,19 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.service.TokenService;
 import xyz.dowob.blogspring.service.UserService;
 
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/register")
@@ -39,27 +42,24 @@ public class UserController {
             userService.registerUser(user ,confirmPassword);
             return "redirect:/register_success"; // 重導到注冊成功頁面
         }catch (Userdata_UpdateException e){
-            String errorMessage = switch (e.getErrorCode()) {
-                case USERNAME_ALREADY_EXISTS -> "用戶名已經存在!";
-                case USERNAME_CONTAINS_ILLEGAL_CHARACTERS -> "用戶名包含非法字符!";
-                case PASSWORD_LENGTH_INVALID -> "密碼長度不符合要求!";
-                case PASSWORD_CONTAINS_USERNAME -> "密碼不能包含用戶名!";
-                case PASSWORD_COMPLEXITY_INSUFFICIENT -> "密碼複雜度不足!";
-                case PASSWORD_NOT_MATCH -> "輸入的密碼不一致!";
-                case EMAIL_ALREADY_EXISTS -> "Email已經存在!";
-
-            };
+            String errorMessage = e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/register";
         }
 
     }
+
+    @GetMapping("/register_success")
+    public String showRegistrationSuccess() {
+        return "register_success";
+    }
+
     @GetMapping("/verify")
     public ModelAndView verifyEmail(@RequestParam String token) {
         ModelAndView modelAndView = new ModelAndView("verify"); // verify.html模板的名称
 
         try {
-            if (userService.verifyToken(token)) {
+            if (tokenService.verifyToken(token)) {
                 modelAndView.addObject("message", "驗證成功"); // 待显示的成功消息
                 modelAndView.addObject("verified", true);
             } else {
@@ -77,10 +77,6 @@ public class UserController {
         return modelAndView;
     }
 
-    @GetMapping("/register_success")
-    public String showRegistrationSuccess() {
-        return "register_success";
-    }
 
 
     @GetMapping("/login")
@@ -126,25 +122,24 @@ public class UserController {
     }
 
     @PostMapping("/profile")
-    public String processProfileForm(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword){
-        String username = (String) session.getAttribute("currentUsername");
-        User repositoryUser = userService.getUserByUsername(username);
+    public String processProfileForm(@ModelAttribute User newInputUser, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword, @RequestParam("originPassword") String originPassword){
         try {
-            userService.updateUser(user, repositoryUser, confirmPassword);
-            redirectAttributes.addFlashAttribute("success", "更新成功");
+            String username = (String) session.getAttribute("currentUsername");
+            User repositoryUser = userService.getUserByUsername(username);
 
-        } catch (Userdata_UpdateException e) {
-            String errorMessage = switch (e.getErrorCode()) {
-                case PASSWORD_LENGTH_INVALID -> "密碼長度不符合要求!";
-                case PASSWORD_CONTAINS_USERNAME -> "密碼不能包含用戶名!";
-                case PASSWORD_COMPLEXITY_INSUFFICIENT -> "密碼複雜度不足!";
-                case PASSWORD_NOT_MATCH -> "輸入的密碼不一致!";
-                case EMAIL_ALREADY_EXISTS -> "Email已經存在!";
-                default -> "未知錯誤";
-            };
+            userService.updateUser(newInputUser, repositoryUser, confirmPassword, originPassword);
+            if(newInputUser.getEmail() != null){
+                redirectAttributes.addFlashAttribute("success", "更新成功!\n請至信箱驗證新的電子郵件");
+            }else{
+                redirectAttributes.addFlashAttribute("success", "更新成功!");
+            }
+            return "redirect:/profile";
+
+        } catch (Userdata_UpdateException | UsernameNotFoundException e) {
+            String errorMessage = e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/profile";
         }
-        return "redirect:/profile";
+
     }
 }

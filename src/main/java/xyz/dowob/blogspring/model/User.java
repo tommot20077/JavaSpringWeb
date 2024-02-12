@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,6 +36,11 @@ public class User {
 
     @Column(name= "active", nullable = false)
     private boolean isActive;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int currentSendTimes;
+
+    private LocalDateTime resetTime = LocalDateTime.now().minusHours(2);;
 
     public User() {
         this.isActive = false;
@@ -75,5 +81,19 @@ public class User {
     }
     public void setActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public int getCurrentSendTimes() {
+        return currentSendTimes;
+    }
+    public void setCurrentSendTimes(int currentSendTimes) {
+        this.currentSendTimes = currentSendTimes;
+    }
+
+    public LocalDateTime getResetTime() {
+        return resetTime;
+    }
+    public void setResetTime(LocalDateTime resetTime) {
+        this.resetTime = resetTime;
     }
 }

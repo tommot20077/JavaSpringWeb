@@ -13,27 +13,23 @@ import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.model.User;
-import xyz.dowob.blogspring.model.VerificationToken;
-import xyz.dowob.blogspring.repository.TokenRepository;
 import xyz.dowob.blogspring.repository.UserRepository;
-
-import java.util.Date;
 
 @Service
 public class UserService{
 
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
+
     private final UserInspection userInspection;
-    private final EmailService emailService;
+    private final TokenService tokenService;
 
 
     @Autowired
-    public UserService(UserInspection userInspection, UserRepository userRepository, TokenRepository tokenRepository, EmailService emailService) {
+    public UserService(UserInspection userInspection, UserRepository userRepository, TokenService tokenService) {
         this.userInspection = userInspection;
         this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
-        this.emailService = emailService;
+
+        this.tokenService = tokenService;
     }
 
     public void registerUser(User user, String confirmPassword) throws Userdata_UpdateException {
@@ -46,10 +42,9 @@ public class UserService{
             }
             user.setEmail(userInspection.hasEmail(user.getEmail()));
             userRepository.save(user);
-
-            String token = emailService.createVerificationCode(user);
-            String verificationLink = "http://localhost:8080/verify?token=" + token;
-            emailService.sendVerificationEmail(user.getEmail(), "請驗證您的電子郵件", verificationLink);
+            if (user.getEmail() != null) {
+                tokenService.sendVerificationEmail(user);
+            }
         }
     }
 
@@ -70,30 +65,44 @@ public class UserService{
 
     }
 
-    public void updateUser(User newInputUser, User repositoryUser, String confirmPassword) throws Userdata_UpdateException {
-
-        if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
-            if (userInspection.isValidPassword(newInputUser.getPassword(), newInputUser.getUsername())) {
-                repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
+    public void updateUser(User newInputUser, User repositoryUser, String confirmPassword, String originPassword) throws Userdata_UpdateException {
+        if (StringUtils.isNotBlank(originPassword) && authenticate(repositoryUser.getUsername(), originPassword)) {
+            if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
+                if (userInspection.isValidPassword(newInputUser.getPassword(), newInputUser.getUsername())) {
+                    repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
+                }
+            } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
+                throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
             }
-        } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
-            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
-        }
 
 
-        if(StringUtils.isNotBlank(newInputUser.getEmail()) && !newInputUser.getEmail().equals(repositoryUser.getEmail())){
-            // 如果電子郵件在資料庫中不存在，則不應拋出異常
-            if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
-                repositoryUser.setEmail(newInputUser.getEmail());
-            } else {
-                throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.EMAIL_ALREADY_EXISTS);
+            if (newInputUser.getBirthdate() != null && !newInputUser.getBirthdate().equals(repositoryUser.getBirthdate())) {
+                repositoryUser.setBirthdate(newInputUser.getBirthdate());
             }
-        }
 
-        if (newInputUser.getBirthdate() != null && !newInputUser.getBirthdate().equals(repositoryUser.getBirthdate())) {
-            repositoryUser.setBirthdate(newInputUser.getBirthdate());
+
+            boolean emailChanged = false;
+
+            if(StringUtils.isNotBlank(newInputUser.getEmail()) && !newInputUser.getEmail().equals(repositoryUser.getEmail())){
+                // 如果電子郵件在資料庫中不存在，則不應拋出異常
+                if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
+                    repositoryUser.setEmail(newInputUser.getEmail());
+                    emailChanged = true;
+                    repositoryUser.setActive(false);
+                } else {
+                    throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.EMAIL_ALREADY_EXISTS);
+                }
+            }
+            userRepository.save(repositoryUser);
+
+
+            if (emailChanged) {
+                tokenService.sendVerificationEmail(repositoryUser);
+            }
+
+        } else {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_WRONG);
         }
-        userRepository.save(repositoryUser);
     }
 
 
@@ -108,31 +117,7 @@ public class UserService{
             .orElseThrow(() -> new UsernameNotFoundException("找不到名為" + username + "的使用者。"));
     }
 
-    public VerificationToken getVerificationToken(String token) {
-        return tokenRepository.findByToken(token);
-    }
-    public boolean checkEmailIsVerified(String email, String token) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("找不到電子郵件為" + email + "的使用者。"));
-        if (user.isActive()) {
-            throw new UsernameNotFoundException("電子郵件為" + email + "的使用者已經驗證。");
-        } else {
-            return verifyToken(token);
-        }
-    }
-    public boolean verifyToken(String token){
-        VerificationToken verificationToken = tokenRepository.findByToken(token);
-        if (verificationToken != null && verificationToken.getExpiryDate().after(new Date())) {
-            User user = verificationToken.getUser();
-            if(user != null && !user.isActive()){
-                user.setActive(true);
-                userRepository.save(user);
-                tokenRepository.delete(verificationToken);
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     public Page<User> getAllUsersWithPge(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

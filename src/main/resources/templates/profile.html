@@ -15,9 +15,6 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .form-header {
-            margin-bottom: 20px;
-        }
         .form-group {
             margin-bottom: 10px;
         }
@@ -40,19 +37,23 @@
 <h1>更新個人資料</h1>
 <form th:action="@{/profile}" th:object="${user}" method="post">
     <div class="form-group">
-        <label for="password">密碼</label>
+        <label for="originPassword">原本密碼</label>
+        <input type="password" class="form-control" id="originPassword" name="originPassword" required>
+    </div>
+    <div class="form-group">
+        <label for="password">更新密碼</label>
         <input type="password" class="form-control" id="password" th:field="*{password}">
     </div>
     <div class="form-group">
-        <label for="confirmPassword">重複密碼</label>
+        <label for="confirmPassword">重複更新密碼</label>
         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
     </div>
-    <!---
+
     <div class="form-group">
         <label for="email">Email</label>
         <input type="email" class="form-control" id="email" th:field="*{email}">
     </div>
-    --->
+
     <div class="form-group">
         <label for="birthdate">生日</label>
         <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" >

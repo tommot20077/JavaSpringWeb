@@ -19,6 +19,8 @@ public class VerificationToken {
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
 
+
+
     public VerificationToken() {}
     public VerificationToken(String token, User user) {
         this.token = token;
@@ -39,9 +41,6 @@ public class VerificationToken {
     public String getToken() {
         return token;
     }
-    public void setToken(String token) {
-        this.token = token;
-    }
     public User getUser() {
         return user;
     }
@@ -51,7 +50,6 @@ public class VerificationToken {
     public Date getExpiryDate() {
         return expiryDate;
     }
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
+
+
 }
