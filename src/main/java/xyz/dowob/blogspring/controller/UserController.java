@@ -114,8 +114,8 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfileForm(Model model, HttpSession session) {
         try {
-            String username = (String) session.getAttribute("currentUsername");
-            User user = userService.getUserByUsername(username);
+            long userid = (Long) session.getAttribute("currentUserId");
+            User user = userService.getUserById(userid);
             model.addAttribute("user", user);
             return "profile";
         } catch (UsernameNotFoundException e) {
@@ -127,11 +127,11 @@ public class UserController {
     @PostMapping("/profile")
     public String processProfileForm(@ModelAttribute User newInputUser, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword, @RequestParam("originPassword") String originPassword){
         try {
-            String username = (String) session.getAttribute("currentUsername");
-            User repositoryUser = userService.getUserByUsername(username);
-
+            long userid = (Long) session.getAttribute("currentUserId");
+            User repositoryUser = userService.getUserById(userid);
+            String originEmail = repositoryUser.getEmail();
             userService.updateUser(newInputUser, repositoryUser, confirmPassword, originPassword);
-            if(newInputUser.getEmail() != null){
+            if(!newInputUser.getEmail().equals(originEmail)){
                 redirectAttributes.addFlashAttribute("success", "更新成功!\n請至信箱驗證新的電子郵件");
             }else{
                 redirectAttributes.addFlashAttribute("success", "更新成功!");
@@ -157,9 +157,9 @@ public class UserController {
     public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> payload, HttpSession session){
         String username_Or_Email = payload.get("usernameOrEmail");
         try {
-            long userid = userService.getUserByUsernameOrEmail(username_Or_Email);
-            userService.sendResetPasswordMail(userid);
-            session.setAttribute("resetPasswordUserID", userid);
+            User user = userService.getUserByUsernameOrEmail(username_Or_Email);
+            userService.sendResetPasswordMail(user);
+            session.setAttribute("resetPasswordUserID", user);
             return ResponseEntity.ok("驗證信已發送");
         } catch (Userdata_UpdateException | UsernameNotFoundException e) {
             return ResponseEntity

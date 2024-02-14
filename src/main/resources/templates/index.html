@@ -14,6 +14,11 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
 
+
+            <li class="nav-item">
+                <a class="nav-link" href="/search">搜尋</a>
+            </li>
+
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -22,11 +27,8 @@
                     <a class="dropdown-item" href="/profile">更新資料</a>
                     <a class="dropdown-item" href="/new_article">新增文章</a>
                 </div>
-
-
-
-
             </li>
+
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -46,6 +48,10 @@
         <p class="lead">這是一個簡易實作部落格首頁。</p>
         <hr class="my-4">
         <p>其中主要使用Java Spring boot最為後端架構</p>
+        <a>目前開發狀態: 開發中</a>
+        <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
+        <br>
+        <br>
         <a class="btn btn-primary btn-lg" href="/register" role="button">立即註冊</a>
         <a class="btn btn-secondary btn-lg" href="/login" role="button">登入</a>
     </div>

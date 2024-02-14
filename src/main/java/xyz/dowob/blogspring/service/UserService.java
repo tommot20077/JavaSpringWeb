@@ -70,8 +70,24 @@ public class UserService{
 
     public void updateUser(User newInputUser, User repositoryUser, String confirmPassword, String originPassword) throws Userdata_UpdateException {
         if (StringUtils.isNotBlank(originPassword) && authenticate(repositoryUser.getUsername(), originPassword)) {
+
+            String checkUsername;
+            if (StringUtils.isNotBlank(newInputUser.getUsername()) && newInputUser.getUsername().equals(repositoryUser.getUsername())){
+                checkUsername = repositoryUser.getUsername();
+            }else if (StringUtils.isNotBlank(newInputUser.getUsername())){
+                if (userInspection.isValidUsername(newInputUser.getUsername())) {
+                    repositoryUser.setUsername(newInputUser.getUsername());
+                    checkUsername = newInputUser.getUsername();
+                } else {
+                    throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USERNAME_ALREADY_EXISTS);
+                }
+            }else {
+                throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USERNAME_CONTAINS_ILLEGAL_CHARACTERS);
+            }
+
+
             if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
-                if (userInspection.isValidPassword(newInputUser.getPassword(), newInputUser.getUsername())) {
+                if (userInspection.isValidPassword(newInputUser.getPassword(), checkUsername)) {
                     repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
                 }
             } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
@@ -108,21 +124,8 @@ public class UserService{
         }
     }
 
-    public Long getUserByUsernameOrEmail(String username_or_email) throws Userdata_UpdateException {
-        User user;
-        try {
-            user = getUserByUsername(username_or_email);
-        } catch (UsernameNotFoundException e) {
-            try {
-                user = getUserByEmail(username_or_email);
-            } catch (UsernameNotFoundException e1) {
-                throw new UsernameNotFoundException("找不到" + username_or_email + "的使用者資料。");
-            }
-        }
-        return user.getId();
-    }
-    public void sendResetPasswordMail(Long id) throws Userdata_UpdateException {
-        User user = getUserById(id);
+
+    public void sendResetPasswordMail(User user) throws Userdata_UpdateException {
         if (user.getEmailActiveStatus()) {
             tokenService.sendResetPasswordEmail(user);
         } else {
@@ -151,7 +154,19 @@ public class UserService{
         }
     }
 
-
+    public User getUserByUsernameOrEmail(String username_or_email) throws Userdata_UpdateException {
+        User user;
+        try {
+            user = getUserByUsername(username_or_email);
+        } catch (UsernameNotFoundException e) {
+            try {
+                user = getUserByEmail(username_or_email);
+            } catch (UsernameNotFoundException e1) {
+                throw new UsernameNotFoundException("找不到" + username_or_email + "的使用者資料。");
+            }
+        }
+        return user;
+    }
 
     public User getUserById(long id) {
         return userRepository.findById(id)

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>搜尋</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            margin-top: 50px;
+            text-align: center;
+        }
+        input[type="text"], select {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .search-results {
+            margin-top: 20px;
+            text-align:center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding-left: 0;
+            list-style: none;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination li a {
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination li.active a,
+        .pagination li a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .pagination li.disabled a {
+            color: #ccc;
+            pointer-events: none;
+        }
+        .pagination-arrows span {
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 搜尋表單 -->
+<form th:action="@{/search}" method="get">
+    <label>
+        <input type="text" name="keyword" placeholder="輸入搜索關鍵字...">
+    </label>
+    <label>
+        <select name="type">
+            <!--  <option value="all">全部</option>  -->
+            <option value="users">用戶</option>
+            <option value="posts">文章</option>
+        </select>
+    </label>
+    <button type="submit">搜尋</button>
+</form>
+
+<!-- 使用 Thymeleaf 條件判斷來控制顯示邏輯 -->
+<div class="search-results" th:if="${not #strings.isEmpty(keyword)}">
+
+    <!-- 當選擇 "用戶" 作為搜索類型，並且 usersPage 非 null 非空時顯示 -->
+    <div th:if="${type == 'users'}">
+        <h2 th:if="${usersPage != null and usersPage.totalElements > 0}">用戶</h2>
+        <ul th:if="${usersPage != null and usersPage.totalElements > 0}" th:each="user : ${usersPage.content}">
+            <li th:text="${user.username}">使用者名稱</li>
+        </ul>
+        <p th:if="${usersPage == null or usersPage.totalElements == 0}">未找到相關用戶。</p>
+    </div>
+
+    <!-- 當選擇 "文章" 作為搜索類型，並且 postsPage 非 null 非空時顯示 -->
+    <div th:if="${type == 'posts'}">
+        <h2 th:if="${postsPage != null and postsPage.totalElements > 0}">文章</h2>
+        <ul th:if="${postsPage != null and postsPage.totalElements > 0}" th:each="post : ${postsPage.content}">
+            <li th:text="${post.title}">文章標題</li>
+        </ul>
+        <p th:if="${postsPage == null or postsPage.totalElements == 0}">未找到相關文章。</p>
+    </div>
+
+
+
+    <div class="mt-4" th:if="${usersPage != null}">
+        <nav aria-label="用戶搜尋分頁">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${page == 1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='users', page=${page - 1})}" th:if="${page > 1}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='users', page=${i})}" th:text="${i}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${page == totalPages} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='users', page=${page + 1})}" th:if="${page < totalPages}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="mt-4" th:if="${postsPage != null}">
+        <nav aria-label="用戶搜尋分頁">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${page == 1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='posts', page=${page - 1})}" th:if="${page > 1}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='posts', page=${i})}" th:text="${i}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${page == totalPages} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/search(keyword=${keyword}, type='posts', page=${page + 1})}" th:if="${page < totalPages}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+</body>
+</html>

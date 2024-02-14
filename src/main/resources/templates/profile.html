@@ -47,11 +47,15 @@
         <input type="password" class="form-control" id="originPassword" name="originPassword" required>
     </div>
     <div class="form-group">
-        <label for="password">更新密碼</label>
+        <label for="username">更換使用者名稱</label>
+        <input type="text" class="form-control" id="username" th:field="*{username}">
+    </div>
+    <div class="form-group">
+        <label for="password">更換密碼</label>
         <input type="password" class="form-control" id="password" th:field="*{password}">
     </div>
     <div class="form-group">
-        <label for="confirmPassword">重複更新密碼</label>
+        <label for="confirmPassword">重複更換密碼</label>
         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
     </div>
 
