@@ -52,15 +52,7 @@ public class PostController {
             return "redirect:/new_article_success";
 
         }catch (Postdata_UpdateException e){
-            String errorMessage = switch (e.getErrorCode()) {
-                case DID_NOT_LOGIN -> "請先登入!";
-                case POST_UPDATE_FAILED -> "文章發布失敗!";
-                case CONTENT_TOO_LONG -> "內容太長!";
-                case TITLE_TOO_LONG -> "標題太長!";
-                case NOT_FOUND_USER -> "找不到用戶!";
-                default -> "未知錯誤!";
-
-            };
+            String errorMessage = e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/new_article";
         }

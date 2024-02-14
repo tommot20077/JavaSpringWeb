@@ -34,7 +34,13 @@
     </button>
 </nav>
 <div class="container">
-<h1>更新個人資料</h1>
+    <div th:if="${!session.currentUserEmailStatus}">
+        <h1>更新個人資料  (未驗證信箱)</h1>
+    </div>
+    <div th:if="${session.currentUserEmailStatus}">
+        <h1>更新個人資料  (已驗證信箱)</h1>
+    </div>
+
 <form th:action="@{/profile}" th:object="${user}" method="post">
     <div class="form-group">
         <label for="originPassword">原本密碼</label>
@@ -60,15 +66,30 @@
     </div>
 
     <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-
-    <div th:if="${success}" class="alert alert-success" role="alert">
-        <span th:text="${success}"></span>
+    <div th:if="${success}">
+        <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="successMessage">
+            <span th:text="${success}"></span>
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">更新</button>
+
+    <button type="submit" class="btn btn-primary">更新後登出</button>
     <a href="/" class="btn btn-secondary">回到首頁</a>
 
 </form>
 </div>
+
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const successMessageElement = document.getElementById('successMessage');
+        const successMessage = successMessageElement ? successMessageElement.dataset.success : null;
+        if (successMessage) {
+            setTimeout(() => {
+                window.location.href = '/logout';
+            }, 3000);
+        }
+    });
+</script>
 </body>
 </html>

@@ -2,19 +2,20 @@ package xyz.dowob.blogspring.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.service.TokenService;
 import xyz.dowob.blogspring.service.UserService;
+
+import java.util.Map;
 
 @Controller
 public class UserController {
@@ -59,7 +60,7 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView("verify"); // verify.html模板的名称
 
         try {
-            if (tokenService.verifyToken(token)) {
+            if (tokenService.verifyActiveEmailToken(token)) {
                 modelAndView.addObject("message", "驗證成功"); // 待显示的成功消息
                 modelAndView.addObject("verified", true);
             } else {
@@ -91,8 +92,10 @@ public class UserController {
     @PostMapping("/login")
     public String performLogin(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes){
         if(userService.authenticate(user.getUsername(), user.getPassword())){
-            session.setAttribute("currentUsername", user.getUsername());
-            session.setAttribute("currentUserId", user.getId());
+            User updatedUser = userService.getUserByUsername(user.getUsername());
+            session.setAttribute("currentUsername", updatedUser.getUsername());
+            session.setAttribute("currentUserId", updatedUser.getId());
+            session.setAttribute("currentUserEmailStatus", updatedUser.getEmailActiveStatus());
             return "redirect:/login_success";
         }
         else{
@@ -141,5 +144,45 @@ public class UserController {
             return "redirect:/profile";
         }
 
+    }
+
+
+
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm() {
+        return "reset_password";
+    }
+
+    @PostMapping("/sendResetPasswordMail")
+    public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> payload, HttpSession session){
+        String username_Or_Email = payload.get("usernameOrEmail");
+        try {
+            long userid = userService.getUserByUsernameOrEmail(username_Or_Email);
+            userService.sendResetPasswordMail(userid);
+            session.setAttribute("resetPasswordUserID", userid);
+            return ResponseEntity.ok("驗證信已發送");
+        } catch (Userdata_UpdateException | UsernameNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload, HttpSession session){
+        long userID = Long.parseLong((session.getAttribute("resetPasswordUserID").toString()));
+        User user = userService.getUserById(userID);
+        String verificationCode = payload.get("verificationCode");
+        String newPassword = payload.get("newPassword");
+        String reNewPassword = payload.get("reNewPassword");
+        try {
+            userService.resetPassword(user, verificationCode, newPassword, reNewPassword);
+            return ResponseEntity.ok("重設密碼成功");
+        } catch (Userdata_UpdateException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
 }

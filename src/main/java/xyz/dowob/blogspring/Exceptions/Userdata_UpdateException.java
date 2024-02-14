@@ -23,7 +23,10 @@ public class Userdata_UpdateException extends Exception {
         PASSWORD_NOT_MATCH("輸入的密碼不一致"),
         PASSWORD_WRONG("密碼錯誤"),
         EMAIL_ALREADY_EXISTS("電子郵件已經存在"),
-        USER_SEND_EMAIL_LIMIT("每小時的發信次數已達上限，請稍後再試。");
+        USER_SEND_EMAIL_LIMIT("每小時的發信次數已達上限，請稍後再試。"),
+        TOKEN_INVALID("無效的token"),
+        USER_NOT_FOUND("找不到使用者");
+
 
 
 

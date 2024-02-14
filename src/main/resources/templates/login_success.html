@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html >
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,16 @@
 <div class="container">
     <h1>歡迎回來！</h1>
     <p>登入成功，現在您可以開始使用我們的服務了。</p>
+    <div th:if="${session.currentUserEmailStatus}">
+        <p>已驗證信箱，現在可以使用進階服務</p>
+    </div>
+    <div th:if="${!session.currentUserEmailStatus}">
+        <p>請驗證信箱，以使用進階服務</p>
+    </div>
     <a href="/" class="btn btn-primary">進入主頁</a>
+
+
+
 </div>
 </body>
 </html>

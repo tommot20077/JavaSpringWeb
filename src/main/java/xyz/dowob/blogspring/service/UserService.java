@@ -13,6 +13,7 @@ import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
 import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.repository.TokenRepository;
 import xyz.dowob.blogspring.repository.UserRepository;
 
 @Service
@@ -22,13 +23,15 @@ public class UserService{
 
     private final UserInspection userInspection;
     private final TokenService tokenService;
+    private final TokenRepository tokenRepository;
+
 
 
     @Autowired
-    public UserService(UserInspection userInspection, UserRepository userRepository, TokenService tokenService) {
+    public UserService(UserInspection userInspection, UserRepository userRepository, TokenService tokenService, TokenRepository tokenRepository) {
         this.userInspection = userInspection;
         this.userRepository = userRepository;
-
+        this.tokenRepository = tokenRepository;
         this.tokenService = tokenService;
     }
 
@@ -88,7 +91,7 @@ public class UserService{
                 if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
                     repositoryUser.setEmail(newInputUser.getEmail());
                     emailChanged = true;
-                    repositoryUser.setActive(false);
+                    repositoryUser.setEmailActiveStatus(false);
                 } else {
                     throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.EMAIL_ALREADY_EXISTS);
                 }
@@ -105,6 +108,49 @@ public class UserService{
         }
     }
 
+    public Long getUserByUsernameOrEmail(String username_or_email) throws Userdata_UpdateException {
+        User user;
+        try {
+            user = getUserByUsername(username_or_email);
+        } catch (UsernameNotFoundException e) {
+            try {
+                user = getUserByEmail(username_or_email);
+            } catch (UsernameNotFoundException e1) {
+                throw new UsernameNotFoundException("找不到" + username_or_email + "的使用者資料。");
+            }
+        }
+        return user.getId();
+    }
+    public void sendResetPasswordMail(Long id) throws Userdata_UpdateException {
+        User user = getUserById(id);
+        if (user.getEmailActiveStatus()) {
+            tokenService.sendResetPasswordEmail(user);
+        } else {
+            throw new UsernameNotFoundException("使用者" + user.getUsername() + "的電子郵件尚未驗證，無法找回密碼。");
+        }
+
+
+
+    }
+    public void resetPassword(User user, String token, String newPassword, String confirmPassword) throws Userdata_UpdateException {
+        if (user == null) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USER_NOT_FOUND);
+        if (tokenService.resetPasswordVerifyToken(token)) {
+            if (newPassword.equals(confirmPassword)) {
+                if (userInspection.isValidPassword(newPassword, user.getUsername())) {
+                    user.setPassword(UserHashMethod.hashPassword(newPassword));
+                    userRepository.save(user);
+                    tokenRepository.delete(tokenRepository.findByToken(token).orElseThrow(() -> new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.TOKEN_INVALID)));
+                } else {
+                    throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
+                }
+            } else {
+                throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
+            }
+        } else {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.TOKEN_INVALID);
+        }
+    }
+
 
 
     public User getUserById(long id) {
@@ -115,6 +161,11 @@ public class UserService{
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("找不到名為" + username + "的使用者。"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("找不到電子郵件為" + email + "的使用者。"));
     }
 
 

@@ -34,17 +34,14 @@ public class User {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthdate;
 
-    @Column(name= "active", nullable = false)
-    private boolean isActive;
+    @Column(name= "email_active_status", nullable = false, columnDefinition = "boolean default false")
+    private boolean emailIsActive;
 
     @Column(nullable = false, columnDefinition = "int default 0")
     private int currentSendTimes;
 
-    private LocalDateTime resetTime = LocalDateTime.now().minusHours(2);;
-
-    public User() {
-        this.isActive = false;
-    }
+    @Column(nullable = false)
+    private LocalDateTime resetTime = LocalDateTime.now().minusHours(2);
 
 
     public Long getId() {
@@ -76,11 +73,11 @@ public class User {
         this.birthdate = birthdate;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public boolean getEmailActiveStatus() {
+        return emailIsActive;
     }
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setEmailActiveStatus(boolean emailIsActive) {
+        this.emailIsActive = emailIsActive;
     }
 
     public int getCurrentSendTimes() {
