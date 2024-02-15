@@ -1,7 +1,11 @@
 package xyz.dowob.blogspring.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
+import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.service.PostService;
 import xyz.dowob.blogspring.service.TokenService;
 import xyz.dowob.blogspring.service.UserService;
 
@@ -22,11 +28,13 @@ public class UserController {
 
     private final UserService userService;
     private final TokenService tokenService;
+    private final PostService postService;
 
     @Autowired
-    public UserController(UserService userService, TokenService tokenService) {
+    public UserController(UserService userService, TokenService tokenService, PostService postService) {
         this.userService = userService;
         this.tokenService = tokenService;
+        this.postService = postService;
     }
 
     @GetMapping("/register")
@@ -183,6 +191,32 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/user/{id}")
+    public String showUserDetail(@PathVariable Long id, Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
+        try {
+            User user = userService.getUserById(id);
+            int pageSize = 3;
+            Pageable pageable = PageRequest.of(page -1, pageSize);
+            Page<Post> posts = postService.getPostsByAuthorID(id, pageable);
+            model.addAttribute("user", user);
+            model.addAttribute("postPage", posts);
+            model.addAttribute("pageNum", page);
+            model.addAttribute("totalPages", posts.getTotalPages());
+
+            if (!request.getParameterMap().containsKey("page") && (request.getParameterMap().containsKey("page") && page < 1)) {
+                return "redirect:/user/{id}?page=1";
+            } else if (request.getParameterMap().containsKey("page") && page > posts.getTotalPages()) {
+                return "redirect:/user/{id}?page=" + posts.getTotalPages();
+            }
+
+
+            return "user_detail";
+        } catch (UsernameNotFoundException e) {
+            return "redirect:/";
         }
     }
 }

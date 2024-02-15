@@ -12,9 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Optional<Post> findByTitle(String title);
     Optional<Post> findByArticleId(Long article_id);
 
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword%")
     Page<Post> searchByTitle(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.author.id = :authorID")
+    Page<Post> findByAuthorID(@Param("authorID") long id, Pageable pageable);
 }

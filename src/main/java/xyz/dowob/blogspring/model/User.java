@@ -37,6 +37,11 @@ public class User {
     @Column(name= "email_active_status", nullable = false, columnDefinition = "boolean default false")
     private boolean emailIsActive;
 
+    @Column(nullable = false, updatable = false, name = "register_time", insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date register_time;
+
+
     @Column(nullable = false, columnDefinition = "int default 0")
     private int currentSendTimes;
 
@@ -72,6 +77,8 @@ public class User {
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
     }
+
+    public Date getRegister_time() { return register_time; }
 
     public boolean getEmailActiveStatus() {
         return emailIsActive;

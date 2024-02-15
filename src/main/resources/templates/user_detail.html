@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<head>
+    <meta charset="UTF-8">
+    <title>用戶主頁</title>
+    <!-- 加入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- 其他的head內容 -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            margin-top: 50px;
+            text-align: center;
+        }
+        input[type="text"], select {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .search-results {
+            margin-top: 20px;
+            text-align:center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding-left: 0;
+            list-style: none;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination li a {
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination li.active a,
+        .pagination li a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .pagination li.disabled a {
+            color: #ccc;
+            pointer-events: none;
+        }
+        .pagination-arrows span {
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar等其他內容 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">我的Blog Web</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/search">搜尋</a>
+            </li>
+            <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    歡迎 [[${session.currentUsername}]]!
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/profile">更新資料</a>
+                    <a class="dropdown-item" href="/new_article">新增文章</a>
+                </div>
+
+
+
+
+            </li>
+            <li class="nav-item" th:if="${!userLoggedIn}">
+                <a class="nav-link" href="/login">登入</a>
+            </li>
+            <li class="nav-item" th:if="${!userLoggedIn}">
+                <a class="nav-link" href="/register">註冊</a>
+            </li>
+            <li class="nav-item" th:if="${userLoggedIn}">
+                <a class="nav-link" href="/logout">登出</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title" th:text="${user.getUsername()}">用戶名稱</h1>
+            <br>
+            <p class="card-subtitle mb-2 text-muted" th:text="|用戶ID: ${user.getId()} |">用戶ID</p>
+            <p class="card-subtitle mb-2 text-muted" th:text="|電子信箱: ${user.getEmail()} |">電子信箱
+                <a class="card-subtitle mb-2 text-muted" th:if="${user.getEmailActiveStatus()}">
+                    <a th:text="${user.getEmailActiveStatus()}">(信箱已驗證)</a>
+                </a>
+                <a class="card-subtitle mb-2 text-muted" th:if="${!user.getEmailActiveStatus()}">
+                    <a th:text="${user.getEmailActiveStatus()}">(信箱未驗證)</a>
+                </a>
+            </p>
+            <p class="card-subtitle mb-2 text-muted" th:text="|用戶註冊時間: ${user.getRegister_time()} |">用戶註冊時間</p>
+
+            <!--<p class="card-subtitle mb-2 text-muted" th:text="|用戶最後登入時間: ${user.getLastLoginTime()} |">用戶最後登入時間</p> -->
+        </div>
+    </div>
+</div>
+
+<div class="search-results" th:if="${postPage != null}">
+    <h2>用戶文章</h2>
+    <ul th:each="post : ${postPage.content}">
+        <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
+    </ul>
+</div>
+
+<div class="mt-4" th:if="${postPage != null and postPage.totalElements > 0}">
+    <nav aria-label="用戶文章分頁">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${pageNum - 1})}" th:if="${pageNum > 1}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${pageNum == i} ? 'active' : ''">
+                <a class="page-link" th:href="@{/user/{id} (id=${user.getId()}, page=${i})}" th:text="${i}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum + 1})}" th:if="${pageNum < totalPages}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+</body>
+</html>

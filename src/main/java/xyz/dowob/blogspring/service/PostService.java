@@ -43,19 +43,23 @@ public class PostService {
 
     }
     //找到所有文章
-    public List<Post> findAllPosts(){
+    public List<Post> getAllPosts(){
         return postRepository.findAll();
     }
 
 
 
-    public Post findPostByArticle_id(Long articleId) throws Postdata_UpdateException {
+    public Post getPostByArticle_id(Long articleId) throws Postdata_UpdateException {
 
         return postRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
     }
 
-    public Page<Post> allPostsByPage(Pageable pageable){
+    public Page<Post> getPostsByAuthorID(long authorID, Pageable pageable) {
+        return postRepository.findByAuthorID(authorID, pageable);
+    }
+
+    public Page<Post> getAllPostsByPage(Pageable pageable){
         return postRepository.findAll(pageable);
     }
 

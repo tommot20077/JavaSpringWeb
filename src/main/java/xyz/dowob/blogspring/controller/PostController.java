@@ -33,7 +33,7 @@ public class PostController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Post> posts = postService.findAllPosts(); // 假定你的服務層有這個方法
+        List<Post> posts = postService.getAllPosts(); // 假定你的服務層有這個方法
         model.addAttribute("posts", posts);
         return "index"; // 假定你的主頁模板名為index.html
     }
@@ -67,7 +67,7 @@ public class PostController {
     @GetMapping("/article/{id}")
     public String articleDetail(@PathVariable Long id, Model model){
         try {
-            Post post = postService.findPostByArticle_id(id);
+            Post post = postService.getPostByArticle_id(id);
             model.addAttribute("post", post);
             return "article_detail";
         } catch (Postdata_UpdateException e) {
@@ -79,7 +79,7 @@ public class PostController {
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
         int pageSize = 5;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        Page<Post> postPage = postService.allPostsByPage(pageable);
+        Page<Post> postPage = postService.getAllPostsByPage(pageable);
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("pageNum", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
