@@ -13,7 +13,7 @@ public class Postdata_UpdateException extends Exception{
     public enum ErrorCode {
         TITLE_TOO_LONG("標題太長"),
         CONTENT_TOO_LONG("內容太長"),
-        POST_UPDATE_FAILED("文章發表失敗"),
+        POST_UPDATE_FAILED("文章編輯時發生錯誤"),
         DID_NOT_LOGIN("未登錄"),
         NOT_FOUND_USER("找不到用戶"),
 

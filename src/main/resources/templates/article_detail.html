@@ -5,6 +5,24 @@
     <title th:text="${post.title}">文章標題</title>
     <!-- 加入 Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #fff4e6; /* 淺橘色背景 */
+        }
+        .card-header {
+            background-color: #feedd3; /* 淺橘色與卡片頭部背景色相匹配 */
+        }
+        .card-body {
+            background-color: #fff3ef; /* 淺橘色與卡片內容背景色相匹配 */
+        }
+        .navbar-light {
+            background-color: #ffeadb; /* 暖色調導航欄背景色 */
+        }
+        .btn-primary {
+            background-color: #f9aa33; /* 暖色調按鈕背景色 */
+            border-color: #f9aa33; /* 暖色調按鈕邊框色 */
+        }
+    </style>
     <!-- 其他的head內容 -->
 </head>
 <body>
@@ -51,8 +69,12 @@
             <a class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
         </div>
         <div class="card-body">
-
             <p class="card-text" th:text="${post.content}">文章內容</p>
+            <div th:if="${session.currentUserId == post.author.getId()}">
+                <a th:href="@{/article/{id}/edit(id=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
+            </div>
+
+
         </div>
     </div>
     <!-- 根據需要添加其他內容 -->

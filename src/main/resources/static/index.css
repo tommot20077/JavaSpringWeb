@@ -1,0 +1,8 @@
+body {
+    background-color: #f7f8fa;
+    background-image: url('/images/indexBackground.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: scroll;
+    font-family: 'Arial', sans-serif;
+}

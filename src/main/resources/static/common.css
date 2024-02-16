@@ -1,0 +1,111 @@
+/* 重置廣義的元素樣式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdf6e4; /* 设置一个温暖的背景色 */
+    color: #481d07; /* 基本文本颜色 */
+}
+
+/* 導航 */
+.navbar {
+    background-color: #fb9655; /* 暖橙色用于导航栏背景色 */
+    border-bottom: 3px solid #f75431; /* 更深的橙色边框突出导航条 */
+}
+
+
+.navbar-brand {
+    color: #ffffff;
+}
+
+.navbar .nav-link {
+    color: #fff;
+}
+
+.navbar .nav-link:hover {
+    color: #ffdabf; /* 滑鼠悬停时的色调，保持在暖色系 */
+}
+
+.navbar-toggle {
+    display: none; /* 默认不显示折叠按钮 */
+}
+
+/* 使用媒体查询，只在屏幕尺寸小于大型设备宽度的时候显示折叠按钮 */
+@media (max-width: 992px) {
+    .navbar-toggle {
+        display: block; /* 只在小屏幕设备上显示 */
+        padding: 0.25rem 0.75rem;
+        margin-left: 0.5rem; /* 提供足够的空间防止和其他元素重叠 */
+        cursor: pointer;
+    }
+
+    .navbar-toggle-icon {
+        background-color: #fdf6e4; /* 標誌图标颜色 */
+    }
+}
+
+/* 按鈕 */
+.btn-primary {
+    background-color: #fa8b60; /* 暖橙色用于主要操作按钮 */
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #f7c16d; /* 淺暖色调用于次要按钮或灰色按钮 */
+    border: none;
+}
+
+.btn-info {
+    background-color: #eb802d; /* 浅暖粉色用于信息按钮 */
+    border: none;
+
+}
+
+.btn {
+    border-radius: 20px; /* 所有按鈕都設置圓角 */
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9; /* 鼠标悬停时的透明度变化，增加交互性 */
+}
+
+/* 大標題區塊 */
+.jumbotron {
+    background-color: rgba(255, 255, 255, 0.9); /* 半透明的背景色增加层次感 */
+    color: #5a2c01; /* 继承基本文本的暖色調 */
+    border-radius: 8px; /* 圓角邊框 */
+    box-shadow: 0 4px 6px rgba(0,0,0,.1); /* 细微阴影效果 */
+    margin-bottom: 20px;
+}
+
+/* 卡片 */
+.card {
+    border: none;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1); /* 盒子陰影 */
+    background-color: #fff7ef; /* 浅暖橙色背景 */
+}
+
+.card .card-title a {
+    color: #f75431; /* 热情的橙色用于标题链接 */
+    text-decoration: none; /* 移除底綫 */
+}
+
+.card .card-title a:hover {
+    color: #fb9655; /* 悬停时的标题颜色变化 */
+}
+
+.card .card-text {
+    color: #5a2c01;
+}
+
+/* 底部增加暖色調链接樣式 */
+a {
+    color: #f75431;
+}
+
+a:hover {
+    color: #fb9655; /* 滿足暖色調而又容易辨識 */
+    text-decoration: underline; /* 添加下划线增强交互性 */
+}
+
+

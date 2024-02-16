@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
     <title>文章列表</title>
     <!-- 加入 Bootstrap CSS 和 Font Awesome Icons -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Bootstrap JavaScript 依賴 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
     <!-- Optional: add custom CSS here -->
     <style>
         body {
@@ -60,7 +65,7 @@
 <div class="container mt-4">
     <h2 class="mb-4 text-center">文章列表</h2>
     <div class="row">
-        <th:block th:each="post : ${posts}">
+        <th:block th:each="post : ${posts.content}">
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <!-- <img class="card-img-top" th:src="${post.imageUrl}" alt="Card image cap"> 假設文章有圖片 -->
@@ -77,27 +82,21 @@
     <!-- 分頁導航 -->
     <nav aria-label="文章分頁" th:if="${totalPages > 1}" class="mt-4">
         <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled' : ''">
-                <a class="page-link" th:href="@{/article?page=${pageNum - 1}}" aria-label="Previous" th:if="${pageNum > 1}">
+            <li class="page-item" th:classappend="${page == 1} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/article(page=${page - 1})}" aria-label="Previous" th:if="${page > 1}">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${pageNum == i} ? 'active'">
-                <a class="page-link" th:href="@{/article?page=${i}}" th:text="${i}">1</a>
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active'">
+                <a class="page-link" th:href="@{/article(page=${i})}" th:text="${i}">1</a>
             </li>
-            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled' : ''">
-                <a class="page-link" th:href="@{/article?page=${pageNum + 1}}" aria-label="Next" th:if="${pageNum < totalPages}">
+            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/article(page=${page + 1})}" aria-label="Next" th:if="${page < totalPages}">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
         </ul>
     </nav>
 </div>
-
-<!-- Bootstrap JavaScript 依賴 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
 </body>
 </html>
