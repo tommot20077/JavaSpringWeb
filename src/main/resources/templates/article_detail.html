@@ -5,8 +5,77 @@
     <title th:text="${post.title}">文章標題</title>
     <!-- 加入 Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <style>
+        body {
+            background-color: #fff4e6; /* 淺橘色背景 */
+        }
+        .card-header {
+            background-color: #feedd3; /* 淺橘色與卡片頭部背景色相匹配 */
+        }
+        .card-body {
+            background-color: #fff3ef; /* 淺橘色與卡片內容背景色相匹配 */
+        }
+        .navbar-light {
+            background-color: #ffeadb; /* 暖色調導航欄背景色 */
+        }
+        .btn-primary {
+            background-color: #f9aa33; /* 暖色調按鈕背景色 */
+            border-color: #f9aa33; /* 暖色調按鈕邊框色 */
+        }
+        .editor-container {
+            margin: 30px auto; /* 置中 */
+            padding: 20px; /* 內邊距 */
+            border-radius: 5px;
+            background-color: #ffefd5;
+            border: 1px solid #f9aa33;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        }
+        #editor {
+            background-color: #ffffff; /* 為編輯器區域單獨設定白色背景 */
+            border-radius: 3px; /* 編輯器內容的圓角稍微小一些以保持整體性 */
+            min-height: 100px;
+            height: auto;
+        }
+        .my-toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        .alert {
+            pointer-events: auto; /* 允許滑鼠事件 */
+            min-width: 250px; /* 最小寬度 */
+            margin-top: 0.5rem; /* 與上一個 toast 的間隔 */
+            color: #fff; /* 字體顏色為白色 */
+            border-radius: 0.375rem; /* 圓角設置 */
+            padding: 10px; /* 內邊距 */
+            font-size: 16px; /* 字體大小 */
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* 外部陰影 */
+            opacity: 0.95; /* 透明度 */
+        }
+
+        .alert-success {
+            background-color: #28a745; /* 成功綠色 */
+        }
+
+        .alert-danger {
+            background-color: #dc3545; /* 失敗紅色 */
+        }
+    </style>
     <!-- 其他的head內容 -->
 </head>
+
+
 <body>
 <!-- Navbar等其他內容 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -46,21 +115,197 @@
 <!-- 文章內容 -->
 <div class="container mt-4">
     <div class="card">
-        <div class="card-header">
-            <h1 class="card-title" th:text="${post.title}">文章標題</h1>
-            <a class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
+        <div class="card-header d-flex justify-content-between align-items-top">
+            <div>
+                <h1 class="card-title" th:text="${post.title}">文章標題</h1>
+                <a class="card-subtitle mb-2 text-muted" th:text="|發表時間: ${post.getCreation_time} |">發表時間</a>
+                <br>
+                <a class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
+            </div>
+
+            <div th:if="${session.currentUserId == post.author.getId()}">
+                <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
+            </div>
         </div>
         <div class="card-body">
-
             <p class="card-text" th:text="${post.content}">文章內容</p>
         </div>
     </div>
-    <!-- 根據需要添加其他內容 -->
-</div>
 
-<!-- 加入 Bootstrap JavaScript 和其依賴 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<hr>
+<h2>評論區</h2>
+    <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="postID=${post.getArticleId}">
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var commentsDisplay = document.getElementById('comments-display');
+                var postID = commentsDisplay.getAttribute('postID');
+
+                fetch('/article/' + postID + '/comment')
+                    .then(response => response.json())
+                    .then(commentDeltas => {
+                        commentDeltas.forEach(commentDelta => {
+                            // 為每條評論創建一個新的 div 容器
+                            var commentDiv = document.createElement('div');
+                            // 可能還需要給這個新的 div 設定樣式或類別
+                            commentsDisplay.appendChild(commentDiv); // 將新的 div 加到 commentsDisplay 中
+
+                            const singleCommentQuill = new Quill(commentDiv, { // 將 Quill 綁定到新的 div 上
+                                modules: {
+                                    toolbar: false // 關閉工具欄，因為是只讀的
+                                },
+                                readOnly: true,
+                                theme: 'snow'
+                            });
+
+                            // 設定Quill的內容
+                            singleCommentQuill.setContents(commentDelta);
+                        });
+                    }).catch(error => console.error('Error loading comments:', error));
+            });
+
+                /*
+
+                // 伪造的服務器響應數據, 实际上你會從服务器获得
+                const commentData = {"ops":[{"insert":"评論測試\n"}]};
+
+                // 找到容器元素`#comment-display`
+                const container = document.getElementById('comments-display');
+
+                if (container) {
+                    // 如果找到容器元素，創建一个只读的 Quill 实例
+                    const commentQuill = new Quill('#comments-display', {
+                        modules: {
+                            toolbar: null
+                        },
+                        readOnly: true, // 設置為只读
+                        theme: 'snow'   // 使用默认主题
+                    });
+
+                    // 使用.setContents()方法渲染评论内容
+                    commentQuill.setContents(commentData);
+                } else {
+                    console.error('Quill container not found');
+                }
+            });
+            */
+        </script>
+    </div>
+
+
+
+    <div class="editor-container">
+        <div id="toolbar-container">
+            <span class="ql-formats">
+                <select class="ql-font"></select>
+                <select class="ql-size"></select>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+            </span>
+            <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-script" value="sub"></button>
+                <button class="ql-script" value="super"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-header" value="1"></button>
+                <button class="ql-header" value="2"></button>
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-direction" value="rtl"></button>
+                <select class="ql-align"></select>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+                <button class="ql-video"></button>
+                <button class="ql-formula"></button>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-clean"></button>
+            </span>
+        </div>
+
+        <div id="editor">
+            <script>
+                const quill = new Quill('#editor', {
+                    modules: {
+                        syntax: true,
+                        toolbar: '#toolbar-container',
+                    },
+                    theme: 'snow',
+                });
+            </script>
+        </div>
+    </div>
+    <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
+
+</div>
+<script>
+    function showToast(message, isSuccess) {
+        const toastContainer = document.querySelector('.my-toast-container');
+        const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('alert', toastClass);
+        toastElement.textContent = message;
+
+        toastContainer.appendChild(toastElement);
+        setTimeout(() => toastElement.remove(), 5000);
+    }
+
+
+
+
+    document.getElementById('save-comment-button').addEventListener('click', function() {
+        const editorContent = quill.getContents();
+
+        var postID = this.getAttribute('postID');
+        const postUrl = '/article/' + postID + '/comment';
+
+        fetch(postUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                delta: editorContent
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }else {
+                    return response.json().then(data => {
+                        throw new Error(data.message);
+                    });
+                }
+            })
+            .then(data =>{
+                showToast("評論發表成功", true);
+                setTimeout(() => window.location.reload(), 6000);
+
+        })
+            .catch((error) => {
+                showToast("評論發表失敗: " + error.message, false);
+            });
+
+    });
+</script>
+<div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
 </body>
 </html>

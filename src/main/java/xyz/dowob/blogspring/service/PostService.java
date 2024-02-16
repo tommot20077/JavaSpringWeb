@@ -28,8 +28,10 @@ public class PostService {
     public void addNewPost(Post post, String username) throws Postdata_UpdateException {
         if (username == null || username.trim().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.DID_NOT_LOGIN);
 
+
         User author = userRepository.findByUsername(username).orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.NOT_FOUND_USER));
         post.setAuthor(author);
+
 
         if (post.getTitle().isEmpty() || post.getContent().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_UPDATE_FAILED);
         if (post.getTitle().length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
@@ -42,6 +44,20 @@ public class PostService {
         postRepository.save(post);
 
     }
+
+    public void updatePost(Post UpdatePost, Post OriginPost) throws Postdata_UpdateException {
+        if (UpdatePost.getTitle().isEmpty() || UpdatePost.getContent().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_UPDATE_FAILED);
+        if (UpdatePost.getTitle().length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
+        OriginPost.setTitle(UpdatePost.getTitle());
+
+        if (UpdatePost.getContent().length() > 21000) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
+        OriginPost.setContent(UpdatePost.getContent());
+
+        postRepository.save(OriginPost);
+    }
+
+
+
     //找到所有文章
     public List<Post> getAllPosts(){
         return postRepository.findAll();

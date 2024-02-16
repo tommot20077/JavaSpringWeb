@@ -64,10 +64,10 @@ public class PostController {
     }
 
 
-    @GetMapping("/article/{id}")
-    public String articleDetail(@PathVariable Long id, Model model){
+    @GetMapping("/article/{articleId}")
+    public String articleDetail(@PathVariable Long articleId, Model model){
         try {
-            Post post = postService.getPostByArticle_id(id);
+            Post post = postService.getPostByArticle_id(articleId);
             model.addAttribute("post", post);
             return "article_detail";
         } catch (Postdata_UpdateException e) {
@@ -75,13 +75,14 @@ public class PostController {
         }
     }
 
+
     @GetMapping("/article")
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
         int pageSize = 5;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Post> postPage = postService.getAllPostsByPage(pageable);
-        model.addAttribute("posts", postPage.getContent());
-        model.addAttribute("pageNum", page);
+        model.addAttribute("posts", postPage);
+        model.addAttribute("page", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
 
 
@@ -92,6 +93,42 @@ public class PostController {
         }
         return "article";
     }
+
+
+    @GetMapping("/article/{articleId}/edit")
+    public String editPostForm(@PathVariable Long articleId, Model model, HttpSession session, RedirectAttributes redirectAttributes){
+        try {
+            String username = (String) session.getAttribute("currentUsername");
+            Post post = postService.getPostByArticle_id(articleId);
+            if (username != null && username.equals(post.getAuthor().getUsername())){
+                model.addAttribute("post", post);
+                return "edit_article";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "你沒有權限編輯此文章");
+                return "redirect:/article/" + articleId;
+            }
+        }
+        catch (Postdata_UpdateException e) {
+            return "redirect:/";
+        }
+    }
+
+    @PostMapping("/article/{articleId}/edit")
+    public String processEditPostForm(@PathVariable Long articleId, @ModelAttribute Post updatePost, RedirectAttributes redirectAttributes){
+        try {
+            Post OriginPost = postService.getPostByArticle_id(articleId);
+            postService.updatePost(updatePost, OriginPost);
+            redirectAttributes.addFlashAttribute("success", "文章編輯成功");
+            return "redirect:/article/" + articleId ;
+        } catch (Postdata_UpdateException e) {
+            String errorMessage = e.getMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/article/" + articleId + "/edit";
+        }
+    }
+
+
+
 
 
 }
