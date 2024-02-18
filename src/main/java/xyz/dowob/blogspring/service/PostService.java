@@ -66,7 +66,6 @@ public class PostService {
 
 
     public Post getPostByArticle_id(Long articleId) throws Postdata_UpdateException {
-
         return postRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
     }

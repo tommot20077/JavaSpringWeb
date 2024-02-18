@@ -9,6 +9,7 @@ public class Comment {
     private long commentId;
     @Column(columnDefinition = "TEXT")
     private String content;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
@@ -47,6 +48,7 @@ public class Comment {
     public void setCreation_time(java.util.Date creation_time) {
         this.creation_time = creation_time;
     }
+
 
 
 }

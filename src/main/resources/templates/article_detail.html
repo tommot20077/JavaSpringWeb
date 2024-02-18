@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<div id="myElement" th:attr="data-post-id=${post.getArticleId}"></div>
+
+
 <head>
     <meta charset="UTF-8">
     <title th:text="${post.title}">文章標題</title>
@@ -132,14 +135,15 @@
         </div>
     </div>
 
-<hr>
-<h2>評論區</h2>
+    <hr>
+    <h2>評論區</h2>
     <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="postID=${post.getArticleId}">
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                var myElement = document.getElementById('myElement');
+                var postID = myElement.getAttribute('data-post-id');
                 var commentsDisplay = document.getElementById('comments-display');
-                var postID = commentsDisplay.getAttribute('postID');
 
                 fetch('/article/' + postID + '/comment')
                     .then(response => response.json())
@@ -157,38 +161,12 @@
                                 readOnly: true,
                                 theme: 'snow'
                             });
-
                             // 設定Quill的內容
                             singleCommentQuill.setContents(commentDelta);
                         });
-                    }).catch(error => console.error('Error loading comments:', error));
+                    }).catch(error => console.error('Error loading comments:', error)
+                );
             });
-
-                /*
-
-                // 伪造的服務器響應數據, 实际上你會從服务器获得
-                const commentData = {"ops":[{"insert":"评論測試\n"}]};
-
-                // 找到容器元素`#comment-display`
-                const container = document.getElementById('comments-display');
-
-                if (container) {
-                    // 如果找到容器元素，創建一个只读的 Quill 实例
-                    const commentQuill = new Quill('#comments-display', {
-                        modules: {
-                            toolbar: null
-                        },
-                        readOnly: true, // 設置為只读
-                        theme: 'snow'   // 使用默认主题
-                    });
-
-                    // 使用.setContents()方法渲染评论内容
-                    commentQuill.setContents(commentData);
-                } else {
-                    console.error('Quill container not found');
-                }
-            });
-            */
         </script>
     </div>
 
@@ -246,7 +224,20 @@
                 const quill = new Quill('#editor', {
                     modules: {
                         syntax: true,
-                        toolbar: '#toolbar-container',
+                        toolbar: {
+                            container: '#toolbar-container',
+                            handlers: {
+                                'image': function(value) {
+                                    if (value) {
+                                        var Element = document.getElementById('myElement');
+                                        var postID = Element.getAttribute('data-post-id');
+                                        selectLocalImage(postID);
+                                    } else {
+                                        this.quill.format('image', false);
+                                    }
+                                }
+                            }
+                        },
                     },
                     theme: 'snow',
                 });
@@ -257,6 +248,11 @@
 
 </div>
 <script>
+
+
+    var globalImageUrl = null;
+
+
     function showToast(message, isSuccess) {
         const toastContainer = document.querySelector('.my-toast-container');
         const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
@@ -267,6 +263,45 @@
         toastContainer.appendChild(toastElement);
         setTimeout(() => toastElement.remove(), 5000);
     }
+    function selectLocalImage(postID) {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.click();
+        input.onchange = () => {
+            const file = input.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+                fetch('/article/' + postID + '/comment/image', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }else {
+                            return response.json().then(data => {
+                                throw new Error(data.message);
+                            });
+                        }
+                    }).then(result => {
+                    // 插入圖片到Quill編輯器
+                    const range = quill.getSelection();
+                    globalImageUrl = result.imageUrl;
+                    quill.insertEmbed(range.index, 'image', globalImageUrl);
+                }).catch((error) => {
+                    showToast("圖片上傳失敗: " + error.message, false);
+                });
+            }
+        };
+    }
+
+
+
+
+
+
+
 
 
 
@@ -299,7 +334,7 @@
                 showToast("評論發表成功", true);
                 setTimeout(() => window.location.reload(), 6000);
 
-        })
+            })
             .catch((error) => {
                 showToast("評論發表失敗: " + error.message, false);
             });
