@@ -37,7 +37,7 @@ public class CommentService {
     @Transactional
     public boolean saveComment(Map<String,Object> delta, Long articleId, String commentUsername){
         try {
-            String json = deltaToJsonConverter.convertDeltaToJson(delta);
+            String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
             Comment comment = new Comment();
 
             if (json == null || json.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(delta)) {

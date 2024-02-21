@@ -32,4 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 /src/main/resources/application.properties
-/src/main/java/xyz/dowob/blogspring/config/WebConfig.java
+/src/main/java/xyz/dowob/blogspring/userConfig/WebConfig.java
+/config.properties

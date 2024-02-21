@@ -14,13 +14,40 @@
     <!-- Optional: add custom CSS here -->
     <style>
         body {
-            background-color: #f8f9fa; /* 輕鬆的背景色彩 */
+            background-color: #fff4e6; /* 淺橘色背景 */
+        }
+        .navbar-light {
+            background-color: #ffeadb; /* 暖色調導航欄背景色 */
         }
         .card {
-            transition: transform .2s; /* Hover時卡片放大效果 */
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1); /* 添加阴影效果 */
+            transition: transform .2s; /* 扩充hover效果 */
         }
         .card:hover {
-            transform: scale(1.05); /* 鼠標懸停放大5% */
+            transform: scale(1.02); /* 鼠标悬停放大 */
+        }
+        .card-body {
+            background-color: #fff3ef; /* 卡片背景色 */
+        }
+        .btn-primary {
+            background-color: #f9aa33; /* 暖色調按鈕背景色 */
+            border-color: #f9aa33; /* 暖色調按鈕邊框色 */
+        }
+        .btn-primary:hover {
+            background-color: #e39624; /* 鼠标悬停时按按钮的颜色变深 */
+            border-color: #e39624;
+        }
+        .page-link{
+            color: #f9aa33; /* 分頁連結顏色 */
+        }
+        .page-link:hover{
+            color: #e39624; /* 鼠标悬停时分頁連結的顏色變深 */
+        }
+        .page-item.active .page-link {
+            background-color: #f9aa33; /* 分頁連結背景色 */
+            border-color: #f9aa33; /* 分頁連結邊框色 */
         }
     </style>
 </head>
@@ -71,7 +98,7 @@
                     <!-- <img class="card-img-top" th:src="${post.imageUrl}" alt="Card image cap"> 假設文章有圖片 -->
                     <div class="card-body">
                         <h5 class="card-title" th:text="${post.title.length() > 50 ? #strings.substring(post.title, 0, 50) + '...' : post.title}">文章標題</h5>
-                        <p class="card-text" th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}">一些簡短的介紹文字...</p>
+                        <!--<p class="card-text" th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}">一些簡短的介紹文字...</p>-->
                         <a th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary">閱讀全文 <i class="fas fa-angle-right"></i></a>
                     </div>
                 </div>

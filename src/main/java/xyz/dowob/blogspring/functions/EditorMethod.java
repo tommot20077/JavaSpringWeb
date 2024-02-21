@@ -1,6 +1,7 @@
 package xyz.dowob.blogspring.functions;
 
 import org.springframework.web.multipart.MultipartFile;
+import xyz.dowob.blogspring.config.UserConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,19 +12,20 @@ import java.util.Map;
 import java.util.UUID;
 
 public class EditorMethod {
+
     public static String saveImage(MultipartFile file, Long articleId) throws IOException {
-        String currentDir= StorageMethod.getRunningDirectory();
-        String uploadDirPath = currentDir + "/ImageData/" + articleId;
-        Path filePath = Paths.get(uploadDirPath);
+        UserConfig userConfig = new UserConfig("config.properties");
 
-        if (!Files.exists(filePath)) {
-            Files.createDirectories(filePath);
+        String tempUploadDirPath = userConfig.getTempSavePath() + "/" + articleId;
+        Path tempfilePath = Paths.get(tempUploadDirPath);
+
+        if (!Files.exists(tempfilePath)) {
+            Files.createDirectories(tempfilePath);
         }
-
-
         String filename = UUID.randomUUID()+ "__" +file.getOriginalFilename();
-        Path savePath = Paths.get(uploadDirPath).resolve(filename);
+        Path savePath = Paths.get(tempUploadDirPath).resolve(filename);
         Files.copy(file.getInputStream(), savePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        RcloneExecutor.executeRclone(userConfig);
 
         return "/extra/"+ articleId +"/" + filename;
     }

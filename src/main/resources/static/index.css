@@ -6,3 +6,12 @@ body {
     background-attachment: scroll;
     font-family: 'Arial', sans-serif;
 }
+.editor-container {
+    margin: 30px auto; /* 置中 */
+    padding: 20px; /* 內邊距 */
+    border-radius: 5px;
+    background-color: #ffefd5;
+    border: 1px solid #f9aa33;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+}

@@ -31,7 +31,7 @@ public class CommentController {
     public ResponseEntity<?> postComment(@PathVariable long articleId, @RequestBody @Valid CommentDto commentDto, HttpSession session){
         String commentUsername = (String) session.getAttribute("currentUsername");
         if(commentUsername == null || commentUsername.trim().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
 
         boolean result = commentService.saveComment(commentDto.getDelta(), articleId, commentUsername);
@@ -57,10 +57,10 @@ public class CommentController {
     }
 
     @PostMapping("/article/{articleId}/comment/image")
-    public ResponseEntity<?> handleImageUpload(@PathVariable long articleId, @RequestParam("image")MultipartFile file, HttpSession session){
+    public ResponseEntity<?> handleCommentImageUpload(@PathVariable long articleId, @RequestParam("image")MultipartFile file, HttpSession session){
         String commentUsername = (String) session.getAttribute("currentUsername");
         if(commentUsername == null || commentUsername.trim().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
         try {
             String imageUrl = commentService.saveCommentImage(file, articleId);

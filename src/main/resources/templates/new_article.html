@@ -1,15 +1,83 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>新增文章</title>
     <!-- Bootstrap的CSS檔案 -->
     <style>
+        body {
+            background-color: #fff4e6; /* 淺橘色背景 */
+        }
+        .card-header {
+            background-color: #feedd3; /* 淺橘色與卡片頭部背景色相匹配 */
+        }
+        .card-body {
+            background-color: #fff3ef; /* 淺橘色與卡片內容背景色相匹配 */
+        }
+        .navbar-light {
+            background-color: #ffeadb; /* 暖色調導航欄背景色 */
+        }
+        .btn-primary {
+            background-color: #f9aa33; /* 暖色調按鈕背景色 */
+            border-color: #f9aa33; /* 暖色調按鈕邊框色 */
+        }
+        .editor-container {
+            margin: 30px auto; /* 置中 */
+            padding: 20px; /* 內邊距 */
+            border-radius: 5px;
+            background-color: #ffefd5;
+            border: 1px solid #f9aa33;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        }
+        #editor {
+            background-color: #ffffff; /* 為編輯器區域單獨設定白色背景 */
+            border-radius: 3px; /* 編輯器內容的圓角稍微小一些以保持整體性 */
+            min-height: 100px;
+            height: auto;
+        }
+        .my-toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        .alert {
+            pointer-events: auto; /* 允許滑鼠事件 */
+            min-width: 250px; /* 最小寬度 */
+            margin-top: 0.5rem; /* 與上一個 toast 的間隔 */
+            color: #fff; /* 字體顏色為白色 */
+            border-radius: 0.375rem; /* 圓角設置 */
+            padding: 10px; /* 內邊距 */
+            font-size: 16px; /* 字體大小 */
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* 外部陰影 */
+            opacity: 0.95; /* 透明度 */
+        }
+
+        .alert-success {
+            background-color: #28a745; /* 成功綠色 */
+        }
+
+        .alert-danger {
+            background-color: #dc3545; /* 失敗紅色 */
+        }
         .error {
-            color: red;
+            color: #dc3545;
         }
     </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+
+
 </head>
 
 <body>
@@ -57,19 +125,241 @@
       <label for="title">標題:</label>
       <input type="text" class="form-control" id="title" name="title" required>
     </div>
-    <div class="form-group">
-      <label for="content">內容:</label>
-      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">提交</button>
+        <h6>文章內容:</h6>
+        <div class="editor-container">
+            <div id="toolbar-container">
+            <span class="ql-formats">
+                <select class="ql-font"></select>
+                <select class="ql-size"></select>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+            </span>
+                <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-script" value="sub"></button>
+                <button class="ql-script" value="super"></button>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-header" value="1"></button>
+                <button class="ql-header" value="2"></button>
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-direction" value="rtl"></button>
+                <select class="ql-align"></select>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+                <button class="ql-video"></button>
+                <button class="ql-formula"></button>
+            </span>
+                <span class="ql-formats">
+                <button class="ql-clean"></button>
+            </span>
+            </div>
+
+            <div id="editor">
+                <script>
+                    const quill = new Quill('#editor', {
+                        modules: {
+                            syntax: true,
+                            toolbar: {
+                                container: '#toolbar-container',
+                                handlers: {
+                                    'image': function(value) {
+                                        if (value) {
+                                            selectLocalImage();
+                                        } else {
+                                            this.quill.format('image', false);
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        theme: 'snow',
+                    });
+                </script>
+            </div>
+        </div>
+
+    <button class="btn btn-primary" id="save-article-button">提交</button>
         <a href="/" class="btn btn-secondary">取消</a>
     </form>
-    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 </div>
 
-<!-- Bootstrap的JavaScript檔案 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.15.7/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<script>
+
+    var globalFile = null;
+
+    function showToast(message, isSuccess) {
+        const toastContainer = document.querySelector('.my-toast-container');
+        const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('alert', toastClass);
+        toastElement.textContent = message;
+
+        toastContainer.appendChild(toastElement);
+        setTimeout(() => toastElement.remove(), 5000);
+    }
+
+    function initiateArticleCreation() {
+        // 建立新文章並獲取文章ID
+        createEmptyArticle().then(articleId => {
+            if (articleId) {
+                if (globalFile) {
+                    // 如果選擇了圖片，則進行圖片上傳
+                    uploadImageFunction(globalFile, articleId).then(imageUrl => {
+                        if (imageUrl) {
+                            // 圖片上傳成功後，保存文章內容
+                            saveArticleContent(articleId, quill.getContents(), imageUrl);
+                        }
+                    });
+                } else {
+                    // 沒有選擇圖片直接保存文章內容
+                    saveArticleContent(articleId, quill.getContents());
+                }
+            } else {
+                showToast("無法創建新文章。", false);
+            }
+        });
+    }
+
+    function createEmptyArticle() {
+
+
+
+        return fetch('/new_article', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.message === "評論保存成功") {
+                    return result.articleId; // 返回新建的文章ID
+                }
+            })
+            .catch(error => {
+                showToast("創建文章出錯: " + error.message, false);
+                return null;
+            });
+    }
+
+
+    function uploadImageFunction(file, articleId) {
+        let formData = new FormData();
+        formData.append('image', file);
+        formData.append('articleId', articleId);
+
+        return fetch('/new_article/image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.imageUrl) {
+                    return result.imageUrl; // 返回服務器存儲的圖片URL
+                } else {
+                    showToast("圖片上傳失敗。", false);
+                    return null;
+                }
+            })
+            .catch(error => {
+                showToast("圖片上傳失敗: " + error.message, false);
+                return null;
+            });
+    }
+
+    function saveArticleContent(articleId, content, imageUrl) {
+        // 創建帶有圖片URL的新內容
+        const updatedContent = content.map(op => {
+            if (op.insert && op.insert.image && op.insert.image.startsWith('data:')) {
+                return { insert: {image: imageUrl}};
+            }
+            return op;
+        });
+        const titleData = {
+            title: document.getElementById('title').value,
+        };
+
+        fetch(`/new_article/${articleId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: titleData.title,
+                delta: updatedContent
+
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.message === "文章保存成功") {
+                    showToast("文章保存成功。", true);
+                    setTimeout(() => window.location.href = `/new_article_success`, 6000);
+                } else {
+                    showToast(result.error, false);
+                }
+            })
+            .catch(error => {
+                showToast("文章保存失敗: " + error.message, false);
+            });
+    }
+
+    document.getElementById('save-article-button').addEventListener('click', function(event) {
+        event.preventDefault();
+        initiateArticleCreation();
+    });
+
+    function selectLocalImage() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.click(); // 觸發文件選擇
+        input.onchange = () => {
+            const file = input.files[0];
+            if (file && file.type.includes('image')) {
+                globalFile = file; // 儲存參考到全局變量
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const imgSrc = e.target.result; // 獲得DataURL
+                    insertToEditor(imgSrc); // 調用插入函數
+                };
+                reader.readAsDataURL(file); // 讀取文件
+            }
+        };
+    }
+
+
+    function insertToEditor(url) {
+        const range = quill.getSelection();
+        if (range) {
+            quill.insertEmbed(range.index, 'image', url); // 使用DataURL作為預覽
+        }
+    }
+    quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
+</script>
+<div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
 </body>
 </html>
