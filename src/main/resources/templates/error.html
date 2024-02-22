@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <title>出錯了！</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        .error-container {
-            margin-top: 50px;
-            text-align: center;
+        .btn-danger {
+            background-color: #b83434;
         }
     </style>
+    <link rel="stylesheet" href="/common.css">
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -49,14 +51,20 @@
     </div>
 </nav>
 <div class="container error-container">
-    <h1>哎呀！出錯了！</h1>
-    <p>在處理您的請求時我們遇到了一些問題。請嘗試再次提交，或者稍後再試。</p>
-    <p>如果問題依然存在，請告知系統管理員：<a href="mailto:tommot20077@gmail.com">tommot20077@gmail.com</a></p>
-    <a href="/" class="btn btn-primary">返回首頁</a>
+    <div class="jumbotron shadow p-4 rounded">
+        <h1 class="display-4"><i class="fas fa-exclamation-triangle text-danger"></i> 哎呀！出錯了！</h1>
+        <p class="lead">在處理您的請求時我們遇到了一些問題。請嘗試再次提交，或者稍後再試。</p>
+        <hr class="my-4">
+        <p>如果問題依然存在，請透過以下方式告知系統管理員：</p>
+        <a class="btn btn-danger btn-lg" href="mailto:tommot20077@gmail.com" role="button">聯絡管理員</a>
+        <a class="btn btn-secondary btn-lg ml-2" href="/" role="button">返回首頁</a>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- Font Awesome 的CDN链接，用于图标显示 -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

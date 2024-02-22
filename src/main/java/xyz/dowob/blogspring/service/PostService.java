@@ -53,17 +53,13 @@ public class PostService {
     public void updatePostWithContent(Long articleId, ArticleDto articleDto) throws Postdata_UpdateException, JsonProcessingException {
         Post post = getPostByArticle_id(articleId);
 
-        System.out.println("收到"+articleDto);
         String stringTitle = articleDto.getTitle();
-        System.out.println("標題是"+stringTitle);
         if (stringTitle == null || stringTitle.isBlank() ) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
         if (stringTitle.length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
         post.setTitle(stringTitle);
 
 
         List<Map<String,Object>> contents = articleDto.getDeltaContent();
-
-
 
         String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(contents);
         if (convertContent.isBlank()) {
@@ -84,22 +80,8 @@ public class PostService {
 
 
     public Map<String, Object> convertPostStructure(String commentContent) throws JsonProcessingException {
-        Map<String, Object> delta = deltaToJsonConverter.convertArticleJsonToDelta(commentContent);
-        return delta;
+        return deltaToJsonConverter.convertJsonToDelta(commentContent);
     }
-
-   /* public void updatePost(Post UpdatePost, Post OriginPost) throws Postdata_UpdateException {
-        if (UpdatePost.getTitle().isEmpty() || UpdatePost.getContent().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_UPDATE_FAILED);
-        if (UpdatePost.getTitle().length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
-        OriginPost.setTitle(UpdatePost.getTitle());
-
-        if (UpdatePost.getContent().length() > 21000) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
-        OriginPost.setContent(UpdatePost.getContent());
-
-        postRepository.save(OriginPost);
-    }
-
-*/
 
 
 

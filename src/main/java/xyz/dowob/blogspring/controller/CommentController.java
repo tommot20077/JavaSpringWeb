@@ -35,7 +35,6 @@ public class CommentController {
         }
 
         boolean result = commentService.saveComment(commentDto.getDelta(), articleId, commentUsername);
-
         if(result){
             return ResponseEntity.ok(Map.of("message", "評論保存成功"));
         }else {

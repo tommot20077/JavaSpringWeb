@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.repository.UserRepository;
+
 import java.util.regex.Pattern;
 
 @Service
@@ -57,7 +58,6 @@ public class UserInspection {
            return null;
         }
     }
-
 
 }
 

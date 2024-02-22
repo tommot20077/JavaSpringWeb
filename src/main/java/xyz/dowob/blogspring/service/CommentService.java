@@ -18,9 +18,9 @@ import java.util.Map;
 @Service
 public class CommentService {
 
-    private CommentRepository commentRepository;
-    private PostService postService;
-    private UserService userService;
+    private final CommentRepository commentRepository;
+    private final PostService postService;
+    private final UserService userService;
     private final DeltaToJsonConverter deltaToJsonConverter = new DeltaToJsonConverter();
     @Autowired
     public CommentService(CommentRepository commentRepository,  PostService postService, UserService userService) {
@@ -62,8 +62,7 @@ public class CommentService {
     }
 
     public Map<String, Object> convertCommentStructure(String commentContent) throws JsonProcessingException {
-        Map<String, Object> delta = deltaToJsonConverter.convertJsonToDelta(commentContent);
-        return delta;
+        return deltaToJsonConverter.convertJsonToDelta(commentContent);
     }
 }
 

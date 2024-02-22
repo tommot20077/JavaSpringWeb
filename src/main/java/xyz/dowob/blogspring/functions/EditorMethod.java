@@ -14,7 +14,7 @@ import java.util.UUID;
 public class EditorMethod {
 
     public static String saveImage(MultipartFile file, Long articleId) throws IOException {
-        UserConfig userConfig = new UserConfig("config.properties");
+        UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
 
         String tempUploadDirPath = userConfig.getTempSavePath() + "/" + articleId;
         Path tempfilePath = Paths.get(tempUploadDirPath);

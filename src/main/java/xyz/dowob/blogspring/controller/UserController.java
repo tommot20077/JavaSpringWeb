@@ -162,8 +162,8 @@ public class UserController {
     }
 
     @PostMapping("/sendResetPasswordMail")
-    public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> payload, HttpSession session){
-        String username_Or_Email = payload.get("usernameOrEmail");
+    public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> keyword, HttpSession session){
+        String username_Or_Email = keyword.get("usernameOrEmail");
         try {
             User user = userService.getUserByUsernameOrEmail(username_Or_Email);
             userService.sendResetPasswordMail(user);
@@ -199,7 +199,7 @@ public class UserController {
     public String showUserDetail(@PathVariable Long id, Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
         try {
             User user = userService.getUserById(id);
-            int pageSize = 3;
+            int pageSize = 10;
             Pageable pageable = PageRequest.of(page -1, pageSize);
             Page<Post> posts = postService.getPostsByAuthorID(id, pageable);
             model.addAttribute("user", user);

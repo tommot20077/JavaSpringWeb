@@ -5,16 +5,25 @@
     <title>註冊成功</title>
     <!-- Bootstrap的CSS檔案 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/common.css">
     <!-- 自訂的CSS樣式 -->
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
+
         .container {
             padding-top: 50px;
+            max-width: 800px; /* 降低最大寬度 */
+            margin: auto; /* 居中顯示 */
         }
         .card {
             margin-top: 20px;
+        }
+        /* 在小裝置上更好的觀看效果 */
+        @media (max-width: 767px) {
+            .container {
+                padding-top: 20px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
         }
     </style>
 </head>
@@ -60,8 +69,8 @@
         <div class="card-body">
             <h2 class="card-title">用戶帳號註冊成功</h2>
             <p class="card-text">您現在可以通過點擊下方按鈕，登入您的帳戶。</p>
-            <p class="card-text">如果您在註冊時提供了電子郵件地址，我們已向該地址發送了一封驗證郵件。如果您沒有收到</p>
-            <p class="card-text">請檢查您的垃圾郵件夾，並將我們的郵件標記為「非垃圾郵件」以確保未來的通訊順暢。</p>
+            <p class="card-text">如果您在註冊時提供了電子郵件地址，我們已向該地址發送了一封驗證郵件。</p>
+            <p class="card-text">如果您沒有收到，請檢查您的垃圾郵件夾，並將我們的郵件標記為「非垃圾郵件」以確保未來的通訊順暢。</p>
             <a href="login" class="btn btn-primary">點擊進入登入頁面</a>
         </div>
     </div>

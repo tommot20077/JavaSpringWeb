@@ -1,5 +1,7 @@
 package xyz.dowob.blogspring.config;
 
+import xyz.dowob.blogspring.functions.StorageMethod;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -7,15 +9,16 @@ public class UserConfig {
     private Properties properties;
     private File configFile;
 
+
     public UserConfig(String fileName) {
         this.configFile = new File(fileName);
         this.properties = new Properties();
 
         if (configFile.exists()) {
-            System.out.println("Config file exists. Loading properties.");
+            System.out.println("已存在設定檔，載入設定");
             loadProperties();
         } else {
-            System.out.println("Config file does not exist. Setting up default properties.");
+            System.out.println("未存在設定檔，新增預設設定");
             setupDefaultProperties();
         }
     }
@@ -46,6 +49,11 @@ public class UserConfig {
         }
     }
 
+    public static UserConfig standardSetupCommand(String config){
+        String jarPath = StorageMethod.getRunningDirectory();
+        String configPath = jarPath + File.separator + config;
+        return new UserConfig(configPath);
+    }
 
     public String getRclonePath() {
         return properties.getProperty("rclonePath");

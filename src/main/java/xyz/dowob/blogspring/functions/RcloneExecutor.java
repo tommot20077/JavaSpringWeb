@@ -42,13 +42,13 @@ public class RcloneExecutor {
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                System.err.println("Rclone command exited with error code: " + exitCode);
+                System.err.println("Rclone 執行錯誤: " + exitCode);
             }
         } catch (IOException e) {
-            System.err.println("IO exception occurred while running rclone command: " + e.getMessage());
+            System.err.println("rclone文件操作錯誤: " + e.getMessage());
             e.printStackTrace();
         } catch (InterruptedException e) {
-            System.err.println("Interrupted exception occurred while running rclone command: " + e.getMessage());
+            System.err.println("rclone被中斷: " + e.getMessage());
             e.printStackTrace();
         }
     }

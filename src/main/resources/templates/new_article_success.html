@@ -3,7 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>文章發布成功</title>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/common.css">
+    <style>
+        /* 自定義樣式，用於字體放大 */
+        .alert-heading {
+            font-size: 1.3rem; /* 提高標題字體大小 */
+        }
+
+        .alert p {
+            font-size: 1.2rem; /* 提高段落字體大小 */
+        }
+
+        .btn {
+            font-size: 1.1rem; /* 提高按鈕字體大小 */
+            padding: 0.6rem 1.1rem; /* 調整按鈕padding以更好地適應字體大小 */
+        }
+        .alert-success hr {
+            border-top: 2px solid #151515; /* 修改成功提示的分隔線顏色 */
+        }
+        .alert-success {
+            background-color: #ffe6c0; /* 修改成功提示的邊框顏色 */
+        }
+        .btn-secondary {
+            background-color: #ff5e5e; /* 修改次要按鈕的背景色 */
+        }
+        .btn-secondary:hover {
+            background-color: #f21f1f; /* 修改次要按鈕的hover背景色 */
+        }
+
+    </style>
 </head>
 <body>
 
@@ -43,8 +73,7 @@
         </ul>
     </div>
 </nav>
-<br><br>
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">文章添加成功！</h4>
         <p>你的文章已經成功發布到網站上。</p>
@@ -52,7 +81,7 @@
         <p class="mb-0">點擊下方按鈕返回首頁或者繼續添加新的文章</p>
     </div>
     <a href="/" class="btn btn-primary">返回首頁</a>
-    <a href="/new_article" class="btn btn-secondary btn-primary">新增新文章</a>
+    <a href="/new_article" class="btn btn-secondary ml-2">新增新文章</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

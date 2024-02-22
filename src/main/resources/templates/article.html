@@ -6,50 +6,15 @@
     <!-- 加入 Bootstrap CSS 和 Font Awesome Icons -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/common.css">
     <!-- Bootstrap JavaScript 依賴 -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+
     <!-- Optional: add custom CSS here -->
-    <style>
-        body {
-            background-color: #fff4e6; /* 淺橘色背景 */
-        }
-        .navbar-light {
-            background-color: #ffeadb; /* 暖色調導航欄背景色 */
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1); /* 添加阴影效果 */
-            transition: transform .2s; /* 扩充hover效果 */
-        }
-        .card:hover {
-            transform: scale(1.02); /* 鼠标悬停放大 */
-        }
-        .card-body {
-            background-color: #fff3ef; /* 卡片背景色 */
-        }
-        .btn-primary {
-            background-color: #f9aa33; /* 暖色調按鈕背景色 */
-            border-color: #f9aa33; /* 暖色調按鈕邊框色 */
-        }
-        .btn-primary:hover {
-            background-color: #e39624; /* 鼠标悬停时按按钮的颜色变深 */
-            border-color: #e39624;
-        }
-        .page-link{
-            color: #f9aa33; /* 分頁連結顏色 */
-        }
-        .page-link:hover{
-            color: #e39624; /* 鼠标悬停时分頁連結的顏色變深 */
-        }
-        .page-item.active .page-link {
-            background-color: #f9aa33; /* 分頁連結背景色 */
-            border-color: #f9aa33; /* 分頁連結邊框色 */
-        }
-    </style>
+
 </head>
 <body>
 <!-- 導航欄 -->
@@ -109,17 +74,32 @@
     <!-- 分頁導航 -->
     <nav aria-label="文章分頁" th:if="${totalPages > 1}" class="mt-4">
         <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${page == 1} ? 'disabled' : ''">
+            <!-- First page link -->
+            <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/article(page=1)}" aria-label="First">
+                    <span aria-hidden="true">««</span>
+                </a>
+            </li>
+            <!-- Previous page link -->
+            <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
                 <a class="page-link" th:href="@{/article(page=${page - 1})}" aria-label="Previous" th:if="${page > 1}">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active'">
+            <!-- Page number links, adjusted for when totalPages > 10 and simplified with direct sequence value usage -->
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}" th:if="${i le 10 or ((i ge page - 4) and (i le page + 5))}" class="page-item" th:classappend="${page eq i} ? 'active'">
                 <a class="page-link" th:href="@{/article(page=${i})}" th:text="${i}">1</a>
             </li>
-            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled' : ''">
+            <!-- Next page link -->
+            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
                 <a class="page-link" th:href="@{/article(page=${page + 1})}" aria-label="Next" th:if="${page < totalPages}">
                     <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <!-- Last page link -->
+            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/article(page=${totalPages})}" aria-label="Last">
+                    <span aria-hidden="true">»»</span>
                 </a>
             </li>
         </ul>

@@ -5,31 +5,64 @@
     <title>信箱驗證</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        html,body {
+            height: 100%;
+            background: linear-gradient(to bottom right, #ffecd2, #fcb69f); /* 溫暖的漸變效果 */
+            color: #5a2d0c; /* 文字的暖色調色彩 */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 現代無襯線字體家族 */
+        }
         body {
-            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
         }
         .container {
-            max-width: 400px;
-            margin-top: 50px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 400px;
+            max-width: 500px;
+            margin: 5% auto 50px auto; /* 垂直居中並且提供足夠的上下間距 */
             padding: 20px;
-            border: 1px solid #ccc;
+            background-color: #f9e8e0; /* 容器暖色背景 */
+            border: 1px solid #f1c0d1; /* 較淺的邊框色彩 */
             border-radius: 5px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1); /* 輕微的盒子陰影增加立體感 */
         }
-        .message-header {
-            margin-bottom: 20px;
-        }
-        .message-content {
-            margin-bottom: 10px;
-        }
-        .message-footer {
-            margin-top: 10px;
-            text-align: right;
+        .message-header h1 {
+            font-size: 2.0rem; /* 更大的標題字體 */
+            margin-bottom: 0.5em; /* 與內容區域的間距 */
         }
         .verified-message {
-            color: green;
+            color: #22bb33; /* 明亮的綠色，表示成功 */
         }
         .error-message {
-            color: red;
+            color: #bb2124; /* 明亮的紅色，表示錯誤 */
+        }
+        .message-content p {
+            font-size: 1.2rem; /* 適度增加段落文本的大小 */
+        }
+        .message-footer a {
+            color: white; /* 按鈕內文字顏色 */
+            margin: 0.5em; /* 增加一些間距 */
+            font-weight: bold; /* 加粗字體 */
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2); /* 為按鈕添加陰影 */
+            transition: background-color 0.2s; /* 平滑背景色轉變效果 */
+        }
+        .btn-primary {
+            background-color: #f76c5e; /* 暖色調按鈕背景 */
+            border-color: #f76c5e; /* 暖色調按鈕邊框 */
+        }
+        .btn-outline-primary {
+            background-color: #e12828; /* 暖色調背景 */
+            border-color: #ffecd2; /* 暖色調邊框 */
+            color: #632e2e; /* 暖色調文字 */
+        }
+        .btn-primary:hover,
+        .btn-outline-primary:hover {
+            background-color: #f57170; /* 按鈕悬浮时背景变暖 */
+            border-color: #f57170; /* 按鈕悬浮时邊框变暖 */
+            color: white; /* 按鈕悬浮时內文字顏色 */
         }
     </style>
 </head>
@@ -85,5 +118,8 @@
         <a th:if="${!verified}" href="/" class="btn btn-outline-primary">返回首頁</a>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

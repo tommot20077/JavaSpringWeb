@@ -19,7 +19,6 @@ public class DeltaToJsonConverter {
 
     public Map<String, Object> convertJsonToDelta(String json) throws JsonProcessingException {
         if (json != null) {
-            // JSON字符串转换为Map对象
             return objectMapper.readValue(json, new TypeReference<>() {});
         }
         return null;
@@ -34,13 +33,5 @@ public class DeltaToJsonConverter {
         return null;
     }
 
-    public Map<String, Object> convertArticleJsonToDelta(String json) throws JsonProcessingException {
-        if (json != null) {
-            Map<String, Object> delta = objectMapper.readValue(json, new TypeReference<>() {});
-            System.out.println("最後轉換成"+delta);
-            return delta;
-        }
-        return null;
-    }
 
 }

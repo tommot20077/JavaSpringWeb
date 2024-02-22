@@ -19,7 +19,6 @@ import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.functions.ArticleDto;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.service.PostService;
-import xyz.dowob.blogspring.service.UserService;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,22 +30,21 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
-    private final UserService userService;
+
 
 //userRepository處理
 @Autowired
-    public PostController(PostService postService, UserService userService) {
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.userService = userService;
 
     }
 
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Post> posts = postService.getAllPosts(); // 假定你的服務層有這個方法
+        List<Post> posts = postService.getAllPosts();
         model.addAttribute("posts", posts);
-        return "index"; // 假定你的主頁模板名為index.html
+        return "index";
     }
 
     @GetMapping("/new_article")
@@ -66,7 +64,7 @@ public class PostController {
 
             Long newPostId = postService.addNewPost(username);
 
-            return ResponseEntity.ok(Map.of("message", "評論保存成功", "articleId", newPostId));
+            return ResponseEntity.ok(Map.of("message", "文章建立成功", "articleId", newPostId));
 
         }catch (Postdata_UpdateException |JsonProcessingException e){
             String errorMessage = e.getMessage();
@@ -134,9 +132,7 @@ public class PostController {
     public ResponseEntity<?> getArticleContent(@PathVariable long articleId){
         try {
             Post articleContent = postService.getPostByArticle_id(articleId);
-            System.out.println("回傳內容原:" +articleContent.getContent());
             Map<String, Object> contentDelta = postService.convertPostStructure(articleContent.getContent());
-            System.out.println("回傳內容轉:" + contentDelta);
 
 
             return new ResponseEntity<>(contentDelta, HttpStatus.OK);
@@ -147,7 +143,7 @@ public class PostController {
 
     @GetMapping("/article")
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
-        int pageSize = 6;
+        int pageSize = 9;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Post> postPage = postService.getAllPostsByPage(pageable);
         model.addAttribute("posts", postPage);
@@ -181,23 +177,4 @@ public class PostController {
             return "redirect:/";
         }
     }
-
-  /*  @PostMapping("/article/{articleId}/edit")
-    public String processEditPostForm(@PathVariable Long articleId, @ModelAttribute Post updatePost, RedirectAttributes redirectAttributes){
-        try {
-            Post OriginPost = postService.getPostByArticle_id(articleId);
-            postService.updatePost(updatePost, OriginPost);
-            redirectAttributes.addFlashAttribute("success", "文章編輯成功");
-            return "redirect:/article/" + articleId ;
-        } catch (Postdata_UpdateException e) {
-            String errorMessage = e.getMessage();
-            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-            return "redirect:/article/" + articleId + "/edit";
-        }
-    }
-*/
-
-
-
-
 }

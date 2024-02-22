@@ -30,8 +30,7 @@ public class SearchController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page-1 , 3);
-        ///(type.equals("users") || type.equals("all"))
+        Pageable pageable = PageRequest.of(page - 1 , 10);
         if (type.equals("users")) {
             Page<User> users = userRepository.searchByUsernameOrEmail(keyword, pageable);
             model.addAttribute("usersPage", users);

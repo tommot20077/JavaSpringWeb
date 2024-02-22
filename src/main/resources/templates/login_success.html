@@ -4,15 +4,49 @@
     <meta charset="UTF-8">
     <title>登入成功</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/common.css">
     <style>
-        .container {
-            margin-top: 200px;
-            text-align: center;
+        body {
+            margin-top: 80px; /* 調整頂部留白 */
+            background: #fff4e6; /* 設定背景顏色與common.css保持一致 */
+            background: linear-gradient(135deg, #ffecd2 0%, #f9b9a3 100%);
+            overflow: hidden; /* 隱藏捲動條 */
+
         }
+        .container {
+            display: flex; /* 啟用 Flexbox */
+            flex-direction: column; /* 子元素垂直排列 */
+            justify-content: center; /* 垂直居中 */
+            align-items: center; /* 水平居中 */
+            height: 100vh; /* 容器高度設為視窗高度，有助於垂直居中 */
+            text-align: center; /* 文字居中 */
+            margin-top: -100px; /* 上移容器 */
+
+
+        }
+        .container > .btn-primary {
+            margin-top: 20px; /* 為按鈕添加頂部間距 */
+        }
+        .container > p,
+        .card-text { /* 含原本card-text類別 */
+            font-size: 1.25rem; /* 增大段落文字大小 */
+            color: #5a2c01; /* 採暖色調的字體顏色 */
+            margin-bottom: 1rem; /* 增加段落間距 */
+        }
+        h1,
+        .card-title { /* 含原本card-title類別 */
+            font-size: 2.5rem; /* 增大標題字體大小 */
+            color: #f75431; /* 標題使用更醒目的顏色 */
+            margin-bottom: 1.5rem; /* 為標題增加底部間距 */
+        }
+
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -49,18 +83,17 @@
     </div>
 </nav>
 <div class="container">
-    <h1>歡迎回來！</h1>
+    <h1><i class="fas fa-check-circle text-success"></i> 歡迎回來！</h1> <!-- 使用Font Awesome圖示 -->
     <p>登入成功，現在您可以開始使用我們的服務了。</p>
     <div th:if="${session.currentUserEmailStatus}">
-        <p>已驗證信箱，現在可以使用進階服務</p>
+        <p>已驗證信箱，現在可以使用進階服務。</p>
     </div>
     <div th:if="${!session.currentUserEmailStatus}">
-        <p>請驗證信箱，以使用進階服務</p>
+        <p>請驗證信箱，以使用進階服務。</p>
     </div>
     <a href="/" class="btn btn-primary">進入主頁</a>
-
-
-
 </div>
+<!-- Font Awesome 的CDN链接，用于图标显示 -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

@@ -13,10 +13,8 @@ public class StorageMethod {
             if (jarFile.isFile()) {
                 savePath = jarFile.getParent();
                 if (savePath != null && !savePath.trim().isEmpty()) {
-                    System.out.println("Win savePath: " + savePath);
                     return savePath;
                 }else {
-                    System.out.println("Win savePath: ./");
                     return "./";
                 }
             } else {
@@ -33,15 +31,12 @@ public class StorageMethod {
 
 
                 if (savePath != null && !savePath.trim().isEmpty()) {
-                    System.out.println("Win savePath: " + savePath);
                     return savePath;
                 }else {
-                    System.out.println("Win savePath: ./");
                     return "./";
                 }
             }
         }else {
-            System.out.println("linux savePath: 空");
             return "";
         }
 

@@ -4,12 +4,7 @@
     <meta charset="UTF-8">
     <title>登入頁面</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .error {
-            color: red;
-        }
-    </style>
-    <!-- 上述的CSS樣式可以直接套用 -->
+    <link rel="stylesheet" href="/common.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -18,27 +13,38 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 </nav>
-<br><br><br>
 <div class="container">
-    <h2 class="form-header">登入</h2>
-    <form method="post" action="#" th:action="@{/login}" th:object="${user}">
-        <div class="form-group">
-            <label for="username">用戶名:</label>
-            <input type="text" class="form-control" id="username" th:field="*{username}" required />
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">登入到您的帳號</div>
+                <div class="card-body">
+                    <form method="post" action="#" th:action="@{/login}" th:object="${user}">
+                        <div class="form-group">
+                            <label for="username">用戶名:</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" required placeholder="請輸入用戶名">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密碼:</label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}" required placeholder="請輸入密碼">
+                        </div>
+                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary btn-block" value="登入" />
+                        </div>
+                        <div class="form-group text-center">
+                            <a href="/register" class="card-link">註冊新帳號</a>
+                            |
+                            <a href="/reset_password" class="card-link">忘記密碼</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="password">密碼:</label>
-            <input type="password" class="form-control" id="password" th:field="*{password}" required />
-        </div>
-        <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-        <div class="form-footer">
-            <input type="submit" class="btn btn-primary" value="登入" />
-            <a href="/register" class="btn btn-link">註冊新帳號</a>
-            <a href="/reset_password" class="btn btn-link">忘記密碼</a>
-        </div>
-
-    </form>
+    </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
