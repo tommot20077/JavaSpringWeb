@@ -17,16 +17,16 @@
             border-color: #f75431;
         }
         h2 {
-            margin-bottom: 1.5rem; /* 為標題下方增加更多間距 */
+            margin-bottom: 1.5rem;
         }
         .editor-container {
-            margin-top: 1rem; /* 為編輯器容器增加上方間距 */
+            margin-top: 1rem;
         }
         #toolbar-container {
-            background-color: #feedd3; /* 調整為與導航欄相近的背景色 */
-            border-radius: 0.5rem; /* 增加圓角 */
-            margin-bottom: 1rem; /* 與編輯器間增加間距 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+            background-color: #feedd3;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .ql-toolbar.ql-snow .ql-picker-label:hover,
         .ql-toolbar.ql-snow .ql-picker-item:hover,
@@ -35,7 +35,7 @@
         .ql-toolbar.ql-snow button.ql-active,
         .ql-toolbar.ql-snow .ql-picker-label.ql-active,
         .ql-toolbar.ql-snow .ql-picker-item.ql-selected {
-            color: #f75431; /* 調整工具欄按鈕的激活和懸停顏色 */
+            color: #f75431;
         }
     </style>
 
@@ -172,18 +172,13 @@
 </div>
 
 
-
-
-
 <script>
-
     function showToast(message, isSuccess) {
         const toastContainer = document.querySelector('.my-toast-container');
         const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
         const toastElement = document.createElement('div');
         toastElement.classList.add('alert', toastClass);
         toastElement.textContent = message;
-
         toastContainer.appendChild(toastElement);
         setTimeout(() => toastElement.remove(), 5000);
     }
@@ -193,17 +188,12 @@
         createEmptyArticle().then(articleId => {
             if (articleId) {
                 if (selectedImageFiles.length > 0) {
-                    console.log("總計選擇: " + selectedImageFiles)
-                    // 对于每个选中的文件进行上传
                     Promise.all(selectedImageFiles.map(file => uploadImageFunction(file, articleId)))
                         .then((imageUrl) => {
-                            // 所有图片都上传完成后，保存文章内容
-                            const validUrls = imageUrl.filter(url => url); // 此時 validUrls 應該是一個數組
-                            console.log("總計回傳url: " + validUrls);
-                            saveArticleContent(articleId, quill.getContents(), validUrls); // 使用 validUrls，應該是個數組
+                            const validUrls = imageUrl.filter(url => url);
+                            saveArticleContent(articleId, quill.getContents(), validUrls);
                         });
                 } else {
-                    // 如果没有选择图片，直接保存文章内容
                     saveArticleContent(articleId, quill.getContents());
                 }
             } else {
@@ -213,9 +203,6 @@
     }
 
     function createEmptyArticle() {
-
-
-
         return fetch('/new_article', {
             method: 'POST',
             headers: {
@@ -225,7 +212,7 @@
             .then(response => response.json())
             .then(result => {
                 if (result.message === "文章建立成功") {
-                    return result.articleId; // 返回新建的文章ID
+                    return result.articleId;
                 }
             })
             .catch(error => {
@@ -237,6 +224,8 @@
 
     function uploadImageFunction(file, articleId) {
         let formData = new FormData();
+
+
         formData.append('image', file);
         formData.append('articleId', articleId);
 
@@ -247,7 +236,7 @@
             .then(response => response.json())
             .then(result => {
                 if (result.url && result.originalName) {
-                    return result; // 返回服務器存儲的圖片URL
+                    return result;
                 } else {
                     showToast("圖片上傳失敗。", false);
                     return null;
@@ -259,49 +248,27 @@
             });
     }
 
-    function saveArticleContent(articleId, content, imageResults) {
-        // 首先假设我们有一个从文件生成的data URI和上传后对应URL的映射关系。
-        // 您可能需要根据实际情况调整这部分逻辑来创建这样的映射。
+    function saveArticleContent(articleId, content, imageResults = []) {
         const imageUrlMap = new Map();
         imageResults.forEach((imageResult) => {
             if (imageResult && imageResult.originalName && imageResult.url) {
                 imageUrlMap.set('image-' + imageResult.originalName, imageResult.url);
             }
         });
-        console.log(content.ops[0].insert.customImage);
 
         const updatedOps = content.ops.map(op => {
-            // 检查当前操作是否是图片插入，并且确保attributes存在
             var fileName;
             if (op.insert && typeof op.insert === 'object' && op.insert.customImage && op.insert.customImage.id) {
-                // 使用映射中的新URL替换data URI
-
-
-                console.log("原本fileName: " + op.insert.customImage.id)
                 fileName = op.insert.customImage.id;
-                //const fileName = op.insert.customImage.id.replace('image-', ''); // 假设id是'image-Filename.ext'的形式
-                //console.log("更換fileName: " + fileName);
-
-
                 for (let [key, value] of imageUrlMap) {
                     console.log(key + ' = ' + value);
                 }
-
                 if (imageUrlMap.has(fileName)) {
-                    console.log("準備替換URL的檔名: " + imageUrlMap.get(fileName));
-                    // 從映射中獲取新的URL
-                    op.insert.customImage.url = imageUrlMap.get(fileName); // 替換 customImage 對象的 url 屬性
-                    console.log("替換url: " + op.insert.customImage.url);
+                    op.insert.customImage.url = imageUrlMap.get(fileName);
                 }
             }
-            return op; // 对于其他情况或者没找到对应的fileName，保持原样
+            return op;
         });
-/*
-        content.ops.forEach(op => {
-            console.log("JSON stringify version: ", JSON.stringify(op, null, 2)); // 使用 JSON.stringify 來查看物件細節
-        });
-*/
-        // 发送更新操作替换后的内容到服务器
         fetch(`/new_article/${articleId}`, {
             method: 'PUT',
             headers: {
@@ -316,7 +283,7 @@
             .then(result => {
                 if (result.message === "文章保存成功") {
                     showToast("文章保存成功。", true);
-                    //setTimeout(() => window.location.href = `/new_article_success`, 6000);
+                    setTimeout(() => window.location.href = `/new_article_success`, 6000);
                 } else {
                     showToast(result.error, false);
                 }
@@ -335,17 +302,17 @@
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('multiple', 'true');
-        input.click(); // 觸發文件選擇
+        input.click();
         input.onchange = () => {
             Array.from(input.files).forEach(file => {
                 if (file && file.type.includes('image')) {
-                    selectedImageFiles.push(file); // 存储所有选择的图片
+                    selectedImageFiles.push(file);
                     const reader = new FileReader();
                     reader.onload = e => {
-                        const imgSrc = e.target.result; // 获取DataURL
-                        insertToEditor(imgSrc, file); // 调用插入函数
+                        const imgSrc = e.target.result;
+                        insertToEditor(imgSrc, file);
                     };
-                    reader.readAsDataURL(file); // 读取文件
+                    reader.readAsDataURL(file);
                 }
             });
         };
@@ -359,9 +326,9 @@
     class ImageBlot extends BlockEmbed {
         static create(value) {
             let node = super.create();
-            node.setAttribute('src', value.url); // 設置圖片的src属性
+            node.setAttribute('src', value.url);
             if(value.id) {
-                node.setAttribute('id', value.id); // 設置圖片的id屬性
+                node.setAttribute('id', value.id);
             }
             return node;
         }
@@ -374,25 +341,21 @@
         }
     }
 
-    ImageBlot.blotName = 'customImage'; // 使用 customImage 作為Blot名稱避免與內建圖片Blot名稱衝突
-    ImageBlot.tagName = 'img'; // 自定義Blot的tagName為img
+    ImageBlot.blotName = 'customImage';
+    ImageBlot.tagName = 'img';
 
     Quill.register(ImageBlot);
 
 
     function insertToEditor(url, file) {
-        var fileId = "image-" + file.name; // 為圖片生成一個唯一標識
+        var fileId = "image-" + file.name;
         const range = quill.getSelection(true);
         if (range) {
             quill.insertEmbed(range.index, 'customImage', { url: url, id: fileId }, Quill.sources.USER);
         }
     }
     function updateSelectedImagesAfterDelete(deletedIndex) {
-
-
-        // 删除图片后，利用唯一id标识来更新 selectedImageFiles
         let fileToDelete = selectedImageFiles.find(file => `image-${file.name}` === deletedIndex);
-
         if (fileToDelete) {
             let indexToDelete = selectedImageFiles.indexOf(fileToDelete);
             if (indexToDelete > -1) {
@@ -401,12 +364,10 @@
         }
     }
 
-    // 请在某个初始化函数或者合适的位置注册 text-change 事件监听器，不要重复注册
     quill.on('text-change', (delta, oldDelta, source) => {
         if (source === 'user') {
             delta.ops.forEach((op) => {
                 if (op.delete) {
-                    // 寻找已删除的图片id
                     const contents = quill.getContents().ops;
                     let deletedImageId = null;
 
@@ -423,12 +384,6 @@
             });
         }
     });
-
-
-
-
-
-
     quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
 </script>

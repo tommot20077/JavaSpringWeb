@@ -23,8 +23,8 @@ public class EditorMethod {
         if (!Files.exists(tempfilePath)) {
             Files.createDirectories(tempfilePath);
         }
-
-        String filename = UUID.randomUUID()+ "__" + file.getOriginalFilename();
+        String uuid = UUID.randomUUID()+ "__";
+        String filename = uuid + file.getOriginalFilename();
         Path savePath = Paths.get(tempUploadDirPath).resolve(filename);
         Files.copy(file.getInputStream(), savePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         RcloneExecutor.executeRclone(userConfig);

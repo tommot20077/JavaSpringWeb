@@ -1,62 +1,60 @@
-/* 重置廣義的元素樣式 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 更易於閱讀的字體 */
-    line-height: 1.6; /* 調整行間距 */
-    background-color: #fff4e6; /* 设置一个温暖的背景色 */
-    color: #481d07; /* 基本文本颜色 */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #fff4e6;
+    color: #481d07;
 }
 
-
-/* 導航 */
 .navbar {
-
-    background: linear-gradient(to right, #ff8181, #ffc837); !important; /* 暖橙色用于导航栏背景色 */
-
-    padding: 0.6rem 1rem; /* 增加 padding 改善间隔 */
-
+    background: linear-gradient(to right, #ff8181, #ffc837); !important;
+    padding: 0.6rem 1rem;
 }
+
 .bg-light {
-    background-color: #fb9655; /* 暖色調背景色 */
+    background-color: #fb9655;
     !important;
 }
+
 .navbar-light {
-    background-color: #ffeadb; /* 暖色調導航欄背景色 */
+    background-color: #ffeadb;
 }
+
 .navbar-brand {
     color: #ffffff;
 }
+
 .nav-item {
-    margin: 0 0.5rem; /* 增加導航項目之間的距離 */
+    margin: 0 0.5rem;
 }
+
 .nav-link.active, .nav-link:focus {
-    border-bottom: 2px solid #fff; /* 激活狀態下的下劃線 */
+    border-bottom: 2px solid #fff;
 }
+
 .navbar .nav-link {
     color: #fff;
 }
 
-
 .navbar .nav-link:hover {
-    color: #ffdabf; /* 滑鼠悬停时的色调，保持在暖色系 */
+    color: #ffdabf;
 }
 
 .navbar-toggle {
-    display: none; /* 默认不显示折叠按钮 */
+    display: none;
 }
 
-/* 使用媒体查询，只在屏幕尺寸小于大型设备宽度的时候显示折叠按钮 */
 @media (max-width: 992px) {
     .navbar-toggle {
-        display: block; /* 只在小屏幕设备上显示 */
+        display: block;
         padding: 0.25rem 0.75rem;
-        margin-left: 0.5rem; /* 提供足够的空间防止和其他元素重叠 */
+        margin-left: 0.5rem;
         cursor: pointer;
     }
-
     .navbar-toggle-icon {
-        background-color: #fdf6e4; /* 標誌图标颜色 */
+        background-color: #fdf6e4;
     }
 }
+
 .btn-primary, .navbar-nav .nav-link {
     transition: all 0.3s ease;
 }
@@ -65,60 +63,57 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
-/* 按鈕 */
+
 .btn-primary {
-    background-color: #f9aa33; /* 暖色調按鈕背景色 */
-    border-color: #f9aa33; /* 暖色調按鈕邊框色 */
-    color: #fff; /* 白色文字 */
+    background-color: #f9aa33;
+    border-color: #f9aa33;
+    color: #fff;
 }
 
 .btn-primary:hover, .btn-primary:focus {
-    background-color: #e69520; /* 按鈕在懸停或聚焦時的背景色 */
-    border-color: #e69520; /* 按鈕在懸停或聚焦時的邊框色 */
+    background-color: #e69520;
+    border-color: #e69520;
 }
 
-
 .btn-link {
-    color: #481d07; /* 暖色調文字 */
+    color: #481d07;
 }
 
 .btn-link:hover {
-    color: #f9aa33; /* 懸停時的文字顏色 */
+    color: #f9aa33;
 }
 
 
 .btn-secondary {
-    background-color: #f7c16d; /* 淺暖色调用于次要按钮或灰色按钮 */
+    background-color: #f7c16d;
     border: none;
 }
 
 .btn-info {
-    background-color: #eb802d; /* 浅暖粉色用于信息按钮 */
+    background-color: #eb802d;
     border: none;
-
 }
 
 .btn {
-    border-radius: 20px; /* 所有按鈕都設置圓角 */
+    border-radius: 20px;
     color: white;
 }
 
 .btn:hover {
-    opacity: 0.9; /* 鼠标悬停时的透明度变化，增加交互性 */
+    opacity: 0.9;
 }
 
-/* 大標題區塊 */
 .jumbotron {
-    background-color: rgba(255, 255, 255, 0.9); /* 半透明的背景色增加层次感 */
-    color: #5a2c01; /* 继承基本文本的暖色調 */
-    border-radius: 8px; /* 圓角邊框 */
-    box-shadow: 0 4px 6px rgba(0,0,0,.1); /* 细微阴影效果 */
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #5a2c01;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
     margin-bottom: 20px;
 }
 
 .editor-container {
-    margin: 30px auto; /* 置中 */
-    padding: 20px; /* 內邊距 */
+    margin: 30px auto;
+    padding: 20px;
     border-radius: 5px;
     background-color: #ffefd5;
     border: 1px solid #f9aa33;
@@ -126,37 +121,35 @@ body {
 
 }
 
-/* 卡片 */
 .card {
     border: none;
     border-radius: 10px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,.1); /* 盒子陰影 */
-    background-color: #fff7ef; /* 浅暖橙色背景 */
-    transition: transform .2s; /* 扩充hover效果 */
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    background-color: #fff7ef;
+    transition: transform .2s;
 }
 
 .card:hover {
-    transform: scale(1.02); /* 鼠标悬停放大 */
+    transform: scale(1.02);
 }
 
 .card-header {
-    background-color: #feedd3; /* 淺橘色與卡片頭部背景色相匹配 */
+    background-color: #feedd3;
 }
 
 .card-body {
-    background-color: #fff3ef; /* 卡片背景色 */
+    background-color: #fff3ef;
 }
 
 .card .card-title a {
-    color: #f75431; /* 热情的橙色用于标题链接 */
-    text-decoration: none; /* 移除底綫 */
+    color: #f75431;
+    text-decoration: none;
 }
 
 .card .card-title a:hover {
-    color: #fb9655; /* 悬停时的标题颜色变化 */
+    color: #fb9655;
 }
-
 
 .card .card-text {
     color: #5a2c01;
@@ -168,61 +161,66 @@ body {
     right: 20px;
     z-index: 1050;
 }
+
 .alert {
-    pointer-events: auto; /* 允許滑鼠事件 */
-    min-width: 250px; /* 最小寬度 */
-    margin-top: 0.5rem; /* 與上一個 toast 的間隔 */
-    color: #fff; /* 字體顏色為白色 */
-    border-radius: 0.375rem; /* 圓角設置 */
-    padding: 10px; /* 內邊距 */
-    font-size: 16px; /* 字體大小 */
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* 外部陰影 */
-    opacity: 0.95; /* 透明度 */
+    pointer-events: auto;
+    min-width: 250px;
+    margin-top: 0.5rem;
+    color: #fff;
+    border-radius: 0.375rem;
+    padding: 10px;
+    font-size: 16px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    opacity: 0.95;
 }
 
 .alert-success {
-    background-color: #fff4e6; /* 浅暖色背景 */
-    color: #481d07; /* 暖色调文字 */
-    border-radius: 0.5rem; /* 圆角 */
-    border: 1px solid #f9aa33; /* 暖色调边框 */
+    background-color: #CDF310;
+    color: #481d07;
+    border-radius: 0.5rem;
+    border: 1px solid #f9aa33;
 }
 
 .alert-danger {
-    background-color: #dc3545; /* 失敗紅色 */
-}
-.error {
-    color: #dc3545; /* 紅色錯誤訊息 */
-    margin-bottom: 15px; /* 錯誤訊息與下一元素間隔 */
+    background-color: #dc3545;
 }
 
-/* 底部增加暖色調链接樣式 */
+.error {
+    color: #dc3545;
+    margin-bottom: 15px;
+}
+
+
 a {
     color: #f75431;
 }
 
 a:hover {
-    color: #fb9655; /* 滿足暖色調而又容易辨識 */
-    text-decoration: underline; /* 添加下划线增强交互性 */
+    color: #fb9655;
+    text-decoration: underline;
 }
 
 .page-link{
-    color: #f9aa33; /* 分頁連結顏色 */
+    color: #f9aa33;
 }
+
 .page-link:hover{
-    color: #e39624; /* 鼠标悬停时分頁連結的顏色變深 */
+    color: #e39624;
 }
+
 .page-item.active .page-link {
-    background-color: #f9aa33; /* 分頁連結背景色 */
-    border-color: #f9aa33; /* 分頁連結邊框色 */
+    background-color: #f9aa33;
+    border-color: #f9aa33;
 }
+
 .error-container {
     margin-top: 50px;
     text-align: center;
 }
 
 #editor {
-    background-color: #ffffff; /* 為編輯器區域單獨設定白色背景 */
-    border-radius: 3px; /* 編輯器內容的圓角稍微小一些以保持整體性 */
+    background-color: #ffffff;
+    border-radius: 3px;
     min-height: 100px;
     height: auto;
 }

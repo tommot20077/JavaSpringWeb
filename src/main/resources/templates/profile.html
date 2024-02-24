@@ -13,25 +13,25 @@
             max-width: 400px;
             margin-top: 50px;
             padding: 20px;
-            background-color: #fff7ef; /* 暖色調背景 */
-            border: 1px solid #f9aa33; /* 暖色調邊框 */
+            background-color: #fff7ef;
+            border: 1px solid #f9aa33;
             border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1); /* 輕微的陰影效果 */
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
         }
         .form-group label {
-            color: #481d07; /* 暖色調文字 */
+            color: #481d07;
         }
         .error, .alert {
-            color: #dc3545; /* 錯誤訊息的顏色 */
-            border-color: #dc3545; /* 錯誤訊息邊框的顏色 */
+            color: #dc3545;
+            border-color: #dc3545;
         }
         .btn-primary, .btn-secondary {
             margin-top: 10px;
         }
         .btn-secondary:hover {
-            background-color: #e79d2e; /* 您想要的暖色調背景色 */
-            border-color: #f9aa33; /* 邊框色也要配合背景色 */
-            color: #f9f9f9; /* 假設這是您的文字顏色 */
+            background-color: #e79d2e;
+            border-color: #f9aa33;
+            color: #f9f9f9;
         }
     </style>
 </head>
@@ -43,12 +43,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -59,7 +56,6 @@
                     <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
-
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -114,8 +110,6 @@
             <span th:text="${success}"></span>
         </div>
     </div>
-
-
     <button type="submit" class="btn btn-primary">更新後登出</button>
     <a href="/" class="btn btn-secondary">回到首頁</a>
 

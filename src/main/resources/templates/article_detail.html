@@ -6,12 +6,12 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${post.title}">文章標題</title>
-    <!-- 加入 Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
     <link rel="stylesheet" href="/common.css">
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
@@ -26,12 +26,12 @@
             height: auto;
         }
     </style>
-    <!-- 其他的head內容 -->
+
 </head>
 
 
 <body>
-<!-- Navbar等其他內容 -->
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -48,10 +47,6 @@
                     <a class="dropdown-item" href="/profile">更新資料</a>
                     <a class="dropdown-item" href="/new_article">新增文章</a>
                 </div>
-
-
-
-
             </li>
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
@@ -66,7 +61,7 @@
     </div>
 </nav>
 
-<!-- 文章內容 -->
+
 <div class="container mt-4">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-top">
@@ -76,7 +71,6 @@
                 <br>
                 <a class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
             </div>
-
             <div th:if="${session.currentUserId == post.author.getId()}">
                 <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
             </div>
@@ -85,9 +79,7 @@
             <div id="content-display" class="content-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="data-post-id=${post.getArticleId}">
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-
                         let BlockEmbed = Quill.import('blots/block/embed');
-
                         class ImageBlot extends BlockEmbed {
                             static create(value) {
                                 let node = super.create();
@@ -108,12 +100,11 @@
 
                         ImageBlot.blotName = 'customImage'; // 使用 customImage 作為Blot名稱避免與內建圖片Blot名稱衝突
                         ImageBlot.tagName = 'img'; // 自定義Blot的tagName為img
-
                         Quill.register(ImageBlot);
+
 
                         var contentDisplay = document.getElementById('content-display');
                         var postID = contentDisplay.getAttribute('data-post-id');
-
                         fetch('/article/' + postID + '/content')
                             .then(response => {
                                 if (!response.ok) {
@@ -151,7 +142,6 @@
     <hr>
     <h2>評論區</h2>
     <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="postID=${post.getArticleId}">
-
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 var myElement = document.getElementById('myElement');
@@ -162,19 +152,15 @@
                     .then(response => response.json())
                     .then(commentDeltas => {
                         commentDeltas.forEach(commentDelta => {
-                            // 為每條評論創建一個新的 div 容器
                             var commentDiv = document.createElement('div');
-                            // 可能還需要給這個新的 div 設定樣式或類別
-                            commentsDisplay.appendChild(commentDiv); // 將新的 div 加到 commentsDisplay 中
-
-                            const singleCommentQuill = new Quill(commentDiv, { // 將 Quill 綁定到新的 div 上
+                            commentsDisplay.appendChild(commentDiv);
+                            const singleCommentQuill = new Quill(commentDiv, {
                                 modules: {
-                                    toolbar: false // 關閉工具欄，因為是只讀的
+                                    toolbar: false
                                 },
                                 readOnly: true,
                                 theme: 'snow'
                             });
-                            // 設定Quill的內容
                             singleCommentQuill.setContents(commentDelta);
                         });
                     }).catch(error => console.error('Error loading comments:', error)
@@ -258,21 +244,17 @@
         </div>
     </div>
     <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
-
 </div>
 <script>
 
 
     var globalImageUrl = null;
-
-
     function showToast(message, isSuccess) {
         const toastContainer = document.querySelector('.my-toast-container');
         const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
         const toastElement = document.createElement('div');
         toastElement.classList.add('alert', toastClass);
         toastElement.textContent = message;
-
         toastContainer.appendChild(toastElement);
         setTimeout(() => toastElement.remove(), 5000);
     }
@@ -310,21 +292,11 @@
     }
 
 
-
-
-
-
-
-
-
-
-
     document.getElementById('save-comment-button').addEventListener('click', function() {
         const editorContent = quill.getContents();
         console.log(editorContent);
         var postID = this.getAttribute('postID');
         const postUrl = '/article/' + postID + '/comment';
-
         fetch(postUrl, {
             method: 'POST',
             headers: {

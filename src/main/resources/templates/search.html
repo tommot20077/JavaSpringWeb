@@ -58,7 +58,7 @@
         </ul>
     </div>
 </nav>
-<!-- 搜尋表單 -->
+
 <div class="container mt-4">
     <form th:action="@{/search}" method="get" class="justify-content-center form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="text" placeholder="輸入搜索關鍵字..." aria-label="搜索" name="keyword">
@@ -70,11 +70,7 @@
     </form>
 </div>
 
-
-<!-- 使用 Thymeleaf 條件判斷來控制顯示邏輯 -->
 <div class="container mt-4" th:if="${not #strings.isEmpty(keyword)}">
-
-    <!-- 當選擇 "用戶" 作為搜索類型，並且 usersPage 非 null 非空時顯示 -->
     <div th:if="${type == 'users'}">
         <h2 th:if="${usersPage != null and usersPage.totalElements > 0}">用戶</h2>
         <div class="list-group">
@@ -87,8 +83,6 @@
         <p th:if="${usersPage == null or usersPage.totalElements == 0}" class="alert alert-warning">未找到相關用戶。</p>
     </div>
 
-
-    <!-- 當選擇 "文章" 作為搜索類型，並且 postsPage 非 null 非空時顯示 -->
     <div th:if="${type == 'posts'}">
         <h2 th:if="${postsPage != null and postsPage.totalElements > 0}">文章</h2>
         <div class="list-group">

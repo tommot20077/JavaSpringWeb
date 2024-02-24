@@ -7,8 +7,8 @@ body {
     font-family: 'Arial', sans-serif;
 }
 .editor-container {
-    margin: 30px auto; /* 置中 */
-    padding: 20px; /* 內邊距 */
+    margin: 30px auto;
+    padding: 20px;
     border-radius: 5px;
     background-color: #ffefd5;
     border: 1px solid #f9aa33;

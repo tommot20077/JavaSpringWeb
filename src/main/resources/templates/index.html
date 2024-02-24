@@ -71,19 +71,17 @@
         <p>其中主要使用Java Spring boot最為後端架構</p>
         <a>目前開發狀態: 開發中</a>
         <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
-
     </div>
 
 
-    <!-- 在HTML模板的合適位置 -->
+
     <div class="container mt-4">
-        <!-- 省略其他代碼 -->
+
         <div th:if="${posts}">
             <h3 class="mb3">精選文章</h3>
             <div th:each="post, iterStat : ${posts}" th:if="${iterStat.count <= 5}">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <!-- 點擊標題直接跳轉到文章詳情頁面 -->
                         <h5 class="card-title">
                             <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
                         </h5>
@@ -131,12 +129,10 @@
                     </div>
                 </div>
             </div>
-            <!-- 只有當文章多於五篇時才顯示"查看更多文章"按鈕 -->
             <div th:if="${posts.size() > 5}" class="text-center">
                 <a href="/article" class="btn btn-info">更多文章</a>
             </div>
         </div>
-        <!-- 省略其他代碼 -->
     </div>
     <br><br>
 

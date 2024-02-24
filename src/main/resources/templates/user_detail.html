@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>用戶主頁</title>
-    <!-- 加入 Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/common.css">
-    <!-- 其他的head內容 -->
     <style>
         form {
             margin-top: 50px;
@@ -71,7 +69,6 @@
     </style>
 </head>
 <body>
-<!-- Navbar等其他內容 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,12 +76,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -95,7 +89,6 @@
                     <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
-
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>

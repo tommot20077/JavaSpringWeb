@@ -79,7 +79,6 @@ public class PostController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
             }
             try {
-
                 Map<String, String> imageUrl = postService.saveNewArticleImage(file, articleId);
                 System.out.println("imageUrl: " + imageUrl);
                 return ResponseEntity.ok(imageUrl);
@@ -145,7 +144,7 @@ public class PostController {
 
     @GetMapping("/article")
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
-        int pageSize = 9;
+        int pageSize = 6;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Post> postPage = postService.getAllPostsByPage(pageable);
         model.addAttribute("posts", postPage);
