@@ -79,8 +79,10 @@ public class PostController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
             }
             try {
-                String imageUrl = postService.saveNewArticleImage(file, articleId);
-                return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+
+                Map<String, String> imageUrl = postService.saveNewArticleImage(file, articleId);
+                System.out.println("imageUrl: " + imageUrl);
+                return ResponseEntity.ok(imageUrl);
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
             }
@@ -90,7 +92,7 @@ public class PostController {
     }
 
     @PutMapping("/new_article/{articleId}")
-    public ResponseEntity<?> updatePostWithContent(@PathVariable Long articleId, @RequestBody @Valid ArticleDto articleDto, HttpSession session) {
+    public ResponseEntity<?> updatePostContent(@PathVariable Long articleId, @RequestBody @Valid ArticleDto articleDto, HttpSession session) {
         try {
             String authorUsername = (String) session.getAttribute("currentUsername");
             if (authorUsername == null || authorUsername.trim().isEmpty()) {

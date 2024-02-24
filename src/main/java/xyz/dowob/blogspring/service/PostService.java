@@ -58,10 +58,9 @@ public class PostService {
         if (stringTitle.length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
         post.setTitle(stringTitle);
 
-
-        List<Map<String,Object>> contents = articleDto.getDeltaContent();
-
-        String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(contents);
+        System.out.println(articleDto.getDeltaContent());
+        List<Map<String, Object>> standardContents = deltaToJsonConverter.convertToStandardDeltaFormat(articleDto.getDeltaContent());
+        String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(standardContents);
         if (convertContent.isBlank()) {
             throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
         }else if (convertContent.length() > 21000) {
@@ -74,7 +73,7 @@ public class PostService {
 
 
     }
-    public String saveNewArticleImage(MultipartFile file, Long articleId) throws IOException {
+    public Map<String, String> saveNewArticleImage(MultipartFile file, Long articleId) throws IOException {
         return EditorMethod.saveImage(file, articleId);
     }
 

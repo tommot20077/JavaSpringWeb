@@ -9,11 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EditorMethod {
 
-    public static String saveImage(MultipartFile file, Long articleId) throws IOException {
+    public static Map<String, String> saveImage(MultipartFile file, Long articleId) throws IOException {
         UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
 
         String tempUploadDirPath = userConfig.getTempSavePath() + "/" + articleId;
@@ -22,6 +23,24 @@ public class EditorMethod {
         if (!Files.exists(tempfilePath)) {
             Files.createDirectories(tempfilePath);
         }
+
+        String filename = UUID.randomUUID()+ "__" + file.getOriginalFilename();
+        Path savePath = Paths.get(tempUploadDirPath).resolve(filename);
+        Files.copy(file.getInputStream(), savePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        RcloneExecutor.executeRclone(userConfig);
+        return Map.of("url", "/extra/"+ articleId +"/" + filename, "originalName", Objects.requireNonNull(file.getOriginalFilename()));
+    }
+
+    public static String saveCommentImage(MultipartFile file, Long articleId) throws IOException {
+        UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
+
+        String tempUploadDirPath = userConfig.getTempSavePath() + "/" + articleId;
+        Path tempfilePath = Paths.get(tempUploadDirPath);
+
+        if (!Files.exists(tempfilePath)) {
+            Files.createDirectories(tempfilePath);
+        }
+
         String filename = UUID.randomUUID()+ "__" +file.getOriginalFilename();
         Path savePath = Paths.get(tempUploadDirPath).resolve(filename);
         Files.copy(file.getInputStream(), savePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -29,6 +48,7 @@ public class EditorMethod {
 
         return "/extra/"+ articleId +"/" + filename;
     }
+
     public static boolean isOnlyWhiteSpaceOrEmpty(Map<String, Object> delta) {
         if (delta.containsKey("ops")) {
             List<Map<String, Object>> ops = (List<Map<String, Object>>) delta.get("ops");

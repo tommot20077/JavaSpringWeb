@@ -58,7 +58,7 @@ public class CommentService {
     }
 
     public String saveCommentImage(MultipartFile file, Long articleId) throws IOException {
-        return EditorMethod.saveImage(file, articleId);
+        return EditorMethod.saveCommentImage(file, articleId);
     }
 
     public Map<String, Object> convertCommentStructure(String commentContent) throws JsonProcessingException {

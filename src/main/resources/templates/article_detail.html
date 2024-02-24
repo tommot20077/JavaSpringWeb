@@ -85,8 +85,34 @@
             <div id="content-display" class="content-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="data-post-id=${post.getArticleId}">
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        var myElement = document.getElementById('myElement');
-                        var postID = myElement.getAttribute('data-post-id');
+
+                        let BlockEmbed = Quill.import('blots/block/embed');
+
+                        class ImageBlot extends BlockEmbed {
+                            static create(value) {
+                                let node = super.create();
+                                node.setAttribute('src', value.url); // 設置圖片的src属性
+                                if(value.id) {
+                                    node.setAttribute('id', value.id); // 設置圖片的id屬性
+                                }
+                                return node;
+                            }
+
+                            static value(node) {
+                                return {
+                                    url: node.getAttribute('src'),
+                                    id: node.getAttribute('id')
+                                };
+                            }
+                        }
+
+                        ImageBlot.blotName = 'customImage'; // 使用 customImage 作為Blot名稱避免與內建圖片Blot名稱衝突
+                        ImageBlot.tagName = 'img'; // 自定義Blot的tagName為img
+
+                        Quill.register(ImageBlot);
+
+                        var contentDisplay = document.getElementById('content-display');
+                        var postID = contentDisplay.getAttribute('data-post-id');
 
                         fetch('/article/' + postID + '/content')
                             .then(response => {
@@ -106,7 +132,8 @@
                                         theme: 'snow'
                                     });
                                     // 设置Quill的内容
-                                    contentQuill.setContents(result.delta); // 使用result.contentDelta
+                                    contentQuill.setContents(result.delta);
+                                    // 使用result.contentDelta
                                 } else {
                                     showToast("無法讀取文章內容。", false);
                                 }
