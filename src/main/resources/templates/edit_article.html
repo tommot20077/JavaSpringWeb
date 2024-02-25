@@ -148,6 +148,7 @@
                 }
             })
             .catch(error => {
+
                 console.error('發生錯誤，無法讀取文章內容:', error);
                 showToast("發生錯誤，無法讀取文章內容。", false);
             });
@@ -170,7 +171,6 @@
         function editArticle() {
             if (postID) {
                 if (selectedImageFiles.length > 0) {
-
                     Promise.all(selectedImageFiles.map(file => uploadImageFunction(file, postID)))
                         .then((imageUrl) => {
 
@@ -182,6 +182,7 @@
                     saveArticleContent(postID, quill.getContents());
                 }
             } else {
+                hideSpinner();
                 showToast("無法更新文章。", false);
             }
         }
@@ -200,11 +201,13 @@
                     if (result.url && result.originalName) {
                         return result;
                     } else {
+                        hideSpinner();
                         showToast("圖片上傳失敗。", false);
                         return null;
                     }
                 })
                 .catch(error => {
+                    hideSpinner();
                     showToast("圖片上傳失敗: " + error.message, false);
                     return null;
                 });
@@ -245,19 +248,23 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.message === "文章保存成功") {
+                        hideSpinner();
                         showToast("文章保存成功。", true);
 
                     } else {
+                        hideSpinner();
                         showToast(result.error, false);
                     }
                 })
                 .catch(error => {
+                    hideSpinner();
                     showToast("文章保存失敗: " + error.message, false);
                 });
         }
 
         document.getElementById('save-article-button').addEventListener('click', function (event) {
             event.preventDefault();
+            showSpinner();
             editArticle();
         });
 
@@ -346,8 +353,23 @@
 
         quill.getModule('toolbar').addHandler('image', selectLocalImage);
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        hideSpinner();
+    });
+    function showSpinner() {
+        //document.querySelector('body').classList.add("body-blur")
+        document.getElementById('loading-spinner').style.display = 'flex';
+    }
+    function hideSpinner() {
+        //document.querySelector('body').classList.remove("body-blur")
+        document.getElementById('loading-spinner').style.display = 'none';
+    }
 </script>
 <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
+<div id="loading-spinner" class="loading-spinner-container">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
 <br>
 </body>
 </html>

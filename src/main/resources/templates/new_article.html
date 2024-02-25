@@ -197,6 +197,7 @@
                     saveArticleContent(articleId, quill.getContents());
                 }
             } else {
+                hideSpinner();
                 showToast("無法創建新文章。", false);
             }
         });
@@ -216,6 +217,7 @@
                 }
             })
             .catch(error => {
+                hideSpinner();
                 showToast("創建文章出錯: " + error.message, false);
                 return null;
             });
@@ -238,11 +240,13 @@
                 if (result.url && result.originalName) {
                     return result;
                 } else {
+                    hideSpinner();
                     showToast("圖片上傳失敗。", false);
                     return null;
                 }
             })
             .catch(error => {
+                hideSpinner();
                 showToast("圖片上傳失敗: " + error.message, false);
                 return null;
             });
@@ -282,18 +286,22 @@
             .then(response => response.json())
             .then(result => {
                 if (result.message === "文章保存成功") {
+                    hideSpinner();
                     showToast("文章保存成功。", true);
                     setTimeout(() => window.location.href = `/new_article_success`, 6000);
                 } else {
+                    hideSpinner();
                     showToast(result.error, false);
                 }
             })
             .catch(error => {
+                hideSpinner();
                 showToast("文章保存失敗: " + error.message, false);
             });
     }
 
     document.getElementById('save-article-button').addEventListener('click', function(event) {
+        showSpinner();
         event.preventDefault();
         initiateArticleCreation();
     });
@@ -386,8 +394,23 @@
     });
     quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
+    document.addEventListener('DOMContentLoaded', () => {
+        hideSpinner();
+    });
+    function showSpinner() {
+        //document.querySelector('body').classList.add("body-blur")
+        document.getElementById('loading-spinner').style.display = 'flex';
+    }
+    function hideSpinner() {
+        //document.querySelector('body').classList.remove("body-blur")
+        document.getElementById('loading-spinner').style.display = 'none';
+    }
+
 </script>
 <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
+<div id="loading-spinner" class="loading-spinner-container">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>

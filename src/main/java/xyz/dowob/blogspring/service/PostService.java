@@ -1,6 +1,8 @@
 package xyz.dowob.blogspring.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import xyz.dowob.blogspring.repository.PostRepository;
 import xyz.dowob.blogspring.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +54,7 @@ public class PostService {
 
     }
     public void updatePostWithContent(Long articleId, ArticleDto articleDto) throws Postdata_UpdateException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
         Post post = getPostByArticle_id(articleId);
 
         String stringTitle = articleDto.getTitle();
@@ -58,10 +62,16 @@ public class PostService {
         if (stringTitle.length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
         post.setTitle(stringTitle);
 
-        System.out.println(articleDto.getDeltaContent());
         List<Map<String, Object>> standardContents = deltaToJsonConverter.convertToStandardDeltaFormat(articleDto.getDeltaContent());
         String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(standardContents);
-        if (convertContent.isBlank()) {
+
+        Map<String, Object> map = objectMapper.readValue(convertContent, new TypeReference<Map<String, Object>>() {});
+        Object opsValue = map.get("delta");
+        Map<String, Object> modifiedContent = new HashMap<>();
+        modifiedContent.put("ops", opsValue);
+
+
+        if  (convertContent == null || convertContent.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(modifiedContent)) {
             throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
         }else if (convertContent.length() > 21000) {
             throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);

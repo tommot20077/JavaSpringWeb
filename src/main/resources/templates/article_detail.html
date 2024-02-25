@@ -26,28 +26,8 @@
             height: auto;
         }
 
-        #prevPage {
-            background-color: rgba(255, 255, 255, 0);
-            border: none;
-        }
-
-        #nextPage {
-            background-color: rgba(255, 255, 255, 0);
-            border: none;
-        }
-
-        #prevSinglePage {
-            background-color: rgba(255, 255, 255, 0);
-            border: none;
-        }
-
-        #nextSinglePage {
-            background-color: rgba(255, 255, 255, 0);
-            border: none;
-        }
-
         #currentPageInput {
-            width: 150px;text-align: center;
+            width: 50px;text-align: center;
         }
 
         .comment-top {
@@ -472,6 +452,7 @@
                     globalImageUrl = result.imageUrl;
                     quill.insertEmbed(range.index, 'image', globalImageUrl);
                 }).catch((error) => {
+                    hideSpinner();
                     showToast("圖片上傳失敗: " + error.message, false);
                 });
             }
@@ -480,8 +461,8 @@
 
 
     document.getElementById('save-comment-button').addEventListener('click', function() {
+        showSpinner();
         const editorContent = quill.getContents();
-        console.log(editorContent);
         var postID = this.getAttribute('postID');
         const postUrl = '/article/' + postID + '/comment';
         fetch(postUrl, {
@@ -503,17 +484,36 @@
                 }
             })
             .then(data =>{
+                hideSpinner();
                 showToast("評論發表成功", true);
                 setTimeout(() => window.location.reload(), 6000);
 
             })
             .catch((error) => {
+                hideSpinner();
                 showToast("評論發表失敗: " + error.message, false);
             });
 
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            hideSpinner();
+        });
+        function showSpinner() {
+            //document.querySelector('body').classList.add("body-blur")
+            document.getElementById('loading-spinner').style.display = 'flex';
+        }
+        function hideSpinner() {
+            //document.querySelector('body').classList.remove("body-blur")
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
     });
 </script>
 <br>
 <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
+<div id="loading-spinner" class="loading-spinner-container">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>
+
 </body>
 </html>

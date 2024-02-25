@@ -39,6 +39,7 @@ public class CommentService {
     public boolean saveComment(Map<String,Object> delta, Long articleId, String commentUsername){
         try {
             String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
+            System.out.println(json);
             Comment comment = new Comment();
 
             if (json == null || json.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(delta)) {
