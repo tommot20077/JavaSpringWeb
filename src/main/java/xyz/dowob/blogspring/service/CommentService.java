@@ -3,6 +3,8 @@ package xyz.dowob.blogspring.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
@@ -12,7 +14,6 @@ import xyz.dowob.blogspring.model.Comment;
 import xyz.dowob.blogspring.repository.CommentRepository;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,8 +30,8 @@ public class CommentService {
         this.userService = userService;
     }
 
-    public List<Comment> getCommentsByArticleId(Long articleId){
-        return commentRepository.findCommentsByPost_ArticleId(articleId);
+    public Page<Comment> getCommentsByArticleId(Long articleId, Pageable pageable){
+        return commentRepository.findCommentsPageByPost_ArticleId(articleId , pageable);
     }
 
 
@@ -48,7 +49,8 @@ public class CommentService {
             comment.setPost(postService.getPostByArticle_id(articleId));
             comment.setCreation_time(new java.util.Date());
             comment.setAuthor(userService.getUserByUsername(commentUsername));
-
+            comment.setCommentInArticleId(commentRepository.findCommentsListByPost_ArticleId(articleId).size() + 1);
+            comment.setDeleted(false);
             commentRepository.save(comment);
             return true;
         }catch (JsonProcessingException | Postdata_UpdateException e){

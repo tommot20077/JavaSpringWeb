@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import xyz.dowob.blogspring.model.Comment;
 import xyz.dowob.blogspring.service.CommentService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,16 +47,32 @@ public class CommentController {
     }
 
     @GetMapping("/article/{articleId}/comment")
-    public ResponseEntity<?> getComments(@PathVariable long articleId){
-        List<Comment> comments = commentService.getCommentsByArticleId(articleId);
-        List<Map<String, Object>> commentDelta = comments.stream().map(comment -> {
+    public ResponseEntity<?> getComments(@PathVariable long articleId ,@RequestParam(defaultValue = "0") int page ){
+
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Comment> commentPage = commentService.getCommentsByArticleId(articleId, pageable);
+
+        List<Map<String, Object>> commentDeltaList = commentPage.getContent().stream().map(comment -> {
+            Map<String, Object> commentData = new HashMap<>();
             try {
-                return commentService.convertCommentStructure(comment.getContent());
+                Map<String, Object> commentDelta = commentService.convertCommentStructure(comment.getContent());
+                commentData.put("delta", commentDelta);
+                commentData.put("commentInArticleId", comment.getCommentInArticleId());
+                commentData.put("author", comment.getAuthor().getUsername());
+                commentData.put("creation_time", comment.getCreation_time());
+                commentData.put("isDeleted", comment.isDeleted());
+                return commentData;
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("轉換JSON失敗", e);
             }
         }).collect(Collectors.toList());
-        return new ResponseEntity<>(commentDelta, HttpStatus.OK);
+
+        Map<String, Object> paginatedResponse = new HashMap<>();
+        paginatedResponse.put("comments", commentDeltaList);
+        paginatedResponse.put("currentPage", commentPage.getNumber());
+        paginatedResponse.put("totalPages", commentPage.getTotalPages());
+
+        return new ResponseEntity<>(paginatedResponse, HttpStatus.OK);
     }
 
     @PostMapping("/article/{articleId}/comment/image")

@@ -78,7 +78,6 @@
     <div class="container mt-4">
 
         <div th:if="${posts}">
-            <h3 class="mb3">精選文章</h3>
             <div th:each="post, iterStat : ${posts}" th:if="${iterStat.count <= 5}">
                 <div class="card mb-3">
                     <div class="card-body">

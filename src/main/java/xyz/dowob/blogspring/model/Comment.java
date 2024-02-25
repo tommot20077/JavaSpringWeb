@@ -17,6 +17,9 @@ public class Comment {
     @JoinColumn(name = "article_id", nullable = false)
     private Post post;
     private java.util.Date creation_time;
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
+    private int commentInArticleId;
 
 
 
@@ -47,6 +50,18 @@ public class Comment {
     }
     public void setCreation_time(java.util.Date creation_time) {
         this.creation_time = creation_time;
+    }
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+    public int getCommentInArticleId() {
+        return commentInArticleId;
+    }
+    public void setCommentInArticleId(int commentInArticleId) {
+        this.commentInArticleId = commentInArticleId;
     }
 
 
