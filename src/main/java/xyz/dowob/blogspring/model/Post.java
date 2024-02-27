@@ -27,11 +27,12 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-
-
     @Column(nullable = false, updatable = false, name = "creation_time", insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creation_time;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
 
 
 
@@ -60,6 +61,14 @@ public class Post {
 
     public Date getCreation_time() {
         return creation_time;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
 

@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.dowob.blogspring.Exceptions.Commentdata_UpdateException;
 import xyz.dowob.blogspring.functions.CommentDto;
 import xyz.dowob.blogspring.model.Comment;
 import xyz.dowob.blogspring.service.CommentService;
@@ -34,7 +36,7 @@ public class CommentController {
     @PostMapping("/article/{articleId}/comment")
     public ResponseEntity<?> postComment(@PathVariable long articleId, @RequestBody @Valid CommentDto commentDto, HttpSession session){
         String commentUsername = (String) session.getAttribute("currentUsername");
-        if(commentUsername == null || commentUsername.trim().isEmpty()){
+        if (session.getAttribute("currentUserId") == null){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
 
@@ -55,10 +57,12 @@ public class CommentController {
         List<Map<String, Object>> commentDeltaList = commentPage.getContent().stream().map(comment -> {
             Map<String, Object> commentData = new HashMap<>();
             try {
-                Map<String, Object> commentDelta = commentService.convertCommentStructure(comment.getContent());
+                Map<String, Object> commentDelta = commentService.convertCommentStructure(comment.getContent(), comment);
                 commentData.put("delta", commentDelta);
                 commentData.put("commentInArticleId", comment.getCommentInArticleId());
-                commentData.put("author", comment.getAuthor().getUsername());
+                commentData.put("commentId", comment.getCommentId());
+                commentData.put("authorName", comment.getAuthor().getUsername());
+                commentData.put("authorId", comment.getAuthor().getId());
                 commentData.put("creation_time", comment.getCreation_time());
                 commentData.put("isDeleted", comment.isDeleted());
                 return commentData;
@@ -77,8 +81,7 @@ public class CommentController {
 
     @PostMapping("/article/{articleId}/comment/image")
     public ResponseEntity<?> handleCommentImageUpload(@PathVariable long articleId, @RequestParam("image")MultipartFile file, HttpSession session){
-        String commentUsername = (String) session.getAttribute("currentUsername");
-        if(commentUsername == null || commentUsername.trim().isEmpty()){
+        if (session.getAttribute("currentUserId") == null){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
         try {
@@ -87,6 +90,64 @@ public class CommentController {
             return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/comment/edit/{commentId}")
+    public String editCommentForm(@PathVariable Long commentId, Model model, HttpSession session){
+        try {
+            String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
+            if (commentService.getCommentByCommentId(commentId).isDeleted() || !commentService.isUserEditable(commentId, currentUserId)){
+                return "redirect:/";
+            }
+            Comment comment = commentService.getCommentByCommentId(commentId);
+            model.addAttribute("comment", comment);
+            return "edit_comment";
+        } catch (Commentdata_UpdateException e) {
+            return "redirect:/";
+        }
+    }
+
+    @GetMapping("/comment/{commentId}/content")
+    public ResponseEntity<?> getCommentContent(@PathVariable long commentId){
+        try {
+            Comment comment = commentService.getCommentByCommentId(commentId);
+            Map<String, Object> contentDelta = commentService.convertCommentStructure(comment.getContent(), comment);
+            return ResponseEntity.ok(Map.of("delta", contentDelta));
+        } catch (Commentdata_UpdateException |JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+
+
+    @PutMapping("/comment/edit/{commentId}")
+    public ResponseEntity<?> editComment(@PathVariable long commentId, @RequestBody @Valid CommentDto commentDto, HttpSession session){
+        try {
+            if (session.getAttribute("currentUserId") == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
+            }
+            String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
+            commentService.editComment(commentDto.getDelta(), commentId, currentUserId);
+            return ResponseEntity.ok(Map.of("message", "評論修改成功"));
+
+        }catch (Commentdata_UpdateException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
+        }
+
+    }
+
+    @DeleteMapping("/comment/delete/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable long commentId, HttpSession session){
+        try {
+            if (session.getAttribute("currentUserId") == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
+            }
+            String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
+            commentService.deleteComment(commentId, currentUserId);
+            return ResponseEntity.ok(Map.of("message", "評論刪除成功"));
+        }catch (Commentdata_UpdateException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
     }
 

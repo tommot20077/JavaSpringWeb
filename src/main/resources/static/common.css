@@ -6,9 +6,24 @@ html, body {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
+    line-height: 1.4;
     background-color: #fff4e6;
     color: #481d07;
+}
+
+.confirm-card {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+
+.confirm-card-body {
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
 }
 
 .navbar {
@@ -49,11 +64,32 @@ body {
     display: none;
 }
 
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
 .ql-container {
     border: none;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0,0,0,.1);
     background-color: #fff7ef;
+}
+
+.ql-editor {
+    background-color: #fff7ef;
+    border-radius: 3px;
+    min-height: 100px;
+    height: auto;
+    font-size: 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
 }
 
 @media (max-width: 992px) {
@@ -98,8 +134,15 @@ body {
 
 
 .btn-secondary {
-    background-color: #f7c16d;
-    border: none;
+    color: #fff;
+    background-color: #ff5517;
+    border-color: #ff5517;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #f90700;
+    border-color: #f90700;
 }
 
 .btn-info {
@@ -142,11 +185,11 @@ body {
     background-color: #fff7ef;
     transition: transform .2s;
 }
-
+/*
 .card:hover {
     transform: scale(1.02);
 }
-
+*/
 .card-header {
     background-color: #feedd3;
 }
@@ -288,12 +331,6 @@ a:hover {
 
 
 
-#editor {
-    background-color: #ffffff;
-    border-radius: 3px;
-    min-height: 100px;
-    height: auto;
-}
 
 
 

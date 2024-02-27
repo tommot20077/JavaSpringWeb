@@ -57,8 +57,8 @@ public class PostController {
     public ResponseEntity<?> processPostForm(HttpSession session) {
         try {
             String username = (String) session.getAttribute("currentUsername");
-            if (username == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","請先登入"));
+            if (session.getAttribute("currentUserId") == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
 
 
@@ -74,9 +74,8 @@ public class PostController {
     @PostMapping("/new_article/image")
     public ResponseEntity<?> handleArticleImageUpload(@RequestParam("image") MultipartFile file, @RequestParam("articleId") Long articleId, HttpSession session){
         if (file != null) {
-            String commentUsername = (String) session.getAttribute("currentUsername");
-            if(commentUsername == null || commentUsername.trim().isEmpty()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
+            if (session.getAttribute("currentUserId") == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
             try {
                 Map<String, String> imageUrl = postService.saveNewArticleImage(file, articleId);
@@ -93,9 +92,8 @@ public class PostController {
     @PutMapping("/new_article/{articleId}")
     public ResponseEntity<?> updatePostContent(@PathVariable Long articleId, @RequestBody @Valid ArticleDto articleDto, HttpSession session) {
         try {
-            String authorUsername = (String) session.getAttribute("currentUsername");
-            if (authorUsername == null || authorUsername.trim().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "請先登入"));
+            if (session.getAttribute("currentUserId") == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
 
             postService.updatePostWithContent(articleId, articleDto);
@@ -133,7 +131,7 @@ public class PostController {
     public ResponseEntity<?> getArticleContent(@PathVariable long articleId){
         try {
             Post articleContent = postService.getPostByArticle_id(articleId);
-            Map<String, Object> contentDelta = postService.convertPostStructure(articleContent.getContent());
+            Map<String, Object> contentDelta = postService.convertPostStructure(articleContent.getContent(), articleContent);
 
 
             return new ResponseEntity<>(contentDelta, HttpStatus.OK);

@@ -3,6 +3,8 @@ package xyz.dowob.blogspring.functions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import xyz.dowob.blogspring.model.Comment;
+import xyz.dowob.blogspring.model.Post;
 
 import java.util.*;
 
@@ -15,18 +17,34 @@ public class DeltaToJsonConverter {
         return null;
     }
 
-    public Map<String, Object> convertJsonToDelta(String json) throws JsonProcessingException {
-        if (json != null) {
-            return objectMapper.readValue(json, new TypeReference<>() {});
-        }
-        return null;
-    }
-
     public String convertArticleDeltaToJson(List<Map<String,Object>> delta) throws JsonProcessingException {
         if (delta != null) {
             Map<String, List<Map<String, Object>>> wrappedDelta = new HashMap<>();
             wrappedDelta.put("delta", delta); // 包装delta数组与"delta"键
             return objectMapper.writeValueAsString(wrappedDelta); // 转换整个结构为JSON字符串
+        }
+        return null;
+    }
+
+    public Map<String, Object> convertCommentFromJsonToDelta(String json, Comment comment) throws JsonProcessingException {
+        if (json != null) {
+            Map<String, Object> delta = objectMapper.readValue(json, new TypeReference<>() {});
+            if (comment.isDeleted()) {
+                Map<String, Object> deletedOpsItem = Collections.singletonMap("insert", "已刪除評論");
+                delta.put("ops", Collections.singletonList(deletedOpsItem));
+            }
+            return delta;
+        }
+        return null;
+    }
+
+    public Map<String, Object> convertArticleFromJsonToDelta(String json, Post post) throws JsonProcessingException {
+        if (json != null) {
+            Map<String, Object> delta = objectMapper.readValue(json, new TypeReference<>() {});
+            if (post.isDeleted()) {
+                delta.put("insert", "已刪除的文章");
+            }
+            return delta;
         }
         return null;
     }

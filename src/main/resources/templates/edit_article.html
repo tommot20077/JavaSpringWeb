@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}, POSTID=${post.getArticleId}">
 <div id="myElement" th:attr="data-post-id=${post.getArticleId}"></div>
 <head>
     <meta charset="UTF-8">
@@ -105,7 +105,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary" id="save-article-button">更新</button>
-        <a href="/" class="btn btn-secondary">取消</a>
+        <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回文章</a>
     </form>
 </div>
 

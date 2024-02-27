@@ -53,6 +53,14 @@
             text-decoration: none;
             color: #f76c5e;
         }
+
+        .pagination .page-item {
+            margin: 0 5px; /* 加入左右邊距來設定分頁項目之間的距離 */
+        }
+
+        .pagination .page-item .page-link {
+            font-size: larger; /* 放大分頁鏈接文字 */
+        }
         .pagination li.active a,
         .pagination li a:hover {
             background-color: #f93118;
@@ -65,6 +73,16 @@
         .pagination-arrows span {
             border: 1px solid #ddd;
             padding: 5px 10px;
+        }
+        .fixed-bottom-nav {
+            position: fixed;
+            left: 50%;              /* 设置左偏移为50%，即视图的中心 */
+            transform: translateX(-50%); /*  通过平移使元素中心对齐视图的中心 */
+            bottom: 20px;
+            width: auto;           /* 可以设置为 auto 或是 100%, 根据需要来调整 */
+            background-color: rgba(255, 255, 255, 0); /* 適當調整背景色 */
+            z-index: 1030;
+            text-align: center;
         }
     </style>
 </head>
@@ -131,21 +149,41 @@
 </div>
 
 <div class="mt-4" th:if="${postPage != null and postPage.totalElements > 0}">
-    <nav aria-label="用戶文章分頁">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled' : ''">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${pageNum - 1})}" th:if="${pageNum > 1}" aria-label="Previous">
+    <nav aria-label="用戶文章分頁" th:if="${totalPages > 1}" class="mt-4 fixed-bottom-nav ">
+        <ul class="pagination justify-content-center">
+            <!-- 跳至首頁 -->
+            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=0)}" aria-label="First" th:if="${pageNum > 1}">
+                    <span aria-hidden="true">««</span>
+                </a>
+            </li>
+
+            <!-- 前一頁 -->
+            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum - 1})}" aria-label="Previous" th:if="${pageNum > 1}">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
 
-            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${pageNum == i} ? 'active' : ''">
+            <!-- 分頁號碼 -->
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:class="page-item"
+                th:classappend="${pageNum eq i} ? 'active'"
+                th:if="${(totalPages le 10) or (i ge (pageNum - 4) and i le (pageNum + 5)) or (totalPages - pageNum lt 5 and i gt totalPages - 10)}"
+            >
                 <a class="page-link" th:href="@{/user/{id} (id=${user.getId()}, page=${i})}" th:text="${i}">1</a>
             </li>
 
-            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled' : ''">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum + 1})}" th:if="${pageNum < totalPages}" aria-label="Next">
+            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum + 1})}" aria-label="Next" th:if="${pageNum < totalPages}">
                     <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+
+            <!-- 跳至尾頁 -->
+            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${totalPages})}" aria-label="Last" th:if="${page < totalPages}">
+                    <span aria-hidden="true">»»</span>
                 </a>
             </li>
         </ul>

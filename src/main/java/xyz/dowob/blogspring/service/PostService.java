@@ -88,8 +88,8 @@ public class PostService {
     }
 
 
-    public Map<String, Object> convertPostStructure(String commentContent) throws JsonProcessingException {
-        return deltaToJsonConverter.convertJsonToDelta(commentContent);
+    public Map<String, Object> convertPostStructure(String commentContent, Post post) throws JsonProcessingException {
+        return deltaToJsonConverter.convertArticleFromJsonToDelta(commentContent, post);
     }
 
 

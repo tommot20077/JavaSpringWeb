@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.dowob.blogspring.Exceptions.Commentdata_UpdateException;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.functions.DeltaToJsonConverter;
 import xyz.dowob.blogspring.functions.EditorMethod;
@@ -34,12 +35,15 @@ public class CommentService {
         return commentRepository.findCommentsPageByPost_ArticleId(articleId , pageable);
     }
 
+    public Comment getCommentByCommentId(Long commentId) throws Commentdata_UpdateException {
+        return commentRepository.findCommentByCommentId(commentId)
+                .orElseThrow(() -> new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_NOT_FOUND));
+    }
 
     @Transactional
     public boolean saveComment(Map<String,Object> delta, Long articleId, String commentUsername){
         try {
             String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
-            System.out.println(json);
             Comment comment = new Comment();
 
             if (json == null || json.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(delta)) {
@@ -64,8 +68,57 @@ public class CommentService {
         return EditorMethod.saveCommentImage(file, articleId);
     }
 
-    public Map<String, Object> convertCommentStructure(String commentContent) throws JsonProcessingException {
-        return deltaToJsonConverter.convertJsonToDelta(commentContent);
+    public void editComment(Map<String, Object> delta, Long commentId, String currentUserId) throws Commentdata_UpdateException {
+
+        try {
+            Comment comment = getCommentByCommentId(commentId);
+            String formattedCommentUserId = comment.getAuthor().getId().toString();
+            if (!(formattedCommentUserId.equals(currentUserId))) {
+                throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.UNAUTHORIZED);
+            }
+
+            String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
+            if (json == null || json.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(delta)) {
+                throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_INVALID);
+            }else if (json.length() > 10000){
+                throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
+            }
+
+            comment.setContent(json);
+            commentRepository.save(comment);
+
+        } catch (JsonProcessingException e) {
+            throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_UPDATE_JSON_ERROR);
+        }
+    }
+
+    public void deleteComment(Long commentId, String currentUserId) throws Commentdata_UpdateException {
+        try {
+            Comment comment = getCommentByCommentId(commentId);
+            String formattedCommentUserId = comment.getAuthor().getId().toString();
+            if (!(formattedCommentUserId.equals(currentUserId))) {
+                throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.UNAUTHORIZED);
+            }
+            comment.setDeleted(true);
+            commentRepository.save(comment);
+        } catch (Commentdata_UpdateException e) {
+            throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_NOT_FOUND);
+        }
+    }
+
+
+    public Map<String, Object> convertCommentStructure(String commentContent, Comment comment) throws JsonProcessingException {
+        return deltaToJsonConverter.convertCommentFromJsonToDelta(commentContent, comment);
+    }
+
+    public boolean isUserEditable(Long commentId, String currentUserId) {
+        try {
+            Comment comment = getCommentByCommentId(commentId);
+            String formattedCommentUserId = comment.getAuthor().getId().toString();
+            return formattedCommentUserId.equals(currentUserId);
+        } catch (Commentdata_UpdateException e) {
+            return false;
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
-<div id="myElement" th:attr="data-post-id=${post.getArticleId}"></div>
-
+<div id="myElement" th:attr="login-User-id=${session.currentUserId}, data-post-id=${post.getArticleId}"></div>
 
 <head>
     <meta charset="UTF-8">
@@ -11,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/article_detail.css">
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -18,79 +18,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
-    <style>
-        #editor {
-            background-color: #ffffff;
-            border-radius: 3px;
-            min-height: 100px;
-            height: auto;
-        }
-
-        #currentPageInput {
-            width: 50px;text-align: center;
-        }
-
-        .comment-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0;
-            background-color: #fcebd7;
-        }
-
-        .comment-serial-number, .comment-author, .comment-Time-number {
-            padding: 5px 10px;
-            background-color: #ffefe6;
-            white-space: nowrap;
-
-        }
-
-        .comment-serial-number{
-            font-weight: bold;
-            padding: 5px 10px;
-            background-color: #fcebd7;
-            margin-left: auto;
-            border-radius: 10px;
-            margin-bottom: 0;
-        }
-
-        .comment-author, .comment-Time-number{
-            margin-right: auto;
-            background-color: #fcebd7;
-        }
-
-        .comment-Time-number{
-            margin-bottom: 2px;
-        }
-
-        .comment-content {
-
-            border: 1px solid #cccccc;
-            border-bottom: none;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
-        .comment-wrapper {
-            background-color: #fcebd7; /* 提供一個亮色背景 */
-            border: 1px solid #e1e1e1; /* 添加細邊框 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影 */
-            margin-bottom: 20px; /* 評論之間的間隔 */
-            border-radius: 4px; /* 略微圓角的邊框 */
-            padding: 15px; /* 向評論內部添加一些 padding */
-            transition: box-shadow 0.3s ease; /* 鼠標經過時，添加過渡效果讓陰影更加明顯 */
-        }
-
-        .comment-wrapper:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 當鼠標經過評論時，陰影變深 */
-        }
-
-
-    </style>
-
-
-
 </head>
 
 
@@ -131,9 +58,9 @@
         <div class="card-header d-flex justify-content-between align-items-top">
             <div>
                 <h1 class="card-title" th:text="${post.title}">文章標題</h1>
-                <a class="card-subtitle mb-2 text-muted" th:text="|發表時間: ${post.getCreation_time} |">發表時間</a>
+                <a class="card-subtitle mb-2 card-subtitle-author" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
                 <br>
-                <a class="card-subtitle mb-2 text-muted" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
+                <a class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${post.getCreation_time} |">發表時間</a>
             </div>
             <div th:if="${session.currentUserId == post.author.getId()}">
                 <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
@@ -147,9 +74,9 @@
                         class ImageBlot extends BlockEmbed {
                             static create(value) {
                                 let node = super.create();
-                                node.setAttribute('src', value.url); // 設置圖片的src属性
+                                node.setAttribute('src', value.url);
                                 if(value.id) {
-                                    node.setAttribute('id', value.id); // 設置圖片的id屬性
+                                    node.setAttribute('id', value.id);
                                 }
                                 return node;
                             }
@@ -162,8 +89,8 @@
                             }
                         }
 
-                        ImageBlot.blotName = 'customImage'; // 使用 customImage 作為Blot名稱避免與內建圖片Blot名稱衝突
-                        ImageBlot.tagName = 'img'; // 自定義Blot的tagName為img
+                        ImageBlot.blotName = 'customImage';
+                        ImageBlot.tagName = 'img';
                         Quill.register(ImageBlot);
 
 
@@ -177,18 +104,16 @@
                                 return response.json();
                             })
                             .then(result => {
-                                if (result) { // 确保result包含contentDelta
+                                if (result) {
                                     const contentDisplay = document.getElementById('content-display');
-                                    const contentQuill = new Quill(contentDisplay, { // 使用 'content-display' 的ID
+                                    const contentQuill = new Quill(contentDisplay, {
                                         modules: {
-                                            toolbar: false // 关闭工具栏，因为是只读的
+                                            toolbar: false
                                         },
                                         readOnly: true,
                                         theme: 'snow'
                                     });
-                                    // 设置Quill的内容
                                     contentQuill.setContents(result.delta);
-                                    // 使用result.contentDelta
                                 } else {
                                     showToast("無法讀取文章內容。", false);
                                 }
@@ -205,26 +130,34 @@
 
     <hr>
     <h2>評論區</h2>
-    <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="postID=${post.getArticleId}">
+    <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;">
         <script>
+            const myElement = document.getElementById('myElement');
+            const postID = myElement.getAttribute('data-post-id');
+            console.log("data-post-id: "+postID);
             let currentPage = 0;
-            let varTotalPages = 0;
+            let varTotalPages = 1;
 
             document.addEventListener('DOMContentLoaded', function() {
-                loadPage(0);
+                loadCommentPage(0);
             });
 
-            function loadPage(pageNumber) {
+            function loadCommentPage(pageNumber) {
                 const commentsDisplay = document.getElementById('comments-display');
-                const postID = commentsDisplay.getAttribute('postID');
-                commentsDisplay.innerHTML = '';
+                commentsDisplay.innerHTML =
+                    `<div class="loadingio-spinner-dual-ball-l2u3038qtw8"><div class="ldio-4pqo44ipw4">
+                     <div></div><div></div><div></div>
+                     </div></div>`;
+                commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
 
-                if (pageNumber < 0) {
-                    pageNumber = 0;
-                }else if (pageNumber >= varTotalPages) {
-                    pageNumber = currentPage;
+
+                pageNumber = parseInt(pageNumber, 10);
+                if (pageNumber >= 0 && pageNumber < varTotalPages) {
+                    currentPage = pageNumber;
+                }else {
+                    showToast('無效的頁碼:', false);
+                    return;
                 }
-                currentPage = pageNumber;
 
 
                 fetch('/article/' + postID + '/comment?page=' + pageNumber)
@@ -232,110 +165,197 @@
                     .then(data => {
                         const { comments, currentPage, totalPages } = data;
                         varTotalPages = totalPages;
-                        comments.forEach(commentData => {
-                            if (!commentData.isDeleted) {
-                                const wrapperDiv  = document.createElement('div');
-                                wrapperDiv.classList.add('comment-wrapper');
 
-                                const commentTopDiv = document.createElement('div');
-                                commentTopDiv.classList.add('comment-top');
-
-                                const commentSerialNumberDiv = document.createElement('div');
-                                commentSerialNumberDiv.classList.add('comment-serial-number');
-                                commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
-
-                                const publishedTimeDiv = document.createElement('div');
-                                publishedTimeDiv.classList.add('comment-Time-number');
-                                const utcDate = new Date(commentData.creation_time);
-                                const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
-                                const formattedTime = localDate.toISOString().replace('T', ' ').substring(0, 19);
-                                publishedTimeDiv.textContent = "發布時間: " + formattedTime;
-
-                                const authorDiv = document.createElement('div');
-                                authorDiv.classList.add('comment-author');
-                                authorDiv.textContent = "評論者: " + commentData.author;
-
-                                const commentDiv = document.createElement('div');
-                                commentDiv.classList.add('comment-content');
-
-                                const hrLine = document.createElement('hr');
-                                hrLine.classList.add('hr-line');
-
-                                commentTopDiv.appendChild(authorDiv);
-                                commentTopDiv.appendChild(commentSerialNumberDiv);
-                                wrapperDiv.appendChild(commentTopDiv);
-                                wrapperDiv.appendChild(publishedTimeDiv);
-                                wrapperDiv.appendChild(commentDiv);
-
-                                commentsDisplay.appendChild(wrapperDiv);
-
-                                const singleCommentQuill = new Quill(commentDiv, {
-                                    modules: { toolbar: false },
-                                    readOnly: true,
-                                    theme: 'snow'
-                                });
-                                singleCommentQuill.setContents(commentData.delta);
+                        if (comments.length === 0) {
+                            commentsDisplay.textContent = '空空如也的評論(°ﾛ°٥)';
+                            commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
+                            document.getElementById('pagination-control').style.display = 'none';
+                        } else {
+                            if (totalPages === 1){
+                                document.getElementById('pagination-control').style.display = 'none';
                             }
-                        });
-                        updatePagination(currentPage, totalPages);
+                            commentsDisplay.innerHTML = '';
+                            fillPageSelect()
+                            comments.forEach(commentData => {
+                                if (!commentData.isDeleted) {
+                                    const wrapperDiv  = document.createElement('div');
+                                    wrapperDiv.classList.add('comment-wrapper');
+
+                                    const commentTopDiv = document.createElement('div');
+                                    commentTopDiv.classList.add('comment-top');
+
+                                    const commentSerialNumberDiv = document.createElement('div');
+                                    commentSerialNumberDiv.classList.add('comment-serial-number');
+                                    commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
+
+                                    const publishedTimeDiv = document.createElement('div');
+                                    publishedTimeDiv.classList.add('comment-Time-number');
+                                    const utcDate = new Date(commentData.creation_time);
+                                    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+                                    const formattedTime = localDate.toISOString().replace('T', ' ').substring(0, 19);
+                                    publishedTimeDiv.textContent = "發布時間: " + formattedTime;
+
+                                    if (canEditComment(commentData.authorId)) {
+                                        let commentId = String(commentData.commentId);
+                                        const editButton = document.createElement('a');
+                                        editButton.href = `/comment/edit/`+ commentId;
+                                        editButton.classList.add('btn');
+                                        editButton.classList.add('btn-primary');
+                                        editButton.textContent = "編輯";
+                                        editButton.style.cssText = "float: right;";
+                                        publishedTimeDiv.appendChild(editButton);
+                                    }
+
+                                    const authorDiv = document.createElement('div');
+                                    authorDiv.classList.add('comment-author');
+                                    const authorLink = document.createElement('a');
+                                    authorLink.href = '/user/' + commentData.authorId;
+                                    authorLink.textContent = "評論者: " + commentData.authorName;
+                                    authorLink.target = '_blank';
+                                    authorDiv.appendChild(authorLink);
+
+                                    const commentDiv = document.createElement('div');
+                                    commentDiv.classList.add('comment-content');
+
+                                    const hrLine = document.createElement('hr');
+                                    hrLine.classList.add('hr-line');
+
+                                    commentTopDiv.appendChild(authorDiv);
+                                    commentTopDiv.appendChild(commentSerialNumberDiv);
+                                    wrapperDiv.appendChild(commentTopDiv);
+                                    wrapperDiv.appendChild(publishedTimeDiv);
+                                    wrapperDiv.appendChild(commentDiv);
+
+                                    commentsDisplay.appendChild(wrapperDiv);
+
+                                    const singleCommentQuill = new Quill(commentDiv, {
+                                        modules: { toolbar: false },
+                                        readOnly: true,
+                                        theme: 'snow'
+                                    });
+                                    singleCommentQuill.setContents(commentData.delta);
+                                }else {
+                                    const wrapperDiv  = document.createElement('div');
+                                    wrapperDiv.classList.add('comment-wrapper');
+
+                                    const commentTopDiv = document.createElement('div');
+                                    commentTopDiv.classList.add('comment-top');
+
+                                    const commentSerialNumberDiv = document.createElement('div');
+                                    commentSerialNumberDiv.classList.add('comment-serial-number');
+                                    commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
+
+                                    const publishedTimeDiv = document.createElement('div');
+                                    publishedTimeDiv.classList.add('comment-Time-number');
+                                    const utcDate = new Date(commentData.creation_time);
+                                    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+                                    const formattedTime = localDate.toISOString().replace('T', ' ').substring(0, 19);
+                                    publishedTimeDiv.textContent = "發布時間: " + formattedTime;
+
+                                    const authorDiv = document.createElement('div');
+                                    authorDiv.classList.add('comment-author');
+                                    const authorLink = document.createElement('a');
+                                    authorLink.href = '/user/' + commentData.authorId;
+                                    authorLink.textContent = "評論者: " + commentData.authorName;
+                                    authorLink.target = '_blank';
+                                    authorDiv.appendChild(authorLink);
+
+                                    const commentDiv = document.createElement('div');
+                                    commentDiv.classList.add('comment-content');
+                                    commentDiv.textContent = "該評論已被刪除";
+
+                                    const hrLine = document.createElement('hr');
+                                    hrLine.classList.add('hr-line');
+
+                                    commentTopDiv.appendChild(authorDiv);
+                                    commentTopDiv.appendChild(commentSerialNumberDiv);
+                                    wrapperDiv.appendChild(commentTopDiv);
+                                    wrapperDiv.appendChild(publishedTimeDiv);
+                                    wrapperDiv.appendChild(commentDiv);
+
+                                    commentsDisplay.appendChild(wrapperDiv);
+
+                                }
+                            });
+                            updatePagination(currentPage);
+                        }
                     }).catch(error => console.error('Error loading comments:', error));
             }
-            function updatePagination(current, total) {
+            function updatePagination(current) {
+                const currentPageSelect = document.getElementById('currentPageSelect');
+                if (!currentPageSelect) {
+                    showToast("找不到ID為'currentPageSelect'的元素，請檢查html結構。", false);
+                    return;
+                }
                 document.getElementById('firstPage').classList.toggle('disabled', current === 0);
                 document.getElementById('prevPage').classList.toggle('disabled', current === 0);
-                document.getElementById('currentPageInput').value = current + 1;
-                document.getElementById('nextPage').classList.toggle('disabled', current === total - 1);
-                document.getElementById('lastPage').classList.toggle('disabled', current === total - 1);
+                document.getElementById('nextPage').classList.toggle('disabled', current === varTotalPages - 1);
+                document.getElementById('lastPage').classList.toggle('disabled', current === varTotalPages - 1);
+                currentPageSelect.value = current + 1;
             }
-            document.addEventListener("DOMContentLoaded", function() {
-                function inputEnterPressed() {
-                    let inputValue = parseInt(document.getElementById('currentPageInput').value, 10);
-                    if (!isNaN(inputValue) && inputValue >= 1 && inputValue <= varTotalPages) {
-                        loadPage(inputValue - 1);
-                    }else {
-                        document.getElementById('currentPageInput').value = currentPage + 1;
-                        showToast("請輸入有效的頁碼。", false)
+            function fillPageSelect() {
+                const currentPageSelect = document.getElementById('currentPageSelect');
+                currentPageSelect.innerHTML = '';
+                for (let i = 1; i <= varTotalPages; i++) {
+                    const option = document.createElement('option');
+                    option.value = String(i);
+                    option.textContent = `第${i}頁`;
+                    if (i === currentPage + 1) {
+                        option.selected = true;
                     }
+                    currentPageSelect.appendChild(option);
                 }
-                const currentPageInput = document.querySelector('#currentPageInput');
-                currentPageInput.addEventListener('keyup', (e) => {
-                    if (e.key === 'Enter') {
-                        inputEnterPressed();
+                updatePagination(currentPage);
+                currentPageSelect.addEventListener('change', function () {
+                    const selectedPage = parseInt(this.value, 10) - 1;
+                    if (selectedPage !== currentPage) {
+                        if (typeof loadCommentPage === 'function') {
+                            loadCommentPage(selectedPage);
+                        }
                     }
                 });
-            });
+            }
+
+            function canEditComment(commentAuthorId) {
+                const myElement = document.getElementById('myElement');
+                const currentUserId = myElement.getAttribute('login-User-id');
+                if (currentUserId === null) {
+                    return false;
+                }else {
+                    return currentUserId === String(commentAuthorId);
+                }
+
+            }
         </script>
     </div>
     <nav aria-label="評論分頁" class="mt-4">
         <ul class="pagination justify-content-center" id="pagination-control">
             <li class="page-item" id="firstPage">
-                <a class="page-link" aria-label="First" onclick="loadPage(0)">
+                <a class="page-link" aria-label="First" onclick="loadCommentPage(0)">
                     <span aria-hidden="true">««</span>
                 </a>
             </li>
             <li class="page-item" id="prevPage">
-                <a class="page-link" aria-label="Previous" onclick="loadPage(currentPage - 1)">
+                <a class="page-link" aria-label="Previous" onclick="loadCommentPage(currentPage - 1)">
                     <span aria-hidden="true">«</span>
                 </a>
             </li>
             <li class="page-item">
-                <input class="page-link" id="currentPageInput" aria-label="Current page" type="text" value="1" min="1">
+                <label>
+                    <select class="page-link" id="currentPageSelect" aria-label="Current page" style="font-size:1em; padding: 0.5em;"></select>
+                </label>
             </li>
             <li class="page-item" id="nextPage">
-                <a class="page-link" aria-label="Next" onclick="loadPage(currentPage + 1)">
+                <a class="page-link" aria-label="Next" onclick="loadCommentPage(currentPage + 1)">
                     <span aria-hidden="true">»</span>
                 </a>
             </li>
             <li class="page-item" id="lastPage">
-                <a class="page-link" aria-label="Last" onclick="loadPage(currentPage)">
+                <a class="page-link" aria-label="Last" onclick="loadCommentPage(varTotalPages-1)">
                     <span aria-hidden="true">»»</span>
                 </a>
         </ul>
     </nav>
-    <div >
-
-    </div>
-
 
 
     <div class="editor-container">
@@ -447,7 +467,6 @@
                             });
                         }
                     }).then(result => {
-                    // 插入圖片到Quill編輯器
                     const range = quill.getSelection();
                     globalImageUrl = result.imageUrl;
                     quill.insertEmbed(range.index, 'image', globalImageUrl);
@@ -500,11 +519,9 @@
             hideSpinner();
         });
         function showSpinner() {
-            //document.querySelector('body').classList.add("body-blur")
             document.getElementById('loading-spinner').style.display = 'flex';
         }
         function hideSpinner() {
-            //document.querySelector('body').classList.remove("body-blur")
             document.getElementById('loading-spinner').style.display = 'none';
         }
     });
