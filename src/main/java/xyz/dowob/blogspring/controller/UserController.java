@@ -202,7 +202,7 @@ public class UserController {
     public String showUserDetail(@PathVariable Long id, Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
         try {
             User user = userService.getUserById(id);
-            int pageSize = 10;
+            int pageSize = 9;
             Pageable pageable = PageRequest.of(page -1, pageSize);
             Page<Post> posts = postService.getPostsByAuthorID(id, pageable);
             model.addAttribute("user", user);
@@ -215,8 +215,6 @@ public class UserController {
             } else if (request.getParameterMap().containsKey("page") && page > posts.getTotalPages()) {
                 return "redirect:/user/{id}?page=" + posts.getTotalPages();
             }
-
-
             return "user_detail";
         } catch (UsernameNotFoundException e) {
             return "redirect:/";

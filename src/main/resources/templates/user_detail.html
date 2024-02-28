@@ -5,86 +5,8 @@
     <title>用戶主頁</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/common.css">
-    <style>
-        form {
-            margin-top: 50px;
-            text-align: center;
-        }
-        input[type="text"], select {
-            padding: 10px;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #f76c5e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #f93118;
-        }
-        .search-results {
-            margin-top: 20px;
-            text-align:center;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 5px 0;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            padding-left: 0;
-            list-style: none;
-        }
-        .pagination li {
-            margin: 0 5px;
-        }
-        .pagination li a {
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            text-decoration: none;
-            color: #f76c5e;
-        }
+    <link rel="stylesheet" href="/user_detail.css">
 
-        .pagination .page-item {
-            margin: 0 5px; /* 加入左右邊距來設定分頁項目之間的距離 */
-        }
-
-        .pagination .page-item .page-link {
-            font-size: larger; /* 放大分頁鏈接文字 */
-        }
-        .pagination li.active a,
-        .pagination li a:hover {
-            background-color: #f93118;
-            color: white;
-        }
-        .pagination li.disabled a {
-            color: #ccc;
-            pointer-events: none;
-        }
-        .pagination-arrows span {
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-        }
-        .fixed-bottom-nav {
-            position: fixed;
-            left: 50%;              /* 设置左偏移为50%，即视图的中心 */
-            transform: translateX(-50%); /*  通过平移使元素中心对齐视图的中心 */
-            bottom: 20px;
-            width: auto;           /* 可以设置为 auto 或是 100%, 根据需要来调整 */
-            background-color: rgba(255, 255, 255, 0); /* 適當調整背景色 */
-            z-index: 1030;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">

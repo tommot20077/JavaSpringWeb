@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,7 @@ public class PostController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Post> posts = postService.getAllPosts();
+        List<Post> posts = postService.getLatestFivePosts();
         model.addAttribute("posts", posts);
         return "index";
     }
@@ -148,8 +149,8 @@ public class PostController {
 
     @GetMapping("/article")
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
-        int pageSize = 6;
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        int pageSize = 9;
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("articleId").descending());
         Page<Post> postPage = postService.getAllPostsByPage(pageable);
         model.addAttribute("posts", postPage);
         model.addAttribute("page", page);

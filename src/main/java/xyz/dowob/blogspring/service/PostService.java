@@ -3,6 +3,8 @@ package xyz.dowob.blogspring.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -110,8 +112,9 @@ public class PostService {
 
 
     //找到所有文章
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
+    public List<Post> getLatestFivePosts(){
+        Pageable pageable = PageRequest.of(0, 6, Sort.by("articleId").descending());
+        return postRepository.findAll(pageable).getContent();
     }
 
 
