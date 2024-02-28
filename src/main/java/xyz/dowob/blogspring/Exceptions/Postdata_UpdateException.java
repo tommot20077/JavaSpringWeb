@@ -18,7 +18,7 @@ public class Postdata_UpdateException extends Exception{
         POST_INVALID("標題與內容不可為空或僅有圖片"),
         DID_NOT_LOGIN("未登錄"),
         NOT_FOUND_USER("找不到用戶"),
-
+        NOT_AUTHORIZED("未授權"),
         POST_NOT_FOUND("找不到文章"),
         POST_UPDATE_CAST_ERROR("類型轉換發生錯誤"),
         POST_UPDATE_JSON_ERROR("轉換JSON時發生錯誤");

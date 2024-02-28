@@ -82,7 +82,8 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
+                            <a th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</a>
+                            <a th:unless="${post.isDeleted}" th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
                         </h5>
                         <!--<p class="card-text" th:text="${post.content.length() > 200 ? #strings.substring(post.content, 0, 200) + '...' : post.content}">文章內容預覽</p>
                         <div id="content-display" class="content-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="data-post-id=${post.getArticleId}">

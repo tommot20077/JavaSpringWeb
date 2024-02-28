@@ -103,9 +103,11 @@
             </div>
             <div id="editor"></div>
         </div>
-
-        <button type="submit" class="btn btn-primary" id="save-article-button">更新</button>
-        <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回文章</a>
+        <div class="bottom-group">
+            <button type="submit" class="btn btn-primary" id="save-article-button">更新</button>
+            <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回文章</a>
+            <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除文章</button>
+        </div>
     </form>
 </div>
 
@@ -113,6 +115,20 @@
 <script>
     var myElement = document.getElementById('myElement');
     var postID = myElement.getAttribute('data-post-id');
+
+
+    function showToast(message, isSuccess) {
+        const toastContainer = document.querySelector('.my-toast-container');
+        const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('alert', toastClass);
+        toastElement.textContent = message;
+
+        toastContainer.appendChild(toastElement);
+        setTimeout(() => toastElement.remove(), 5000);
+    }
+
+
 
     document.addEventListener('DOMContentLoaded', function() {
         const quill = new Quill('#editor', {
@@ -155,16 +171,6 @@
         quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
 
-        function showToast(message, isSuccess) {
-            const toastContainer = document.querySelector('.my-toast-container');
-            const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
-            const toastElement = document.createElement('div');
-            toastElement.classList.add('alert', toastClass);
-            toastElement.textContent = message;
-
-            toastContainer.appendChild(toastElement);
-            setTimeout(() => toastElement.remove(), 5000);
-        }
 
         var selectedImageFiles = [];
 
@@ -354,18 +360,66 @@
         quill.getModule('toolbar').addHandler('image', selectLocalImage);
     });
 
+
+    document.getElementById('delete-comment-button').addEventListener('click', function() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('modal').style.display = 'block';
+
+        document.getElementById('cancel-delete').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
+        });
+
+        document.getElementById('confirm-delete').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
+            showSpinner();
+            const postUrl = '/article/' + postID + '/delete';
+            fetch(postUrl, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }else {
+                        return response.json().then(data => {
+                            throw new Error(data.message);
+                        });
+                    }
+                })
+                .then(data =>{
+                    hideSpinner();
+                    showToast("文章刪除成功", true);
+                    setTimeout(() => window.location.href = '/article', 1000);
+                })
+                .catch((error) => {
+                    hideSpinner();
+                    showToast("文章刪除失敗: " + error.message, false);
+                });
+        });
+    });
+
+
+
     document.addEventListener('DOMContentLoaded', () => {
         hideSpinner();
     });
     function showSpinner() {
-        //document.querySelector('body').classList.add("body-blur")
         document.getElementById('loading-spinner').style.display = 'flex';
     }
     function hideSpinner() {
-        //document.querySelector('body').classList.remove("body-blur")
         document.getElementById('loading-spinner').style.display = 'none';
     }
 </script>
+
+<div class="overlay" id="overlay"></div>
+<div class="confirm-card" id="modal">
+    <div class="confirm-card-body">
+        <p>你確定要刪除這篇文章嗎?</p>
+        <button class="btn btn-danger" id="confirm-delete">確認刪除</button>
+        <button class="btn btn-primary" id="cancel-delete">取消</button>
+    </div>
+</div>
 <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
 <div id="loading-spinner" class="loading-spinner-container">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>

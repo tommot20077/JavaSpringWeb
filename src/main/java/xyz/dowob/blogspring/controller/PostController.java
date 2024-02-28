@@ -120,6 +120,9 @@ public class PostController {
     public String articleDetail(@PathVariable Long articleId, Model model){
         try {
             Post post = postService.getPostByArticle_id(articleId);
+            if (post.isDeleted()){
+                return "redirect:/";
+            }
             model.addAttribute("post", post);
             return "article_detail";
         } catch (Postdata_UpdateException e) {
@@ -131,6 +134,9 @@ public class PostController {
     public ResponseEntity<?> getArticleContent(@PathVariable long articleId){
         try {
             Post articleContent = postService.getPostByArticle_id(articleId);
+            if (articleContent.isDeleted()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "文章已刪除"));
+            }
             Map<String, Object> contentDelta = postService.convertPostStructure(articleContent.getContent(), articleContent);
 
 
@@ -164,6 +170,9 @@ public class PostController {
         try {
             String username = (String) session.getAttribute("currentUsername");
             Post post = postService.getPostByArticle_id(articleId);
+            if (post.isDeleted()){
+                return "redirect:/";
+            }
             if (username != null && username.equals(post.getAuthor().getUsername())){
                 model.addAttribute("post", post);
                 return "edit_article";
@@ -174,6 +183,21 @@ public class PostController {
         }
         catch (Postdata_UpdateException e) {
             return "redirect:/";
+        }
+    }
+
+    @DeleteMapping("/article/{articleId}/delete")
+    public ResponseEntity<?> deletePost(@PathVariable Long articleId, HttpSession session){
+        try {
+            String username = (String) session.getAttribute("currentUsername");
+            if (username != null){
+                postService.deletePost(articleId, username);
+                return ResponseEntity.ok(Map.of("message", "文章刪除成功"));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
+            }
+        } catch (Postdata_UpdateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
 }

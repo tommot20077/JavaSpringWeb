@@ -84,6 +84,20 @@ public class PostService {
             throw e;
         }
     }
+
+    public void deletePost(Long articleId, String username) throws Postdata_UpdateException {
+        Post post = getPostByArticle_id(articleId);
+        if (post.getAuthor().getUsername().equals(username)) {
+            post.setDeleted(true);
+            postRepository.save(post);
+        } else {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.NOT_AUTHORIZED);
+        }
+
+    }
+
+
+
     public Map<String, String> saveNewArticleImage(MultipartFile file, Long articleId) throws IOException {
         return EditorMethod.saveImage(file, articleId);
     }
