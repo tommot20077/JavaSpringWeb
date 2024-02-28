@@ -18,7 +18,7 @@ public class RcloneExecutor {
         if (os.contains("dow")) {
             commands = new String[]{"cmd", "/c", rclonePath, "move", TempSave, rcloneUploadPath, "--config", rcloneConfigPath, "--delete-empty-src-dirs"};
         } else {
-            commands = new String[]{rclonePath, "move", TempSave, "webdav:emby/od/60/images", "--config", rcloneConfigPath};
+            commands = new String[]{rclonePath, "move", TempSave, rcloneUploadPath, "--config", rcloneConfigPath, "--delete-empty-src-dirs"};
         }
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
         try {
