@@ -216,7 +216,7 @@
             .then(data =>{
                 hideSpinner();
                 showToast("評論更新成功", true);
-                setTimeout(() => window.location.reload(), 6000);
+                setTimeout(() => window.location.reload(), 3000);
 
             })
             .catch((error) => {
@@ -254,7 +254,7 @@
                 .then(data =>{
                     hideSpinner();
                     showToast("評論刪除成功", true);
-                    setTimeout(() => window.location.href = '/article/' + postID, 6000);
+                    setTimeout(() => window.location.href = '/article/' + postID, 3000);
                 })
                 .catch((error) => {
                     hideSpinner();

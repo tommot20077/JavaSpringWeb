@@ -2,6 +2,7 @@ package xyz.dowob.blogspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,20 +40,22 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
-        return "register"; // 返回注冊表單視圖
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", new User());
+        }
+        return "register";
     }
 
 
     @PostMapping("/register")
-    public String processRegistrationForm(@ModelAttribute User user, RedirectAttributes redirectAttributes,@RequestParam("confirmPassword") String confirmPassword) {
-        // 呼叫 service 層來處理用戶注冊
+    public String processRegistrationForm(@ModelAttribute("user") @Valid User user, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword, Model model) {
         try {
             userService.registerUser(user ,confirmPassword);
-            return "redirect:/register_success"; // 重導到注冊成功頁面
+            return "redirect:/register_success";
         }catch (Userdata_UpdateException e){
             String errorMessage = e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/register";
         }
 
@@ -167,7 +170,7 @@ public class UserController {
         try {
             User user = userService.getUserByUsernameOrEmail(username_Or_Email);
             userService.sendResetPasswordMail(user);
-            session.setAttribute("resetPasswordUserID", user);
+            session.setAttribute("resetPasswordUserID", user.getId());
             return ResponseEntity.ok("驗證信已發送");
         } catch (Userdata_UpdateException | UsernameNotFoundException e) {
             return ResponseEntity

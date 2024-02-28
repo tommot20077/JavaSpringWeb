@@ -5,6 +5,7 @@
     <title>更新資料</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/password-card.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -113,12 +114,20 @@
             <span th:text="${success}"></span>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">更新後登出</button>
+    <button id="save-button" type="submit" class="btn btn-primary">更新後登出</button>
     <a href="/" class="btn btn-secondary">回到首頁</a>
-
 </form>
 </div>
 
+<div id="password-rule" class="password-card">
+    <h4>密碼規則</h4>
+    <ul>
+        <li id="rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
+        <li id="rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
+        <li id="rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
+        <li id="rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
+    </ul>
+</div>
 
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
@@ -139,12 +148,36 @@
         });
     });
 
+    document.getElementById("password").addEventListener("input", function(e) {
+        const value = e.target.value;
+
+        updateStatus(document.getElementById("rule-upper"), /[A-Z]/.test(value));
+        updateStatus(document.getElementById("rule-lower"), /[a-z]/.test(value));
+        updateStatus(document.getElementById("rule-number"), /[0-9]/.test(value));
+        updateStatus(document.getElementById("rule-length"), value.length >= 8);
+    });
+
+    function updateStatus(element, isValid) {
+        const statusElement = element.querySelector('.status');
+        if (isValid) {
+            statusElement.className = "status correct";
+            element.style.color = 'green';
+        } else {
+            statusElement.className = "status incorrect";
+            element.style.color = 'red';
+        }
+    }
+
+
+    document.getElementById("save-button").addEventListener('click', () => {
+        showSpinner();
+        this.disabled = true;
+    });
+
     function showSpinner() {
-        //document.querySelector('body').classList.add("body-blur")
         document.getElementById('loading-spinner').style.display = 'flex';
     }
     function hideSpinner() {
-        //document.querySelector('body').classList.remove("body-blur")
         document.getElementById('loading-spinner').style.display = 'none';
     }
 </script>

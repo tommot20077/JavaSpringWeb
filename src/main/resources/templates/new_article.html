@@ -288,7 +288,7 @@
                 if (result.message === "文章保存成功") {
                     hideSpinner();
                     showToast("文章保存成功。", true);
-                    setTimeout(() => window.location.href = `/new_article_success`, 6000);
+                    setTimeout(() => window.location.href = `/new_article_success`, 3000);
                 } else {
                     hideSpinner();
                     showToast(result.error, false);

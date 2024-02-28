@@ -5,6 +5,7 @@
     <title>註冊頁面</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/password-card.css">
     <style>
         .form-header {
             text-align: center;
@@ -33,52 +34,107 @@
         .form-control {
             width: 100%;
         }
+
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</nav>
-<div class="container">
-
-    <div class="form-header"><h1>註冊帳號</h1></div>
-    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">我的Blog Web</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
 
 
-    <form method="post" action="#" th:action="@{/register}" th:object="${user}">
-        <div class="form-group">
-            <label for="username">用戶名稱:</label>
-            <input type="text" class="form-control" id="username" th:field="*{username}" required />
-        </div>
+    <div class="container">
+        <div class="form-header"><h1>註冊帳號</h1></div>
+        <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 
-        <div class="form-group">
-            <label for="password">用戶密碼:</label>
-            <input type="password" class="form-control" id="password" th:field="*{password}" required />
-        </div>
+        <form method="post" action="#" th:action="@{/register}" th:object="${user}">
+            <div class="form-group">
+                <label for="username">用戶名稱:</label>
+                <input type="text" class="form-control" id="username" th:field="*{username}" required />
+            </div>
 
-        <div class="form-group">
-            <label for="confirmPassword">確認密碼:</label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required />
-        </div>
+            <div class="form-group">
+                <label for="password">用戶密碼:</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" required />
+            </div>
 
-        <div class="form-group">
-            <label for="email">電子信箱:</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" />
-        </div>
+            <div class="form-group">
+                <label for="confirmPassword">確認密碼:</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required />
+            </div>
 
-        <div class="form-group">
-            <label for="birthdate">生日日期:</label>
-            <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" />
-        </div>
+            <div class="form-group">
+                <label for="email">電子信箱:</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" />
+            </div>
 
-        <div class="form-footer">
-            <a href="/login" class="btn btn-link">點此登入</a>
-            <input type="submit" class="btn btn-primary" value="提交" />
-        </div>
-    </form>
-</div>
+            <div class="form-group">
+                <label for="birthdate">生日日期:</label>
+                <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" />
+            </div>
+
+            <div class="form-footer">
+                <a href="/" class="btn btn-link">返回首頁</a>
+                <input id="save-button" type="submit" class="btn btn-primary" value="提交" />
+            </div>
+        </form>
+    </div>
+
+    <div id="password-rule" class="password-card">
+        <h4>密碼規則</h4>
+        <ul>
+            <li id="rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
+            <li id="rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
+            <li id="rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
+            <li id="rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            hideSpinner();
+        });
+
+        document.getElementById("password").addEventListener("input", function(e) {
+            const value = e.target.value;
+
+            updateStatus(document.getElementById("rule-upper"), /[A-Z]/.test(value));
+            updateStatus(document.getElementById("rule-lower"), /[a-z]/.test(value));
+            updateStatus(document.getElementById("rule-number"), /[0-9]/.test(value));
+            updateStatus(document.getElementById("rule-length"), value.length >= 8);
+        });
+
+        function updateStatus(element, isValid) {
+            const statusElement = element.querySelector('.status');
+            if (isValid) {
+                statusElement.className = "status correct";
+                element.style.color = 'green';
+            } else {
+                statusElement.className = "status incorrect";
+                element.style.color = 'red';
+            }
+        }
+
+
+        document.getElementById("save-button").addEventListener('click', () => {
+            showSpinner();
+            this.disabled = true;
+        });
+
+
+        function showSpinner() {
+            document.getElementById('loading-spinner').style.display = 'flex';
+        }
+        function hideSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+    </script>
+
+    <div id="loading-spinner" class="loading-spinner-container">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
 </body>
 </html>
