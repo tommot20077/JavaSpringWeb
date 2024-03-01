@@ -3,18 +3,20 @@ package xyz.dowob.blogspring.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.functions.ArticleDto;
 import xyz.dowob.blogspring.functions.DeltaToJsonConverter;
 import xyz.dowob.blogspring.functions.EditorMethod;
+import xyz.dowob.blogspring.functions.PublishRequestDto;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.repository.PostRepository;
@@ -46,8 +48,8 @@ public class PostService {
         User author = userRepository.findByUsername(username).orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.NOT_FOUND_USER));
         post.setAuthor(author);
 
-        post.setTitle("");
-        post.setContent("");
+        post.setTitle("預設標題");
+        post.setContent("{\"delta\":[{\"insert\":\"預設內容\\n\"}]}");
         postRepository.save(post);
 
         return post.getArticleId();
@@ -109,12 +111,27 @@ public class PostService {
         return deltaToJsonConverter.convertArticleFromJsonToDelta(commentContent, post);
     }
 
+    public void updatePostPublish(PublishRequestDto publishRequest) throws Postdata_UpdateException {
+        try {
+            System.out.println("id: "+publishRequest.getId());
+            System.out.println("isPublished: "+publishRequest.getIsPublished());
+            Post post = getPostByArticle_id(publishRequest.getId());
+            post.setPublished(publishRequest.getIsPublished());
+            postRepository.save(post);
+        } catch (Postdata_UpdateException e) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_UPDATE_FAILED);
+        }
+    }
 
 
-    //找到所有文章
-    public List<Post> getLatestFivePosts(){
+
+    public List<Post> getLatestSixPosts(){
         Pageable pageable = PageRequest.of(0, 6, Sort.by("articleId").descending());
-        return postRepository.findAll(pageable).getContent();
+        return postRepository.findByPublishedTrueAndDeletedFalse(pageable).getContent();
+    }
+
+    public Page<Post> getPublishedPostsByPage(Pageable pageable){
+        return postRepository.findByPublishedTrueAndDeletedFalse(pageable);
     }
 
 
@@ -124,9 +141,20 @@ public class PostService {
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
     }
 
-    public Page<Post> getPostsByAuthorID(long authorID, Pageable pageable) {
+    public User getUserByArticle_Id(Long articleId) {
+        return userRepository.findByPostsArticleId(articleId)
+                .orElseThrow(() -> new UsernameNotFoundException("找不到ID為" + articleId + "的使用者。"));
+    }
+
+    public Page<Post> getAllPostsByAuthorID(long authorID, Pageable pageable) {
         return postRepository.findByAuthorID(authorID, pageable);
     }
+
+    public Page<Post> getPublishedPostsByAuthorID(long authorID, Pageable pageable){
+        return postRepository.findByPublishedTrueAndAuthorIdAndDeletedFalse(authorID, pageable);
+    }
+
+
 
     public Page<Post> getAllPostsByPage(Pageable pageable){
         return postRepository.findAll(pageable);

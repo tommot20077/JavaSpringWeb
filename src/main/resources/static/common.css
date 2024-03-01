@@ -327,10 +327,69 @@ a:hover {
         transform: rotate(360deg);
     }
 }
+.article-controller {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
+.autoSave-controller a {
+    margin-right: 8px;
+    color: #333; /* 添加這個顏色用於更好的可讀性 */
+    font-weight: bold; /* 文字加粗強調 */
+    line-height: 1;
+}
 
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin: 0 0.5rem;
+}
 
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
 
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .switch-slider {
+    background-color: #ffac31;
+}
+
+.toggle-switch input:checked + .switch-slider:before {
+    transform: translateX(26px);
+}
+
+h1, h2, h3, h4, h5, h6{
+    font-weight: bold;
+}
 
 
 

@@ -16,8 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.functions.ArticleDto;
+import xyz.dowob.blogspring.functions.PublishRequestDto;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.service.PostService;
 
@@ -43,33 +45,23 @@ public class PostController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Post> posts = postService.getLatestFivePosts();
+        List<Post> posts = postService.getLatestSixPosts();
         model.addAttribute("posts", posts);
         return "index";
     }
 
     @GetMapping("/new_article")
-    public String newPostForm(Model model){
-        model.addAttribute("post", new Post());
-        return "new_article";
-    }
-
-    @PostMapping("/new_article")
-    public ResponseEntity<?> processPostForm(HttpSession session) {
+    public RedirectView processPostForm(HttpSession session, RedirectAttributes redirectAttributes) {
         try {
             String username = (String) session.getAttribute("currentUsername");
-            if (session.getAttribute("currentUserId") == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
-            }
-
-
             Long newPostId = postService.addNewPost(username);
+            // 這裡使用 RedirectView 來重定向到編輯文章的頁面
+            return new RedirectView("/article/" + newPostId + "/edit");
 
-            return ResponseEntity.ok(Map.of("message", "文章建立成功", "articleId", newPostId));
-
-        }catch (Postdata_UpdateException |JsonProcessingException e){
-            String errorMessage = e.getMessage();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", errorMessage));
+        }catch (Postdata_UpdateException | JsonProcessingException e){
+            redirectAttributes.addFlashAttribute("errorMessage", "無法創建新文章");
+            // 當錯誤發生時重定向回首頁或錯誤頁面
+            return new RedirectView("/error");
         }
     }
     @PostMapping("/new_article/image")
@@ -108,21 +100,22 @@ public class PostController {
         }
     }
 
-
-
-
-    @GetMapping("/new_article_success")
-    public String newPostSuccess(){
-        return "new_article_success";
-    }
-
-
     @GetMapping("/article/{articleId}")
-    public String articleDetail(@PathVariable Long articleId, Model model){
+    public String articleDetail(@PathVariable Long articleId, Model model, HttpSession session){
         try {
             Post post = postService.getPostByArticle_id(articleId);
             if (post.isDeleted()){
                 return "redirect:/";
+            }
+
+
+            if (!post.isPublished()){
+                Long userId = null;
+                if (session.getAttribute("currentUserId") != null) {
+                    userId = (Long) session.getAttribute("currentUserId");
+                }
+                if (userId == null || !(userId.equals(post.getAuthor().getId())))
+                    return "redirect:/";
             }
             model.addAttribute("post", post);
             return "article_detail";
@@ -150,17 +143,23 @@ public class PostController {
     @GetMapping("/article")
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
         int pageSize = 9;
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("articleId").descending());
-        Page<Post> postPage = postService.getAllPostsByPage(pageable);
+        page = Math.max(page, 1);
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("updateTime").descending());
+        Page<Post> postPage = postService.getPublishedPostsByPage(pageable);
         model.addAttribute("posts", postPage);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
 
 
-        if (!request.getParameterMap().containsKey("page") && (request.getParameterMap().containsKey("page") && page < 1)) {
-            return "redirect:/article?page=1";
-        } else if (request.getParameterMap().containsKey("page") && page > postPage.getTotalPages()) {
-            return "redirect:/article?page=" + postPage.getTotalPages();
+        if (postPage.getTotalPages() == 0) {
+            if (page != 1) {
+                return "redirect:/article?page=1";
+            }
+        } else {
+            if (!request.getParameterMap().containsKey("page") || page > postPage.getTotalPages()) {
+                int lastPage = Math.max(postPage.getTotalPages(), 1);
+                return "redirect:/article?page=" + lastPage;
+            }
         }
         return "article";
     }
@@ -197,6 +196,20 @@ public class PostController {
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
+        } catch (Postdata_UpdateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/article/publish")
+    public ResponseEntity<?> publishArticle (HttpSession session, @RequestBody @Valid PublishRequestDto publishRequest) {
+        try {
+            Long userId = (Long) session.getAttribute("currentUserId");
+            if (userId == null || !(postService.getUserByArticle_Id(publishRequest.getId()).getId().equals(userId))) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入有編輯此文章權限的帳號"));
+            }
+            postService.updatePostPublish(publishRequest);
+            return ResponseEntity.ok(Map.of("message", "文章已更新發布狀態"));
         } catch (Postdata_UpdateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }

@@ -1,6 +1,8 @@
 package xyz.dowob.blogspring.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String processRegistrationForm(@ModelAttribute("user") @Valid User user, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword, Model model) {
+    public String processRegistrationForm(@ModelAttribute("user") @Valid User user, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword) {
         try {
             userService.registerUser(user ,confirmPassword);
             return "redirect:/register_success";
@@ -68,14 +70,13 @@ public class UserController {
 
     @GetMapping("/verify")
     public ModelAndView verifyEmail(@RequestParam String token) {
-        ModelAndView modelAndView = new ModelAndView("verify"); // verify.html模板的名称
-
+        ModelAndView modelAndView = new ModelAndView("verify");
         try {
             if (tokenService.verifyActiveEmailToken(token)) {
-                modelAndView.addObject("message", "驗證成功"); // 待显示的成功消息
+                modelAndView.addObject("message", "驗證成功");
                 modelAndView.addObject("verified", true);
             } else {
-                modelAndView.addObject("message", "驗證失敗：無效的token或token已過期"); // 待显示的失败消息
+                modelAndView.addObject("message", "驗證失敗：無效的token或token已過期");
                 modelAndView.addObject("verified", false);
             }
         } catch (UsernameNotFoundException e) {
@@ -101,9 +102,17 @@ public class UserController {
     public String showLogin_success() {return "login_success";}
 
     @PostMapping("/login")
-    public String performLogin(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes){
+    public String performLogin(@ModelAttribute User user,
+                               @RequestParam(value = "rememberMe", defaultValue = "false") boolean rememberMe,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes,
+                               HttpServletResponse response){
+
         if(userService.authenticate(user.getUsername(), user.getPassword())){
             User updatedUser = userService.getUserByUsername(user.getUsername());
+            if (rememberMe) {
+                userService.createRememberMeCookie(response, updatedUser.getId());
+            }
             session.setAttribute("currentUsername", updatedUser.getUsername());
             session.setAttribute("currentUserId", updatedUser.getId());
             session.setAttribute("currentUserEmailStatus", updatedUser.getEmailActiveStatus());
@@ -117,7 +126,9 @@ public class UserController {
 
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpServletRequest request, HttpSession session, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        userService.deleteRememberMeCookie(response, session, cookies);
         session.invalidate();
         return "redirect:/";
     }
@@ -136,7 +147,14 @@ public class UserController {
     }
 
     @PostMapping("/profile")
-    public String processProfileForm(@ModelAttribute User newInputUser, HttpSession session, RedirectAttributes redirectAttributes, @RequestParam("confirmPassword") String confirmPassword, @RequestParam("originPassword") String originPassword){
+    public String processProfileForm(@ModelAttribute User newInputUser,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes,
+                                     @RequestParam("confirmPassword") String confirmPassword,
+                                     @RequestParam("originPassword") String originPassword,
+                                     HttpServletResponse response,
+                                     HttpServletRequest request
+                                     ){
         try {
             long userid = (Long) session.getAttribute("currentUserId");
             User repositoryUser = userService.getUserById(userid);
@@ -147,6 +165,9 @@ public class UserController {
             }else{
                 redirectAttributes.addFlashAttribute("success", "更新成功!");
             }
+
+            Cookie[] cookies = request.getCookies();
+            userService.deleteRememberMeCookie(response, session, cookies);
             return "redirect:/profile";
 
         } catch (Userdata_UpdateException | UsernameNotFoundException e) {
@@ -181,7 +202,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload, HttpSession session){
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload, HttpSession session, HttpServletRequest request, HttpServletResponse response){
         long userID = Long.parseLong((session.getAttribute("resetPasswordUserID").toString()));
         User user = userService.getUserById(userID);
         String verificationCode = payload.get("verificationCode");
@@ -189,6 +210,8 @@ public class UserController {
         String reNewPassword = payload.get("reNewPassword");
         try {
             userService.resetPassword(user, verificationCode, newPassword, reNewPassword);
+            Cookie[] cookies = request.getCookies();
+            userService.deleteRememberMeCookie(response, session, cookies);
             return ResponseEntity.ok("重設密碼成功");
         } catch (Userdata_UpdateException e) {
             return ResponseEntity
@@ -199,16 +222,27 @@ public class UserController {
 
 
     @GetMapping("/user/{id}")
-    public String showUserDetail(@PathVariable Long id, Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
+    public String showUserDetail(@PathVariable Long id, Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request, HttpSession session){
         try {
+            long userid = 0;
+            int pageSize = 6;
+            Page<Post> posts;
             User user = userService.getUserById(id);
-            int pageSize = 9;
             Pageable pageable = PageRequest.of(page -1, pageSize);
-            Page<Post> posts = postService.getPostsByAuthorID(id, pageable);
+            if (session.getAttribute("currentUserId") != null){
+                userid = (Long) session.getAttribute("currentUserId");
+            }
+
+            if (id == userid) {
+                posts = postService.getAllPostsByAuthorID(id, pageable);
+            } else {
+                posts = postService.getPublishedPostsByAuthorID(id, pageable);
+            }
             model.addAttribute("user", user);
             model.addAttribute("postPage", posts);
             model.addAttribute("pageNum", page);
             model.addAttribute("totalPages", posts.getTotalPages());
+
 
             if (!request.getParameterMap().containsKey("page") && (request.getParameterMap().containsKey("page") && page < 1)) {
                 return "redirect:/user/{id}?page=1";

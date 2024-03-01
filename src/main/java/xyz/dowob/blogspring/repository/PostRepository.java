@@ -14,9 +14,13 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByArticleId(Long article_id);
 
-    @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword%")
-    Page<Post> searchByTitle(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% AND p.deleted = false AND p.published = true")
+    Page<Post> searchByTitleFiltered(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE p.author.id = :authorID")
+    @Query("SELECT p FROM Post p WHERE p.author.id = :authorID AND p.deleted = false")
     Page<Post> findByAuthorID(@Param("authorID") long id, Pageable pageable);
+
+    Page<Post> findByPublishedTrueAndAuthorIdAndDeletedFalse(Long authorID, Pageable pageable);
+    Page<Post> findByPublishedTrueAndDeletedFalse(Pageable pageable);
+
 }

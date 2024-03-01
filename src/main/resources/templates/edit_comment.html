@@ -18,6 +18,10 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
 
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -47,7 +51,16 @@
 </nav>
 <br><br><br>
 <div class="container">
-    <h2>編輯評論</h2>
+    <div class="article-controller">
+        <h2 class="article-title">編輯評論</h2>
+        <div class="autoSave-controller">
+            <a>自動更新</a>
+            <label for="autoSave-toggle" class="toggle-switch">
+                <input type="checkbox" id="autoSave-toggle">
+                <span class="switch-slider round"></span>
+            </label>
+        </div>
+    </div>
     <div class="editor-container">
         <div id="toolbar-container">
                 <span class="ql-formats">
@@ -94,7 +107,7 @@
                     <button class="ql-clean"></button>
                 </span>
         </div>
-        <div id="editor"></div>
+        <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
     <div class="bottom-group">
         <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
@@ -107,7 +120,13 @@
     const commentId = myElement.getAttribute('commentId');
     const postID = myElement.getAttribute('postId');
     var globalImageUrl = null;
-    var quill
+    var quill;
+    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
         hideSpinner();
          quill = new Quill('#editor', {
@@ -123,7 +142,7 @@
                                 this.quill.format('image', false);
                             }
                         }
-                    }
+                    },
                 },
             },
             theme: 'snow',
@@ -145,6 +164,24 @@
                 showToast("發生錯誤，無法讀取評論內容。", false);
             });
         quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
+
+        let autoSaveTimer = null;
+        const autoSaveToggle = document.getElementById('autoSave-toggle');
+        const storedAutoSaveState = localStorage.getItem('autoSaveState') === 'true';
+        autoSaveToggle.checked = storedAutoSaveState;
+
+        function handleAutoSaveChange () {
+            localStorage.setItem('autoSaveState', autoSaveToggle.checked);
+            if (autoSaveToggle.checked) {
+                if (!autoSaveTimer) {
+                    autoSaveTimer = setInterval(function () {
+                        showToast("自動保存中", true);
+                        saveComment()
+                    }, 60000);
+                }
+            }
+        }
     });
 
     function showToast(message, isSuccess) {
@@ -168,6 +205,9 @@
                 const formData = new FormData();
                 formData.append('image', file);
                 fetch('/article/' + postID + '/comment/image', {
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    },
                     method: 'POST',
                     body: formData
                 })
@@ -191,14 +231,14 @@
         };
     }
 
-    document.getElementById('save-comment-button').addEventListener('click', function() {
-        showSpinner();
+    function saveComment() {
         const editorContent = quill.getContents();
         const postUrl = '/comment/edit/' + commentId;
         fetch(postUrl, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
             },
             body: JSON.stringify({
                 delta: editorContent
@@ -223,6 +263,13 @@
                 hideSpinner();
                 showToast("評論更新失敗: " + error.message, false);
             });
+    }
+
+
+
+    document.getElementById('save-comment-button').addEventListener('click', function () {
+        showSpinner();
+        saveComment();
     });
 
     document.getElementById('delete-comment-button').addEventListener('click', function() {
@@ -240,7 +287,12 @@
             showSpinner();
             const postUrl = '/comment/delete/' + commentId;
             fetch(postUrl, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
                 method: 'DELETE'
+
             })
                 .then(response => {
                     if (response.ok) {

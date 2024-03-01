@@ -1,20 +1,24 @@
 package xyz.dowob.blogspring.service;
 
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
 import xyz.dowob.blogspring.functions.UserHashMethod;
 import xyz.dowob.blogspring.functions.UserInspection;
+import xyz.dowob.blogspring.model.PersistentLogin;
 import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.repository.PersistentLoginRepository;
 import xyz.dowob.blogspring.repository.TokenRepository;
 import xyz.dowob.blogspring.repository.UserRepository;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.UUID;
 
 @Service
 public class UserService{
@@ -24,15 +28,19 @@ public class UserService{
     private final UserInspection userInspection;
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+    private final PersistentLoginRepository persistentLoginRepository;
+
 
 
 
     @Autowired
-    public UserService(UserInspection userInspection, UserRepository userRepository, TokenService tokenService, TokenRepository tokenRepository) {
+    public UserService(UserInspection userInspection, UserRepository userRepository, TokenService tokenService, TokenRepository tokenRepository, PersistentLoginRepository persistentLoginRepository) {
         this.userInspection = userInspection;
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.tokenService = tokenService;
+        this.persistentLoginRepository = persistentLoginRepository;
+
     }
 
     public void registerUser(User user, String confirmPassword) throws Userdata_UpdateException {
@@ -41,7 +49,7 @@ public class UserService{
         }
         if (userInspection.isValidUsername(user.getUsername())) {
             if (userInspection.isValidPassword(user.getPassword(), user.getUsername())) {
-                user.setPassword(UserHashMethod.hashPassword(user.getPassword()));
+                user.setPassword(UserHashMethod.argonMethod(user.getPassword()));
             }
             user.setEmail(userInspection.hasEmail(user.getEmail()));
             userRepository.save(user);
@@ -55,15 +63,7 @@ public class UserService{
 
     public Boolean authenticate(String username, String password){
         return userRepository.findByUsername(username)
-                .map(user -> {
-                    Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-                    char[] passwordChars = password.toCharArray();
-                    try {
-                        return argon2.verify(user.getPassword(), passwordChars);
-                    }finally {
-                        argon2.wipeArray(passwordChars);
-                    }
-                })
+                .map(user -> UserHashMethod.argonMethodVerifyInRepository(user.getPassword(), password))
                 .orElse(false);
 
     }
@@ -88,7 +88,7 @@ public class UserService{
 
             if (StringUtils.isNotBlank(newInputUser.getPassword()) && newInputUser.getPassword().equals(confirmPassword)) {
                 if (userInspection.isValidPassword(newInputUser.getPassword(), checkUsername)) {
-                    repositoryUser.setPassword(UserHashMethod.hashPassword(newInputUser.getPassword()));
+                    repositoryUser.setPassword(UserHashMethod.argonMethod(newInputUser.getPassword()));
                 }
             } else if (StringUtils.isNotBlank(newInputUser.getPassword())) {
                 throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
@@ -140,7 +140,7 @@ public class UserService{
         if (tokenService.resetPasswordVerifyToken(token)) {
             if (newPassword.equals(confirmPassword)) {
                 if (userInspection.isValidPassword(newPassword, user.getUsername())) {
-                    user.setPassword(UserHashMethod.hashPassword(newPassword));
+                    user.setPassword(UserHashMethod.argonMethod(newPassword));
                     userRepository.save(user);
                     tokenRepository.delete(tokenRepository.findByToken(token).orElseThrow(() -> new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.TOKEN_INVALID)));
                 } else {
@@ -185,11 +185,6 @@ public class UserService{
 
 
 
-    public Page<User> getAllUsersWithPge(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findAll(pageable);
-    }
-
 
 
     public void deleteUser(Long id) {
@@ -200,4 +195,54 @@ public class UserService{
         }
     }
 
+    public Long verifyRememberMeToken(String base64Token) {
+        if (base64Token == null) return null;
+        String argonToken = new String(Base64.getDecoder().decode(base64Token), StandardCharsets.UTF_8);
+        PersistentLogin persistentLogin = persistentLoginRepository.findByToken(argonToken).orElse(null);
+        if (persistentLogin != null){
+            if (persistentLogin.getExpiryTime().isAfter(java.time.LocalDateTime.now())) {
+            return persistentLogin.getUser().getId();}
+        }
+        return null;
+    }
+
+
+
+    public void createRememberMeCookie(HttpServletResponse response, Long userId){
+        String rememberMeToken = UUID.randomUUID().toString();
+        String hashRememberMeToken = UserHashMethod.argonMethod(rememberMeToken);
+        String base64RememberMeToken = Base64.getEncoder().encodeToString(hashRememberMeToken.getBytes(StandardCharsets.UTF_8));
+
+        int expireTimeDays = 14;
+        PersistentLogin persistentLogin = new PersistentLogin();
+        persistentLogin.setUser(getUserById(userId));
+        persistentLogin.createOrUpdateUserRememberMeToken(hashRememberMeToken, expireTimeDays);
+        persistentLoginRepository.save(persistentLogin);
+
+        Cookie rememberMeCookie = new Cookie("REMEMBER_ME", base64RememberMeToken);
+        rememberMeCookie.setMaxAge(60 * 60 * 24 * expireTimeDays);
+        rememberMeCookie.setPath("/");
+        rememberMeCookie.setHttpOnly(true);
+        rememberMeCookie.setSecure(true);
+        response.addCookie(rememberMeCookie);
+    }
+
+
+
+    public void deleteRememberMeCookie(HttpServletResponse response, HttpSession session, Cookie[] cookies){
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("REMEMBER_ME")) {
+                    Long userId = (Long) session.getAttribute("currentUserId");
+                    persistentLoginRepository.findByUser_Id(userId).ifPresent(persistentLoginRepository::delete);
+                    Cookie rememberMeCookie = new Cookie("REMEMBER_ME", null);
+                    rememberMeCookie.setMaxAge(0);
+                    rememberMeCookie.setPath("/");
+                    rememberMeCookie.setHttpOnly(true);
+                    rememberMeCookie.setSecure(true);
+                    response.addCookie(rememberMeCookie);
+                }
+            }
+        }
+    }
 }

@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByPostsArticleId(Long postId);
+
     @Query("SELECT u FROM User u WHERE u.username LIKE %:keyword%")
     Page<User> searchByUsernameOrEmail(@Param("keyword") String keyword, Pageable pageable);
 

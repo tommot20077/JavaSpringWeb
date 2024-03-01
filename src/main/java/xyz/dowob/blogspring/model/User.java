@@ -50,7 +50,6 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime resetTime = LocalDateTime.now().minusHours(2);
 
-
     public Long getId() {
         return id;
     }

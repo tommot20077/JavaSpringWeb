@@ -18,18 +18,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #e39624">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="/search">搜尋</a>
+            </li>
+
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -37,8 +46,10 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/profile">更新資料</a>
                     <a class="dropdown-item" href="/new_article">新增文章</a>
+                    <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
+
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -60,7 +71,7 @@
                 <h1 class="card-title" th:text="${post.title}">文章標題</h1>
                 <a class="card-subtitle mb-2 card-subtitle-author" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
                 <br>
-                <a class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${post.getCreation_time} |">發表時間</a>
+                <a class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${post.creationTime} |">發表時間</a>
             </div>
             <div th:if="${session.currentUserId == post.author.getId()}">
                 <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
@@ -134,9 +145,10 @@
         <script>
             const myElement = document.getElementById('myElement');
             const postID = myElement.getAttribute('data-post-id');
-            console.log("data-post-id: "+postID);
             let currentPage = 0;
             let varTotalPages = 1;
+            var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
             document.addEventListener('DOMContentLoaded', function() {
                 loadCommentPage(0);
@@ -405,7 +417,7 @@
             </span>
         </div>
 
-        <div id="editor">
+        <div id="editor" style="max-height: 500px; overflow-y: auto;">
             <script>
                 const quill = new Quill('#editor', {
                     modules: {
@@ -456,7 +468,11 @@
                 formData.append('image', file);
                 fetch('/article/' + postID + '/comment/image', {
                     method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    },
                     body: formData
+
                 })
                     .then(response => {
                         if (response.ok) {
@@ -487,7 +503,8 @@
         fetch(postUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
             },
             body: JSON.stringify({
                 delta: editorContent
@@ -512,18 +529,16 @@
                 hideSpinner();
                 showToast("評論發表失敗: " + error.message, false);
             });
-
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            hideSpinner();
-        });
         function showSpinner() {
             document.getElementById('loading-spinner').style.display = 'flex';
         }
         function hideSpinner() {
             document.getElementById('loading-spinner').style.display = 'none';
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            hideSpinner();
+        });
     });
 </script>
 <br>

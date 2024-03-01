@@ -29,11 +29,23 @@ public class Post {
 
     @Column(nullable = false, updatable = false, name = "creation_time", insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date creation_time;
+    private Date creationTime;
+
+    @Column(name = "update_time", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateTime;
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        updateTime = new Date();
+    }
 
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isDeleted;
+    private boolean deleted;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean published;
 
 
     public Long getArticleId() {
@@ -59,16 +71,27 @@ public class Post {
         this.author = author;
     }
 
-    public Date getCreation_time() {
-        return creation_time;
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
     public boolean isDeleted() {
-        return isDeleted;
+        return deleted;
     }
 
     public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+        this.deleted = deleted;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
 

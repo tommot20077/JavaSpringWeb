@@ -36,7 +36,7 @@ public class SearchController {
             model.addAttribute("usersPage", users);
             model.addAttribute("totalPages", users.getTotalPages());
         } else {
-            Page<Post> posts = postRepository.searchByTitle(keyword, pageable);
+            Page<Post> posts = postRepository.searchByTitleFiltered(keyword, pageable);
             model.addAttribute("postsPage", posts);
             model.addAttribute("totalPages", posts.getTotalPages());
         }

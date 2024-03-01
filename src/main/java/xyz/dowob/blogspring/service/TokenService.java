@@ -104,4 +104,5 @@ public class TokenService {
         List<VerificationToken> expiredTokens = tokenRepository.findAllByExpiryDateLessThan(now);
         tokenRepository.deleteAll(expiredTokens);
     }
+
 }

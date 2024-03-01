@@ -14,7 +14,6 @@ public class Postdata_UpdateException extends Exception{
         TITLE_TOO_LONG("標題太長"),
         CONTENT_TOO_LONG("內容太長"),
         POST_UPDATE_FAILED("文章編輯時發生錯誤"),
-
         POST_INVALID("標題與內容不可為空或僅有圖片"),
         DID_NOT_LOGIN("未登錄"),
         NOT_FOUND_USER("找不到用戶"),
