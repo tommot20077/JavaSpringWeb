@@ -20,7 +20,8 @@ public class Postdata_UpdateException extends Exception{
         NOT_AUTHORIZED("未授權"),
         POST_NOT_FOUND("找不到文章"),
         POST_UPDATE_CAST_ERROR("類型轉換發生錯誤"),
-        POST_UPDATE_JSON_ERROR("轉換JSON時發生錯誤");
+        POST_UPDATE_JSON_ERROR("轉換JSON時發生錯誤"),
+        IMAGE_DELETE_ERROR("刪除圖片時發生錯誤");
 
 
 

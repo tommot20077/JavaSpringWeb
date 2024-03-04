@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.functions.ArticleDto;
+import xyz.dowob.blogspring.functions.ImageDto;
 import xyz.dowob.blogspring.functions.PublishRequestDto;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.service.PostService;
@@ -72,7 +73,6 @@ public class PostController {
             }
             try {
                 Map<String, String> imageUrl = postService.saveNewArticleImage(file, articleId);
-                System.out.println("imageUrl: " + imageUrl);
                 return ResponseEntity.ok(imageUrl);
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
@@ -81,6 +81,25 @@ public class PostController {
             return ResponseEntity.ok(Map.of("imageUrl", ""));
         }
     }
+
+    @PostMapping("/new_article/image/deleted")
+    public ResponseEntity<?> deleteArticleImage(@RequestBody @Valid ImageDto imageDto, HttpSession session){
+        Long articleId = imageDto.getArticleId();
+        try {
+            Post post = postService.getPostByArticle_id(articleId);
+            if (session.getAttribute("currentUserId") == null || !(post.getAuthor().getId().equals (session.getAttribute("currentUserId")))){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
+            }
+            System.out.println("imageUrl: " + imageDto.getUrl());
+            System.out.println("articleId: " + articleId);
+            postService.deleteArticleImage(imageDto.getUrl());
+            return ResponseEntity.ok(Map.of("message", "圖片已刪除"));
+        } catch (Postdata_UpdateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
 
     @PutMapping("/new_article/{articleId}")
     public ResponseEntity<?> updatePostContent(@PathVariable Long articleId, @RequestBody @Valid ArticleDto articleDto, HttpSession session) {

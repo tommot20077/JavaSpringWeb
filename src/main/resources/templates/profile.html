@@ -80,46 +80,81 @@
         <h1>更新個人資料  (已驗證信箱)</h1>
     </div>
 
-<form th:action="@{/profile}" th:object="${user}" method="post">
-    <div class="form-group">
-        <label for="originPassword">原本密碼</label>
-        <input type="password" class="form-control" id="originPassword" name="originPassword" required>
-    </div>
-    <div class="form-group">
-        <label for="username">更換使用者名稱</label>
-        <input type="text" class="form-control" id="username" th:field="*{username}">
-    </div>
-    <div class="form-group">
-        <label for="password">更換密碼</label>
-        <input type="password" class="form-control" id="password" th:field="*{password}">
-    </div>
-    <div class="form-group">
-        <label for="confirmPassword">重複更換密碼</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
-    </div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="basic-tab" data-toggle="tab" href="#basic">一般設定</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="important-tab" data-toggle="tab" href="#important">重要設定</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="basic">
+            <form th:action="@{/basicProfile}" th:object="${user}" method="post">
+                <br>
+                <div class="form-group">
+                    <label for="birthdate">生日</label>
+                    <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" >
+                </div>
+                <div class="form-group">
+                    <label for="timezone">用戶時區</label>
+                    <select id="timezone" class="form-control">
+                        <option value="Asia/Taipei">台北</option>
+                        <option value="Asia/Tokyo">東京</option>
+                        <option value="Asia/Shanghai">上海</option>
+                        <option value="Asia/Hong_Kong">香港</option>
+                        <option value="Asia/Singapore">新加坡</option>
+                    </select>
+                </div>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" class="form-control" id="email" th:field="*{email}">
-    </div>
+                <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+                <div th:if="${success}">
+                    <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="baseSuccessMessage">
+                        <span th:text="${success}"></span>
+                    </div>
+                </div>
+                <button id="save-base-button" type="submit" class="btn btn-primary">更新</button>
+                <a href="/" class="btn btn-secondary">回到首頁</a>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="important">
+            <form th:action="@{/importantProfile}" th:object="${user}" method="post">
+                <br>
+                <div class="form-group">
+                    <label for="originPassword">原本密碼</label>
+                    <input type="password" class="form-control" id="originPassword" name="originPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">更換使用者名稱</label>
+                    <input type="text" class="form-control" id="username" th:field="*{username}">
+                </div>
+                <div class="form-group">
+                    <label for="password">更換密碼</label>
+                    <input type="password" class="form-control" id="password" th:field="*{password}">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">重複更換密碼</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+                </div>
 
-    <div class="form-group">
-        <label for="birthdate">生日</label>
-        <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" >
-    </div>
-
-    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-    <div th:if="${success}">
-        <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="successMessage">
-            <span th:text="${success}"></span>
+                <div class="form-group">
+                    <label for="email">更新Email</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}">
+                </div>
+                <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+                <div th:if="${success}">
+                    <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="successMessage">
+                        <span th:text="${success}"></span>
+                    </div>
+                </div>
+                <button id="save-important-button" type="submit" class="btn btn-primary">更新後登出</button>
+                <a href="/" class="btn btn-secondary">回到首頁</a>
+            </form>
         </div>
     </div>
-    <button id="save-button" type="submit" class="btn btn-primary">更新後登出</button>
-    <a href="/" class="btn btn-secondary">回到首頁</a>
-</form>
 </div>
 
-<div id="password-rule" class="password-card">
+<div id="password-rule" class="password-card" style="display: none">
     <h4>密碼規則</h4>
     <ul>
         <li id="rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
@@ -130,8 +165,9 @@
 </div>
 
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        hideSpinner();
+    document.getElementById("save-important-button").addEventListener('click', () => {
+        this.disabled = true;
+        showSpinner();
         const successMessageElement = document.getElementById('successMessage');
         const successMessage = successMessageElement ? successMessageElement.dataset.success : null;
         if (successMessage) {
@@ -142,11 +178,21 @@
         }else {
             hideSpinner();
         }
-        const form = document.querySelector('form');
-        form.addEventListener('submit', () => {
-            showSpinner();
-        });
     });
+    document.getElementById("save-base-button").addEventListener('click', () => {
+        this.disabled = true;
+        showSpinner();
+        const successMessageElement = document.getElementById('successMessage');
+        const successMessage = successMessageElement ? successMessageElement.dataset.success : null;
+        if (successMessage) {
+            hideSpinner();
+        }else {
+            hideSpinner();
+        }
+    });
+
+
+
 
     document.getElementById("password").addEventListener("input", function(e) {
         const value = e.target.value;
@@ -167,6 +213,16 @@
             element.style.color = 'red';
         }
     }
+
+
+    let passwordCard = document.getElementById('password-rule');
+    document.getElementById("important-tab").addEventListener('click', function () {
+        passwordCard.style.display = 'block';
+    });
+    document.getElementById("basic-tab").addEventListener('click', function () {
+        passwordCard.style.display = 'none';
+    });
+
 
 
     document.getElementById("save-button").addEventListener('click', () => {

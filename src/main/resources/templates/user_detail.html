@@ -71,9 +71,9 @@
 
 <div class="search-results" th:if="${postPage != null}">
     <h2>用戶文章</h2>
-    <div class="card-deck">
+    <div class="card-deck" style="margin-right: 0;margin-left: 0">
         <div th:each="post : ${postPage.content}" class="card mb-4 shadow-sm">
-            <div class="card-body">
+            <div class="card-body" style="background-color: #ffbca8">
                 <div class="card-title">
                     <span th:if="${post.published}" class="badge badge-success mr-2">已發布</span>
                     <span th:if="${!post.published}" class="badge badge-secondary mr-2">未發布</span>

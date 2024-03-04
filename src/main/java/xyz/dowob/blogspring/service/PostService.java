@@ -81,10 +81,9 @@ public class PostService {
             }
 
 
-            post.setContent(convertContent); // 更新内容
-            postRepository.save(post); // 保存更新
+            post.setContent(convertContent);
+            postRepository.save(post);
         } catch (Postdata_UpdateException | JsonProcessingException e) {
-            postRepository.deleteById(articleId);
             throw e;
         }
     }
@@ -104,6 +103,10 @@ public class PostService {
 
     public Map<String, String> saveNewArticleImage(MultipartFile file, Long articleId) throws IOException {
         return EditorMethod.saveImage(file, articleId);
+    }
+
+    public void deleteArticleImage(String imageUrl) throws Postdata_UpdateException {
+        EditorMethod.deleteImage(imageUrl);
     }
 
 

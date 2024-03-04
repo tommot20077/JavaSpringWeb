@@ -123,6 +123,7 @@
     var quill;
     var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    let currentImageUrls = new Set();
 
 
 
@@ -158,6 +159,14 @@
                 if (result && result.hasOwnProperty('delta')) {
                     quill.setContents(result.delta);
                 }
+                let content = result.delta;
+                if (content && content.ops && Array.isArray(content.ops)) {
+                    content.ops.forEach((op) => {
+                        if (op.insert && op.insert.image) {
+                            currentImageUrls.add(op.insert.image);
+                        }
+                    });
+                }
             })
             .catch(error => {
                 console.error('發生錯誤，無法讀取評論內容:', error);
@@ -180,9 +189,62 @@
                         saveComment()
                     }, 60000);
                 }
+            } else {
+                if (autoSaveTimer) {
+                    clearInterval(autoSaveTimer);
+                    autoSaveTimer = null;
+                }
             }
         }
+        handleAutoSaveChange();
+        autoSaveToggle.addEventListener('change', handleAutoSaveChange);
+
+
+        document.getElementById('save-comment-button').addEventListener('click', function () {
+            showSpinner();
+            saveComment();
+        });
+
+        quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
     });
+
+    function deleteUnnecessaryImage() {
+        let newImageUrls = new Set();
+        quill.getContents().ops.forEach((op) => {
+            if (op.insert && op.insert.image) {
+                newImageUrls.add(op.insert.image);
+                console.log('currentImageUrls:', currentImageUrls);
+            }
+        });
+        let deletedImageUrls = Array.from(currentImageUrls).filter(image => !newImageUrls.has(image));
+        currentImageUrls = new Set(newImageUrls);
+
+        if (deletedImageUrls.length > 0) {
+            deletedImageUrls.forEach(url => {
+                fetch('/new_article/image/deleted', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify({
+                        imageUrl: url,
+                        articleId: postID
+
+                    })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            showToast('資料庫圖片刪除成功', true);
+                        }
+                    })
+                    .catch(error => {
+                        showToast('資料庫圖片刪除失敗', false);
+                    });
+            });
+        }
+    }
 
     function showToast(message, isSuccess) {
         const toastContainer = document.querySelector('.my-toast-container');
@@ -194,6 +256,8 @@
         toastContainer.appendChild(toastElement);
         setTimeout(() => toastElement.remove(), 5000);
     }
+
+
 
     function selectLocalImage() {
         const input = document.createElement('input');
@@ -254,10 +318,9 @@
                 }
             })
             .then(data =>{
+                deleteUnnecessaryImage();
                 hideSpinner();
                 showToast("評論更新成功", true);
-                setTimeout(() => window.location.reload(), 3000);
-
             })
             .catch((error) => {
                 hideSpinner();
@@ -267,10 +330,7 @@
 
 
 
-    document.getElementById('save-comment-button').addEventListener('click', function () {
-        showSpinner();
-        saveComment();
-    });
+
 
     document.getElementById('delete-comment-button').addEventListener('click', function() {
         document.getElementById('overlay').style.display = 'block';

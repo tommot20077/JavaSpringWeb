@@ -146,8 +146,35 @@ public class UserController {
 
     }
 
-    @PostMapping("/profile")
-    public String processProfileForm(@ModelAttribute User newInputUser,
+
+    @PostMapping("/basicProfile")
+    public String processBasicProfileForm(@ModelAttribute User newInputUser,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes,
+                                     HttpServletResponse response,
+                                     HttpServletRequest request
+    ){
+        try {
+            long userid = (Long) session.getAttribute("currentUserId");
+            User repositoryUser = userService.getUserById(userid);
+            userService.updateBasicUser(newInputUser, repositoryUser);
+            redirectAttributes.addFlashAttribute("success", "更新成功!");
+
+            Cookie[] cookies = request.getCookies();
+            userService.deleteRememberMeCookie(response, session, cookies);
+            return "redirect:/profile";
+
+        } catch (UsernameNotFoundException e) {
+            String errorMessage = e.getMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            return "redirect:/profile";
+        }
+
+    }
+
+
+    @PostMapping("/importantProfile")
+    public String processImportantProfileForm(@ModelAttribute User newInputUser,
                                      HttpSession session,
                                      RedirectAttributes redirectAttributes,
                                      @RequestParam("confirmPassword") String confirmPassword,
@@ -159,7 +186,9 @@ public class UserController {
             long userid = (Long) session.getAttribute("currentUserId");
             User repositoryUser = userService.getUserById(userid);
             String originEmail = repositoryUser.getEmail();
+
             userService.updateUser(newInputUser, repositoryUser, confirmPassword, originPassword);
+
             if(!newInputUser.getEmail().equals(originEmail)){
                 redirectAttributes.addFlashAttribute("success", "更新成功!\n請至信箱驗證新的電子郵件");
             }else{

@@ -148,6 +148,7 @@
     var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
     const publishToggle = document.getElementById("publish-toggle")
+    let currentImageUrls = new Set();
 
 
 
@@ -199,9 +200,16 @@
                 if (result && result.hasOwnProperty('delta')) {
                     quill.setContents(result.delta);
                 }
+                let content = result.delta;
+                if (content && Array.isArray(content)) {
+                    content.forEach((op) => {
+                        if (op.insert && op.insert.customImage && op.insert.customImage.url) {
+                            currentImageUrls.add(op.insert.customImage.url);
+                        }
+                    });
+                }
             })
             .catch(error => {
-
                 console.error('發生錯誤，無法讀取文章內容:', error);
                 showToast("發生錯誤，無法讀取文章內容。", false);
             });
@@ -223,6 +231,7 @@
                         showToast("自動保存中", true);
                         editArticle();
                     }, 60000);
+
                 }
             } else {
                 if (autoSaveTimer) {
@@ -243,12 +252,16 @@
                 if (selectedImageFiles.length > 0) {
                     Promise.all(selectedImageFiles.map(file => uploadImageFunction(file, postID)))
                         .then((imageUrl) => {
-
                             const validUrls = imageUrl.filter(url => url);
+                            selectedImageFiles = selectedImageFiles.filter(file => {
+                                return !imageUrl.some((result) => result.originalName === file.name);
+                            });
                             saveArticleContent(postID, quill.getContents(), validUrls);
-                        });
+                        }).catch((error) => {
+                            hideSpinner();
+                            showToast("圖片上傳失敗: " + error.message, false);
+                    })
                 } else {
-
                     saveArticleContent(postID, quill.getContents());
                 }
             } else {
@@ -324,6 +337,7 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.message === "文章保存成功") {
+                        deleteUnnecessaryImage();
                         hideSpinner();
                         showToast("文章保存成功。", true);
 
@@ -397,36 +411,41 @@
             }
         }
 
-        function updateSelectedImagesAfterDelete(deletedIndex) {
-            let fileToDelete = selectedImageFiles.find(file => `image-${file.name}` === deletedIndex);
-            if (fileToDelete) {
-                let indexToDelete = selectedImageFiles.indexOf(fileToDelete);
-                if (indexToDelete > -1) {
-                    selectedImageFiles.splice(indexToDelete, 1);
+        function deleteUnnecessaryImage() {
+            let newImageUrls = new Set();
+            quill.getContents().ops.forEach((op) => {
+                if (op.insert && op.insert.customImage && op.insert.customImage.url) {
+                    newImageUrls.add(op.insert.customImage.url);
                 }
-            }
-        }
+            });
+            let deletedImageUrls = Array.from(currentImageUrls).filter(url => !newImageUrls.has(url));
+            currentImageUrls = new Set(newImageUrls);
 
+            if (deletedImageUrls.length > 0) {
+                deletedImageUrls.forEach(url => {
+                    fetch('/new_article/image/deleted', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [csrfHeader]: csrfToken
+                        },
+                        body: JSON.stringify({
+                            imageUrl: url,
+                            articleId: postID
 
-        quill.on('text-change', (delta, oldDelta, source) => {
-            if (source === 'user') {
-                delta.ops.forEach((op) => {
-                    if (op.delete) {
-                        const contents = quill.getContents().ops;
-                        let deletedImageId = null;
-                        contents.forEach((op) => {
-                            if (op.insert && op.insert.image && op.attributes && op.attributes.id) {
-                                deletedImageId = op.attributes.id;
+                        })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                showToast('資料庫圖片刪除成功', true);
                             }
+                        })
+                        .catch(error => {
+                            showToast('資料庫圖片刪除失敗', false);
                         });
-                        if (deletedImageId) {
-                            updateSelectedImagesAfterDelete(deletedImageId);
-                        }
-                    }
                 });
             }
-        });
-
+        }
         quill.getModule('toolbar').addHandler('image', selectLocalImage);
         publishToggle.checked = postStatus === 'true';
     });

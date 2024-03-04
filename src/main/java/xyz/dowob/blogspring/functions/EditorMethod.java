@@ -1,6 +1,7 @@
 package xyz.dowob.blogspring.functions;
 
 import org.springframework.web.multipart.MultipartFile;
+import xyz.dowob.blogspring.Exceptions.Postdata_UpdateException;
 import xyz.dowob.blogspring.config.UserConfig;
 
 import java.io.IOException;
@@ -57,17 +58,38 @@ public class EditorMethod {
                 if (insertValue instanceof String){
                     String text = (String) insertValue;
                     if (text != null && !text.trim().isEmpty() && !text.equals("\n")) {
-                        return false; // 有实际内容
+                        return false;
                     }
                 } else if (insertValue instanceof Map) {
                     Map<String, Object> insertMap = (Map<String, Object>) insertValue;
                     if (insertMap.containsKey("image")) {
-                        return false; // 有实际内容
+                        return false;
                     }
 
                 }
             }
         }
-        return true; // 无实际内容，只有空白或为空
+        return true;
+    }
+
+    public static void deleteImage(String imageUrl) throws Postdata_UpdateException {
+        try {
+            UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
+            String extraPrefix = "/extra";
+            String relativePathStr = imageUrl.startsWith(extraPrefix) ? imageUrl.substring(extraPrefix.length()) : imageUrl;
+            System.out.println("relativePathStr: " + relativePathStr);
+            String ImagePath = userConfig.getImagePath() + "/";
+            Path imagePath = Paths.get(ImagePath);
+
+            System.out.println("imagePath: " + imagePath);
+            if (Files.exists(imagePath)) {
+                String DeletePath = ImagePath + relativePathStr;
+                Path deletePath = Paths.get(DeletePath);
+                System.out.println("deletePath: " + deletePath);
+                Files.deleteIfExists(deletePath);
+            }
+        } catch (IOException e) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.IMAGE_DELETE_ERROR);
+        }
     }
 }

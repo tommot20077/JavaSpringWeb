@@ -34,3 +34,5 @@ build/
 /src/main/resources/application.properties
 /src/main/java/xyz/dowob/blogspring/userConfig/WebConfig.java
 /config.properties
+/src/main/resources/application-prod.properties
+/src/main/resources/application-prod.properties

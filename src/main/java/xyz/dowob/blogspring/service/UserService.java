@@ -124,6 +124,11 @@ public class UserService{
         }
     }
 
+    public void updateBasicUser(User newInputUser, User repositoryUser) {
+        repositoryUser.setBirthdate(newInputUser.getBirthdate());
+        userRepository.save(repositoryUser);
+    }
+
 
     public void sendResetPasswordMail(User user) throws Userdata_UpdateException {
         if (user.getEmailActiveStatus()) {
