@@ -1,5 +1,7 @@
 package xyz.dowob.blogspring.functions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.dowob.blogspring.config.UserConfig;
 
 import java.io.BufferedReader;
@@ -7,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class RcloneExecutor {
+    static Logger logger = LoggerFactory.getLogger(RcloneExecutor.class);
+
+
     public static void executeRclone(UserConfig userConfig) {
         String rclonePath = userConfig.getRclonePath();
         String rcloneConfigPath = userConfig.getRcloneConfigPath();
@@ -28,7 +33,7 @@ public class RcloneExecutor {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    logger.info(line);
                 }
             }
 
@@ -36,20 +41,18 @@ public class RcloneExecutor {
             try (BufferedReader readerError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
                 String line;
                 while ((line = readerError.readLine()) != null) {
-                    System.err.println(line);
+                    logger.error(line);
                 }
             }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                System.err.println("Rclone 執行錯誤: " + exitCode);
+                logger.error("Rclone 執行錯誤: " + exitCode);
             }
         } catch (IOException e) {
-            System.err.println("rclone文件操作錯誤: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("rclone文件操作錯誤: " + e.getMessage());
         } catch (InterruptedException e) {
-            System.err.println("rclone被中斷: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("rclone被中斷: " + e.getMessage());
         }
     }
 }

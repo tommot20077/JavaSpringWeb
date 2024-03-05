@@ -1,13 +1,14 @@
 package xyz.dowob.blogspring.config;
 
+import lombok.extern.slf4j.Slf4j;
 import xyz.dowob.blogspring.functions.StorageMethod;
 
 import java.io.*;
 import java.util.Properties;
-
+@Slf4j
 public class UserConfig {
-    private Properties properties;
-    private File configFile;
+    private final Properties properties;
+    private final File configFile;
 
 
     public UserConfig(String fileName) {
@@ -15,10 +16,10 @@ public class UserConfig {
         this.properties = new Properties();
 
         if (configFile.exists()) {
-            System.out.println("已存在設定檔，載入設定");
+            log.info("已存在設定檔，載入設定");
             loadProperties();
         } else {
-            System.out.println("未存在設定檔，新增預設設定");
+            log.info("未存在設定檔，新增預設設定");
             setupDefaultProperties();
         }
     }
@@ -37,7 +38,7 @@ public class UserConfig {
         try (InputStream input = new FileInputStream(configFile)) {
             properties.load(input);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error("讀取設定檔錯誤: " + ex.getMessage());
         }
     }
 
@@ -45,7 +46,7 @@ public class UserConfig {
         try (OutputStream output = new FileOutputStream(configFile)) {
             properties.store(output, "Configuration for My Java Application");
         } catch (IOException io) {
-            io.printStackTrace();
+            log.error("儲存設定檔錯誤: " + io.getMessage());
         }
     }
 
