@@ -62,7 +62,7 @@
                     <a th:text="${user.getEmailActiveStatus()}">(信箱未驗證)</a>
                 </a>
             </p>
-            <p class="card-subtitle mb-2 text-muted" th:text="|用戶註冊時間: ${user.getRegister_time()} |">用戶註冊時間</p>
+            <p class="card-subtitle mb-2 text-muted" th:text="|用戶註冊時間: ${formattedUserTime} |">用戶註冊時間</p>
 
             <!--<p class="card-subtitle mb-2 text-muted" th:text="|用戶最後登入時間: ${user.getLastLoginTime()} |">用戶最後登入時間</p> -->
         </div>
@@ -71,20 +71,22 @@
 
 <div class="search-results" th:if="${postPage != null}">
     <h2>用戶文章</h2>
-    <div class="card-deck" style="margin-right: 0;margin-left: 0">
-        <div th:each="post : ${postPage.content}" class="card mb-4 shadow-sm">
-            <div class="card-body" style="background-color: #ffbca8">
-                <div class="card-title">
-                    <span th:if="${post.published}" class="badge badge-success mr-2">已發布</span>
-                    <span th:if="${!post.published}" class="badge badge-secondary mr-2">未發布</span>
-                    <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}"
-                       th:href="@{/article/{id}(id=${post.articleId})}">文章標題
-                    </a>
+    <div class="row" style="margin-right: 0;margin-left: 0">
+        <div th:each="post, iterStat : ${postPage.content}" class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body" style="background-color: #ffbca8">
+                    <div class="card-title">
+                        <span th:if="${post.published}" class="badge badge-success mr-2">已發布</span>
+                        <span th:if="${!post.published}" class="badge badge-secondary mr-2">未發布</span>
+                        <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}"
+                           th:href="@{/article/{id}(id=${post.articleId})}">文章標題
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <p class="card-text" th:text="'創建時間: '+${#dates.format(post.creationTime, 'yyyy-MM-dd HH:mm:ss')}" style="margin-top: 0;margin-bottom: 0;"></p>
-                <p class="card-text" th:text="'  最後更新時間: '+${#dates.format(post.updateTime, 'yyyy-MM-dd HH:mm:ss')}" style="margin-top: 0;margin-bottom: 0;"></p>
+                <div class="card-footer bg-transparent">
+                    <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
+                    <p class="card-text" th:text="'最後更新時間: '+${formattedPostUpdateTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
+                </div>
             </div>
         </div>
     </div>

@@ -16,28 +16,28 @@
     <style>
         .fixed-bottom-nav {
             position: fixed;
-            left: 50%;              /* 设置左偏移为50%，即视图的中心 */
-            transform: translateX(-50%); /*  通过平移使元素中心对齐视图的中心 */
-            bottom: 20px;
-            width: auto;           /* 可以设置为 auto 或是 100%, 根据需要来调整 */
-            background-color: rgba(255, 255, 255, 0); /* 適當調整背景色 */
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 50px;
+            width: auto;
+            background-color: rgba(255, 255, 255, 0);
             z-index: 1030;
             text-align: center;
         }
 
         .pagination {
-            display: flex; /* 使用彈性布局來保持水平排列 */
-            justify-content: center; /* 水平居中 */
-            list-style-type: none; /* 移除列表樣式 */
-            padding-left: 0; /* 移除預設的 padding */
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            padding-left: 0;
         }
 
         .pagination .page-item {
-            margin: 0 5px; /* 加入左右邊距來設定分頁項目之間的距離 */
+            margin: 0 5px;
         }
 
         .pagination .page-item .page-link {
-            font-size: larger; /* 放大分頁鏈接文字 */
+            font-size: larger;
         }
     </style>
 </head>
@@ -84,14 +84,15 @@
 <div class="container mt-4">
     <h2 class="mb-4 text-center">文章列表</h2>
     <div class="row">
-        <th:block th:each="post : ${posts.content}">
+        <th:block th:each="post,iterStat : ${posts.content}">
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</h5>
                         <h5 class="card-title" th:unless="${post.isDeleted}" th:text="${post.title.length() > 50 ? #strings.substring(post.title, 0, 50) + '...' : post.title}">文章標題</h5>
                         <!--<p class="card-text" th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}">一些簡短的介紹文字...</p>-->
-                        <p class="card-text" th:text="'  更新時間: '+${#dates.format(post.updateTime, 'yyyy-MM-dd HH:mm:ss')}" style="margin-top: 0;margin-bottom: 0;"></p>
+                        <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
+                        <p class="card-text" th:text="'最後更新: '+${formattedPostUpdateTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
                         <a th:if="!${post.isDeleted}" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary">閱讀全文 <i class="fas fa-angle-right"></i></a>
                     </div>
                 </div>

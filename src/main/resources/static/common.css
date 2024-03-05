@@ -1,5 +1,5 @@
 html, body {
-    height: 100%;
+    /*height: 100%;*/
     margin: 0;
     padding: 0;
 }
@@ -285,7 +285,7 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 略帶透明的背景色 */
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 9998;
     align-items: center;
     justify-content: center;
@@ -336,8 +336,8 @@ a:hover {
 
 .autoSave-controller a {
     margin-right: 8px;
-    color: #333; /* 添加這個顏色用於更好的可讀性 */
-    font-weight: bold; /* 文字加粗強調 */
+    color: #333;
+    font-weight: bold;
     line-height: 1;
 }
 

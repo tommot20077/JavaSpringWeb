@@ -24,7 +24,14 @@ import xyz.dowob.blogspring.service.PostService;
 import xyz.dowob.blogspring.service.TokenService;
 import xyz.dowob.blogspring.service.UserService;
 
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static xyz.dowob.blogspring.functions.FormattedTimeForUser.formattedTimeForUser;
 
 @Controller
 public class UserController {
@@ -136,6 +143,12 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfileForm(Model model, HttpSession session) {
         try {
+            List<String> timezones = ZoneId.getAvailableZoneIds()
+                                    .stream()
+                                    .sorted()
+                                    .collect(Collectors.toList());
+            model.addAttribute("timezones", timezones);
+
             long userid = (Long) session.getAttribute("currentUserId");
             User user = userService.getUserById(userid);
             model.addAttribute("user", user);
@@ -271,6 +284,21 @@ public class UserController {
             model.addAttribute("postPage", posts);
             model.addAttribute("pageNum", page);
             model.addAttribute("totalPages", posts.getTotalPages());
+            model.addAttribute("formattedUserTime", formattedTimeForUser(user.getRegister_time(), user));
+
+
+            List<String> formattedPostCreationTimes = new ArrayList<>();
+            List<String> formattedPostUpdateTimes = new ArrayList<>();
+            for (Post post : posts.getContent()) {
+                Date postCreationTime = post.getCreationTime();
+                Date postUpdateTime = post.getUpdateTime();
+                String formattedPostCreationTime = formattedTimeForUser(postCreationTime, user);
+                String formattedPostUpdateTime = formattedTimeForUser(postUpdateTime, user);
+                formattedPostCreationTimes.add(formattedPostCreationTime);
+                formattedPostUpdateTimes.add(formattedPostUpdateTime);
+            }
+            model.addAttribute("formattedPostCreationTimes", formattedPostCreationTimes);
+            model.addAttribute("formattedPostUpdateTimes", formattedPostUpdateTimes);
 
 
             if (!request.getParameterMap().containsKey("page") && (request.getParameterMap().containsKey("page") && page < 1)) {

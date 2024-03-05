@@ -30,7 +30,7 @@ public class StorageMethod {
                 savePath = savePath.replace("ested:/", "");
 
 
-                if (savePath != null && !savePath.trim().isEmpty()) {
+                if (!savePath.trim().isEmpty()) {
                     return savePath;
                 }else {
                     return "./";

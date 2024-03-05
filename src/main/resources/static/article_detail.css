@@ -23,10 +23,9 @@
 }
 
 .pagination .page-item {
-    height: 100%; /* 確保 <li> 是100% 高 */
+    height: 100%;
 }
 
-/* 可能需要調整 select 的樣式 */
 .page-link select {
     border: none;
     background-color: transparent;
@@ -81,17 +80,16 @@
 }
 
 .comment-wrapper {
-    background-color: #fcebd7; /* 提供一個亮色背景 */
-    border: 1px solid #e1e1e1; /* 添加細邊框 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影 */
-    margin-bottom: 20px; /* 評論之間的間隔 */
-    border-radius: 4px; /* 略微圓角的邊框 */
-    padding: 15px; /* 向評論內部添加一些 padding */
-    /*transition: box-shadow 0.3s ease; /* 鼠標經過時，添加過渡效果讓陰影更加明顯 */
+    background-color: #fcebd7;
+    border: 1px solid #e1e1e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-radius: 4px;
+    padding: 15px;
 }
 
 .comment-wrapper:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 當鼠標經過評論時，陰影變深 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .card-subtitle-author {
@@ -109,11 +107,13 @@
     50%    { opacity: 0; transform: translate(80px,0) }
     100%    { opacity: 0; transform: translate(0,0) }
 }
+
 @keyframes ldio-4pqo44ipw4 {
     0% { transform: translate(0,0) }
     50% { transform: translate(80px,0) }
     100% { transform: translate(0,0) }
 }
+
 .ldio-4pqo44ipw4 div {
     position: absolute;
     width: 80px;
@@ -122,21 +122,25 @@
     top: 60px;
     left: 20px;
 }
+
 .ldio-4pqo44ipw4 div:nth-child(1) {
     background: #fe514c;
     animation: ldio-4pqo44ipw4 1s linear infinite;
     animation-delay: -0.5s;
 }
+
 .ldio-4pqo44ipw4 div:nth-child(2) {
     background: #ffb80c;
     animation: ldio-4pqo44ipw4 1s linear infinite;
     animation-delay: 0s;
 }
+
 .ldio-4pqo44ipw4 div:nth-child(3) {
     background: #fe514c;
     animation: ldio-4pqo44ipw4-o 1s linear infinite;
     animation-delay: -0.5s;
 }
+
 .loadingio-spinner-dual-ball-l2u3038qtw8 {
     width: 200px;
     height: 200px;
@@ -144,13 +148,15 @@
     overflow: hidden;
     background: none;
 }
+
 .ldio-4pqo44ipw4 {
     width: 100%;
     height: 100%;
     position: relative;
     transform: translateZ(0) scale(1);
     backface-visibility: hidden;
-    transform-origin: 0 0; /* see note above */
+    transform-origin: 0 0;
 }
+
 .ldio-4pqo44ipw4 div { box-sizing: content-box; }
 

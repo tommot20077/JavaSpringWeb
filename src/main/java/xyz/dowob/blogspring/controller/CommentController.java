@@ -16,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import xyz.dowob.blogspring.Exceptions.Commentdata_UpdateException;
 import xyz.dowob.blogspring.functions.CommentDto;
 import xyz.dowob.blogspring.model.Comment;
+import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.service.CommentService;
+import xyz.dowob.blogspring.service.UserService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,13 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static xyz.dowob.blogspring.functions.FormattedTimeForUser.formattedTimeForUser;
+
 @Controller
 public class CommentController {
     private final CommentService commentService;
+    private final UserService userService;
 
     @Autowired
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService, UserService userService) {
         this.commentService = commentService;
+        this.userService = userService;
     }
 
     @PostMapping("/article/{articleId}/comment")
@@ -49,8 +55,13 @@ public class CommentController {
     }
 
     @GetMapping("/article/{articleId}/comment")
-    public ResponseEntity<?> getComments(@PathVariable long articleId ,@RequestParam(defaultValue = "0") int page ){
-
+    public ResponseEntity<?> getComments(@PathVariable long articleId ,@RequestParam(defaultValue = "0") int page, HttpSession session){
+        User user;
+        if (session.getAttribute("currentUserId") != null){
+            user = userService.getUserById((Long) session.getAttribute("currentUserId"));
+        } else {
+            user = null;
+        }
         Pageable pageable = PageRequest.of(page, 10);
         Page<Comment> commentPage = commentService.getCommentsByArticleId(articleId, pageable);
 
@@ -63,7 +74,7 @@ public class CommentController {
                 commentData.put("commentId", comment.getCommentId());
                 commentData.put("authorName", comment.getAuthor().getUsername());
                 commentData.put("authorId", comment.getAuthor().getId());
-                commentData.put("creation_time", comment.getCreation_time());
+                commentData.put("update_time", formattedTimeForUser(comment.getUpdate_time(),user));
                 commentData.put("isDeleted", comment.isDeleted());
                 return commentData;
             } catch (JsonProcessingException e) {

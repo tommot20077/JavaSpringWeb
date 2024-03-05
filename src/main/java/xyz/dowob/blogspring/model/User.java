@@ -3,6 +3,8 @@ package xyz.dowob.blogspring.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -49,6 +51,11 @@ public class User {
 
     @Column(nullable = false)
     private LocalDateTime resetTime = LocalDateTime.now().minusHours(2);
+
+    @Getter
+    @Setter
+    @Column(nullable = false, columnDefinition = "varchar(100) default 'Etc/UTC'")
+    private String timezone;
 
     public Long getId() {
         return id;

@@ -9,10 +9,10 @@
     margin-top: 20px;
 }
 
-.btn
-{
+.btn {
     color: #282828;
 }
+
 .container {
     max-width: 520px;
     margin-top: 50px;
@@ -22,6 +22,7 @@
     background-color: #ff740045;
     box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
+
 .form-control {
     width: 100%;
 }
@@ -54,17 +55,17 @@
 }
 
 .password-card ul {
-    list-style-type: none; /* 移除列表項前的項符 */
-    padding: 0; /* 移除預設內距 */
+    list-style-type: none;
+    padding: 0;
 }
 
 .password-card li {
-    color: red; /* 默認紅色表示規則未符合 */
-    margin: 8px 0; /* 列表項之間的間距 */
+    color: red;
+    margin: 8px 0;
 }
 
 .password-card li.valid {
-    color: green; /* 符合規則時的顏色 */
+    color: green;
 }
 
 .correct {

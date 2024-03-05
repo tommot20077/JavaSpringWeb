@@ -43,6 +43,7 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/profile">更新資料</a>
                     <a class="dropdown-item" href="/new_article">新增文章</a>
+                    <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
             <li class="nav-item" th:if="${!userLoggedIn}">
@@ -64,9 +65,9 @@
         <div class="card-header d-flex justify-content-between align-items-top">
             <div>
                 <h1 class="card-title" th:text="${post.title}">文章標題</h1>
-                <a class="card-subtitle mb-2 card-subtitle-author" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</a>
-                <br>
-                <a class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${post.creationTime} |">發表時間</a>
+                <p class="card-subtitle mb-2 card-subtitle-author" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
+                <p class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
+                <p class="card-subtitle mb-2 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p>
             </div>
             <div th:if="${session.currentUserId == post.author.getId()}">
                 <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
@@ -197,10 +198,7 @@
 
                                     const publishedTimeDiv = document.createElement('div');
                                     publishedTimeDiv.classList.add('comment-Time-number');
-                                    const utcDate = new Date(commentData.creation_time);
-                                    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
-                                    const formattedTime = localDate.toISOString().replace('T', ' ').substring(0, 19);
-                                    publishedTimeDiv.textContent = "發布時間: " + formattedTime;
+                                    publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
 
                                     if (canEditComment(commentData.authorId)) {
                                         let commentId = String(commentData.commentId);
@@ -254,10 +252,7 @@
 
                                     const publishedTimeDiv = document.createElement('div');
                                     publishedTimeDiv.classList.add('comment-Time-number');
-                                    const utcDate = new Date(commentData.creation_time);
-                                    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
-                                    const formattedTime = localDate.toISOString().replace('T', ' ').substring(0, 19);
-                                    publishedTimeDiv.textContent = "發布時間: " + formattedTime;
+                                    publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
 
                                     const authorDiv = document.createElement('div');
                                     authorDiv.classList.add('comment-author');

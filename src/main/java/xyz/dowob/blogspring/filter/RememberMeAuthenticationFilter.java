@@ -32,23 +32,25 @@ public class RememberMeAuthenticationFilter extends OncePerRequestFilter {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("currentUserId") == null) {
             Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("REMEMBER_ME")) {
-                    Long userId = userService.verifyRememberMeToken(cookie.getValue());
-                    if (userId != null) {
-                        Cache userCache = cacheManager.getCache("user");
-                        if (userCache != null) {
-                            user = userCache.get(userId, User.class);
-                            if (user == null) {
-                                user = userService.getUserById(userId);
-                                userCache.put(userId, user);
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("REMEMBER_ME")) {
+                        Long userId = userService.verifyRememberMeToken(cookie.getValue());
+                        if (userId != null) {
+                            Cache userCache = cacheManager.getCache("user");
+                            if (userCache != null) {
+                                user = userCache.get(userId, User.class);
+                                if (user == null) {
+                                    user = userService.getUserById(userId);
+                                    userCache.put(userId, user);
+                                }
                             }
-                        }
-                        if (user != null) {
-                            session = request.getSession(true);
-                            session.setAttribute("currentUsername", user.getUsername());
-                            session.setAttribute("currentUserId", user.getId());
-                            session.setAttribute("currentUserEmailStatus", user.getEmailActiveStatus());
+                            if (user != null) {
+                                session = request.getSession(true);
+                                session.setAttribute("currentUsername", user.getUsername());
+                                session.setAttribute("currentUserId", user.getId());
+                                session.setAttribute("currentUserEmailStatus", user.getEmailActiveStatus());
+                            }
                         }
                     }
                 }

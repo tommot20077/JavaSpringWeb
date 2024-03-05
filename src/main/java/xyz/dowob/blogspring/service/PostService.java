@@ -3,6 +3,7 @@ package xyz.dowob.blogspring.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -138,10 +139,14 @@ public class PostService {
     }
 
 
-
+    @Transactional
     public Post getPostByArticle_id(Long articleId) throws Postdata_UpdateException {
-        return postRepository.findByArticleId(articleId)
+        Post post = postRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
+        if (post != null) {
+            Hibernate.initialize(post.getAuthor());
+        }
+        return post;
     }
 
     public User getUserByArticle_Id(Long articleId) {
@@ -157,10 +162,5 @@ public class PostService {
         return postRepository.findByPublishedTrueAndAuthorIdAndDeletedFalse(authorID, pageable);
     }
 
-
-
-    public Page<Post> getAllPostsByPage(Pageable pageable){
-        return postRepository.findAll(pageable);
-    }
 
 }

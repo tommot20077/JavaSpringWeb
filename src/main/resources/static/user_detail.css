@@ -2,12 +2,14 @@ form {
     margin-top: 50px;
     text-align: center;
 }
+
 input[type="text"], select {
     padding: 10px;
     margin-right: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
 button {
     padding: 10px 20px;
     background-color: #f76c5e;
@@ -16,29 +18,36 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
 button:hover {
     background-color: #f93118;
 }
+
 .search-results {
     margin-top: 20px;
     text-align:center;
 }
+
 ul {
     list-style-type: none;
     padding: 0;
 }
+
 li {
     margin: 5px 0;
 }
+
 .pagination {
     display: flex;
     justify-content: center;
     padding-left: 0;
     list-style: none;
 }
+
 .pagination li {
     margin: 0 5px;
 }
+
 .pagination li a {
     border: 1px solid #ddd;
     padding: 5px 10px;
@@ -47,25 +56,29 @@ li {
 }
 
 .pagination .page-item {
-    margin: 0 5px; /* 加入左右邊距來設定分頁項目之間的距離 */
+    margin: 0 5px;
 }
 
 .pagination .page-item .page-link {
-    font-size: larger; /* 放大分頁鏈接文字 */
+    font-size: larger;
 }
+
 .pagination li.active a,
 .pagination li a:hover {
     background-color: #f93118;
     color: white;
 }
+
 .pagination li.disabled a {
     color: #ccc;
     pointer-events: none;
 }
+
 .pagination-arrows span {
     border: 1px solid #ddd;
     padding: 5px 10px;
 }
+
 .fixed-bottom-nav {
     position: fixed;
     left: 50%;

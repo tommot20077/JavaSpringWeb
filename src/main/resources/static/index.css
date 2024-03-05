@@ -1,10 +1,18 @@
 body {
+    min-height: 100%;
     background-color: #f7f8fa;
     background-image: url('/images/indexBackground.png');
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: 100% auto;
+    background-position: center top;
     background-attachment: scroll;
     font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+html {
+    height: 100%;
 }
 .editor-container {
     margin: 30px auto;

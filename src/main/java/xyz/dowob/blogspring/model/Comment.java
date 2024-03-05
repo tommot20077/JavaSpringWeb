@@ -2,6 +2,8 @@ package xyz.dowob.blogspring.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity
 public class Comment {
     @Id
@@ -16,10 +18,18 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", nullable = false)
     private Post post;
-    private java.util.Date creation_time;
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
     private int commentInArticleId;
+
+    @Column(name = "update_time", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateTime;
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        updateTime = new Date();
+    }
 
 
 
@@ -45,12 +55,6 @@ public class Comment {
     public void setPost(Post post) {
         this.post = post;
     }
-    public java.util.Date getCreation_time() {
-        return creation_time;
-    }
-    public void setCreation_time(java.util.Date creation_time) {
-        this.creation_time = creation_time;
-    }
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -64,6 +68,8 @@ public class Comment {
         this.commentInArticleId = commentInArticleId;
     }
 
-
+    public Date getUpdate_time() {
+        return updateTime;
+    }
 
 }

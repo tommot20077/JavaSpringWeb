@@ -22,11 +22,17 @@ import xyz.dowob.blogspring.functions.ArticleDto;
 import xyz.dowob.blogspring.functions.ImageDto;
 import xyz.dowob.blogspring.functions.PublishRequestDto;
 import xyz.dowob.blogspring.model.Post;
+import xyz.dowob.blogspring.model.User;
 import xyz.dowob.blogspring.service.PostService;
+import xyz.dowob.blogspring.service.UserService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static xyz.dowob.blogspring.functions.FormattedTimeForUser.formattedTimeForUser;
 
 @Controller
 
@@ -34,14 +40,16 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+    private final UserService userService;
 
 
 //userRepository處理
 @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, UserService userService) {
         this.postService = postService;
 
-    }
+    this.userService = userService;
+}
 
 
     @GetMapping("/")
@@ -122,6 +130,8 @@ public class PostController {
     @GetMapping("/article/{articleId}")
     public String articleDetail(@PathVariable Long articleId, Model model, HttpSession session){
         try {
+            Long userId = null;
+            User user = null;
             Post post = postService.getPostByArticle_id(articleId);
             if (post.isDeleted()){
                 return "redirect:/";
@@ -129,13 +139,21 @@ public class PostController {
 
 
             if (!post.isPublished()){
-                Long userId = null;
+
                 if (session.getAttribute("currentUserId") != null) {
                     userId = (Long) session.getAttribute("currentUserId");
                 }
                 if (userId == null || !(userId.equals(post.getAuthor().getId())))
                     return "redirect:/";
             }
+
+            if (session.getAttribute("currentUserId") != null) {
+                userId = (Long) session.getAttribute("currentUserId");
+                user = userService.getUserById(userId);
+            }
+
+            model.addAttribute("formattedCreationTime", formattedTimeForUser(post.getCreationTime(), user));
+            model.addAttribute("formattedUpdateTime", formattedTimeForUser(post.getUpdateTime(), user));
             model.addAttribute("post", post);
             return "article_detail";
         } catch (Postdata_UpdateException e) {
@@ -160,14 +178,35 @@ public class PostController {
     }
 
     @GetMapping("/article")
-    public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request){
-        int pageSize = 9;
+    public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request, HttpSession session) {
+        int pageSize = 6;
+        User user = null;
         page = Math.max(page, 1);
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("updateTime").descending());
         Page<Post> postPage = postService.getPublishedPostsByPage(pageable);
         model.addAttribute("posts", postPage);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
+
+        if (session.getAttribute("currentUserId") != null){
+            Long userId = (Long) session.getAttribute("currentUserId");
+            user = userService.getUserById(userId);
+        }
+
+        List<String> formattedPostCreationTimes = new ArrayList<>();
+        List<String> formattedPostUpdateTimes = new ArrayList<>();
+        for (Post post : postPage.getContent()) {
+            Date postCreationTime = post.getCreationTime();
+            Date postUpdateTime = post.getUpdateTime();
+            String formattedPostCreationTime = formattedTimeForUser(postCreationTime, user);
+            String formattedPostUpdateTime = formattedTimeForUser(postUpdateTime, user);
+            formattedPostCreationTimes.add(formattedPostCreationTime);
+            formattedPostUpdateTimes.add(formattedPostUpdateTime);
+        }
+        model.addAttribute("formattedPostCreationTimes", formattedPostCreationTimes);
+        model.addAttribute("formattedPostUpdateTimes", formattedPostUpdateTimes);
+
+
 
 
         if (postPage.getTotalPages() == 0) {

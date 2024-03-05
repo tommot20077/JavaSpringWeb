@@ -126,6 +126,7 @@ public class UserService{
 
     public void updateBasicUser(User newInputUser, User repositoryUser) {
         repositoryUser.setBirthdate(newInputUser.getBirthdate());
+        repositoryUser.setTimezone(newInputUser.getTimezone());
         userRepository.save(repositoryUser);
     }
 

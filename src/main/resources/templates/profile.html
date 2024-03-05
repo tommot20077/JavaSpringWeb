@@ -98,12 +98,10 @@
                 </div>
                 <div class="form-group">
                     <label for="timezone">用戶時區</label>
-                    <select id="timezone" class="form-control">
-                        <option value="Asia/Taipei">台北</option>
-                        <option value="Asia/Tokyo">東京</option>
-                        <option value="Asia/Shanghai">上海</option>
-                        <option value="Asia/Hong_Kong">香港</option>
-                        <option value="Asia/Singapore">新加坡</option>
+                    <select id="timezone" class="form-control" th:field="*{timezone}">
+                        <th:block th:each="timezone : ${timezones}">
+                            <option th:value="${timezone}" th:text="${timezone}" th:selected="${timezone == user.timezone}"></option>
+                        </th:block>
                     </select>
                 </div>
 

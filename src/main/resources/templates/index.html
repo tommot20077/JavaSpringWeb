@@ -20,8 +20,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
@@ -40,9 +38,11 @@
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
+
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/register">註冊</a>
             </li>
+
             <li class="nav-item" th:if="${userLoggedIn}">
                 <a class="nav-link" href="/logout">登出</a>
             </li>
@@ -56,7 +56,7 @@
         <p class="lead">這是一個簡易實作部落格首頁。</p>
         <hr class="my-4">
         <p>其中主要使用Java Spring boot最為後端架構</p>
-        <a>目前開發狀態: 開發中</a>
+        <a>目前開發狀態: 維護中</a>
         <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
         <br>
         <br>
@@ -69,7 +69,7 @@
         <p class="lead">這是一個簡易實作部落格首頁。</p>
         <hr class="my-4">
         <p>其中主要使用Java Spring boot最為後端架構</p>
-        <a>目前開發狀態: 開發中</a>
+        <a>目前開發狀態: 維護中</a>
         <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
     </div>
 
@@ -85,47 +85,6 @@
                             <a th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</a>
                             <a th:unless="${post.isDeleted}" th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
                         </h5>
-                        <!--<p class="card-text" th:text="${post.content.length() > 200 ? #strings.substring(post.content, 0, 200) + '...' : post.content}">文章內容預覽</p>
-                        <div id="content-display" class="content-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="data-post-id=${post.getArticleId}">
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    var myElement = document.getElementById('content-display');
-                                    var postID = myElement.getAttribute('data-post-id');
-
-                                    fetch('/article/' + postID + '/content')
-                                        .then(response => {
-                                            if (!response.ok) {
-                                                throw new Error('網路回應錯誤.');
-                                            }
-                                            return response.json();
-                                        })
-                                        .then(result => {
-                                            if (result) { // 确保result包含contentDelta
-                                                const contentDisplay = document.getElementById('content-display');
-                                                const contentQuill = new Quill(contentDisplay, { // 使用 'content-display' 的ID
-                                                    modules: {
-                                                        toolbar: false // 关闭工具栏，因为是只读的
-                                                    },
-                                                    readOnly: true,
-                                                    theme: 'snow'
-                                                });
-                                                // 设置Quill的内容
-                                                contentQuill.setContents(result.delta); // 使用result.contentDelta
-                                            } else {
-                                                showToast("無法讀取文章內容。", false);
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('發生錯誤，無法讀取文章內容:', error);
-                                            showToast("發生錯誤，無法讀取文章內容。", false);
-                                        });
-                                });
-                            </script>
-                        </div>
-                        -->
-
-
-
                     </div>
                 </div>
             </div>
