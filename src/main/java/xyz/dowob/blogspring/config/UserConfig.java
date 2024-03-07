@@ -30,6 +30,8 @@ public class UserConfig {
         properties.setProperty("imagePath", "/root/JavaWeb/TempSave");
         properties.setProperty("tempSavePath", "/root/JavaWeb/tempSavePath");
         properties.setProperty("rcloneUploadPath", "webdav:emby/od/60/images");
+        properties.setProperty("weatherApiUrl", "http://api.weatherapi.com/v1/current.json?key={apikey)&q={inquire}&aqi=no");
+        properties.setProperty("weatherApiKey", "yourApiKey");
         saveProperties();
     }
 
@@ -70,6 +72,13 @@ public class UserConfig {
     }
     public String getRcloneUploadPath() {
         return properties.getProperty("rcloneUploadPath");
+    }
+
+    public String getWeatherApiUrl() {
+        return properties.getProperty("weatherApiUrl");
+    }
+    public String getWeatherApiKey() {
+        return properties.getProperty("weatherApiKey");
     }
 
 

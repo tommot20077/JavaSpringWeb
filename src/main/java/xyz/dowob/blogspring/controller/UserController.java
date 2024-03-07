@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,11 +17,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import xyz.dowob.blogspring.Exceptions.Userdata_UpdateException;
+import xyz.dowob.blogspring.config.UserConfig;
+import xyz.dowob.blogspring.functions.RcloneExecutor;
 import xyz.dowob.blogspring.model.Post;
 import xyz.dowob.blogspring.model.User;
+import xyz.dowob.blogspring.service.ApiTokenService;
 import xyz.dowob.blogspring.service.PostService;
 import xyz.dowob.blogspring.service.TokenService;
 import xyz.dowob.blogspring.service.UserService;
@@ -39,12 +45,14 @@ public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
     private final PostService postService;
+    private final ApiTokenService apiTokenService;
 
     @Autowired
-    public UserController(UserService userService, TokenService tokenService, PostService postService) {
+    public UserController(UserService userService, TokenService tokenService, PostService postService, ApiTokenService apiTokenService) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.postService = postService;
+        this.apiTokenService = apiTokenService;
     }
 
     @GetMapping("/register")
@@ -309,6 +317,33 @@ public class UserController {
             return "user_detail";
         } catch (UsernameNotFoundException e) {
             return "redirect:/";
+        }
+    }
+    @ResponseBody
+    @GetMapping("/weather")
+    public ResponseEntity<String> getWeather(HttpServletRequest request) {
+        Logger logger = LoggerFactory.getLogger(RcloneExecutor.class);
+        String clientIp = userService.getClientIp(request);
+        boolean CanFetchData = apiTokenService.incrementTokenAndCheckLimit(clientIp);
+        if (!CanFetchData) {
+            logger.error("超過每小時請求限制");
+            return ResponseEntity.status(429).body("請求過於頻繁，請稍後再試");
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
+        String url = userConfig.getWeatherApiUrl();
+        String apiKey = userConfig.getWeatherApiKey();
+
+        String postUrl = url.replace("{inquire}", clientIp).replace("{apikey}", apiKey);
+
+        try {
+            String weatherResponse = restTemplate.getForObject(postUrl, String.class);
+            logger.info("成功獲取天氣資料");
+            return ResponseEntity.ok(weatherResponse);
+        } catch (Exception e) {
+            logger.error("無法獲取天氣資料: " + e.getMessage());
+            return ResponseEntity.status(500).body("請求錯誤，請稍後再試");
         }
     }
 }

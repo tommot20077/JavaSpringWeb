@@ -13,7 +13,7 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #e39624">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background-color: #e39624">
     <a class="navbar-brand" href="/">我的Blog Web</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -49,6 +49,10 @@
         </ul>
     </div>
 </nav>
+
+<div id="index-weather" class="weather-container">
+
+</div>
 
 <div class="container mt-5">
     <div class="jumbotron" th:if="${!userLoggedIn}">
@@ -97,9 +101,15 @@
 
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchWeather();
+    });
 
+</script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="/weather.js"></script>
 </body>
 </html>

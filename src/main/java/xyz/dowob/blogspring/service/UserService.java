@@ -2,6 +2,7 @@ package xyz.dowob.blogspring.service;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,5 +251,17 @@ public class UserService{
                 }
             }
         }
+    }
+
+    public String getClientIp(HttpServletRequest request) {
+        String remoteAddr = "";
+
+        if (request.getHeader("X-Forwarded-For") != null) {
+            remoteAddr = request.getHeader("X-Forwarded-For").split(",")[0];
+        } else {
+            remoteAddr = request.getRemoteAddr();
+        }
+
+        return remoteAddr;
     }
 }

@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface CommentRepository extends CrudRepository<Comment, Long>{
     Page<Comment> findCommentsPageByPost_ArticleId(Long PostId, Pageable pageable);
     List<Comment> findCommentsListByPost_ArticleId(Long PostId);
-
     Optional<Comment> findCommentByCommentId(Long commentId);
 
 

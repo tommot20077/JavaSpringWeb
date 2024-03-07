@@ -23,3 +23,48 @@ html {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 }
+
+.weather-container {
+    background-color: #f9d5b0;
+    padding: 20px;
+    border-radius: 10px;
+    color: #d8896e;
+    font-family: 'Arial', sans-serif;
+    position: absolute;
+    top: 130px;
+    right: 10px;
+    padding: 20px;
+    border: 1px solid #d8896e;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: auto;
+    max-width: 370px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.9em;
+}
+
+.weather-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.weather-container th,
+.weather-container td {
+    text-align: left;
+    padding: 4px;
+    border-bottom: 1px solid #570000;
+    color: #552323;
+}
+
+.weather-icon {
+    display: block;
+    width: 64px;
+    height: 64px;
+}
+
+.weather-details {
+    margin-top: 10px;
+}
