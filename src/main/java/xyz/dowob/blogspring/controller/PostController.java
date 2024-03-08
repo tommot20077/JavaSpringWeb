@@ -42,8 +42,6 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-
-//userRepository處理
 @Autowired
     public PostController(PostService postService, UserService userService) {
         this.postService = postService;
@@ -181,7 +179,6 @@ public class PostController {
     public String listPosts(Model model, @RequestParam(defaultValue = "1") int page, HttpServletRequest request, HttpSession session) {
         int pageSize = 6;
         User user = null;
-        page = Math.max(page, 1);
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("updateTime").descending());
         Page<Post> postPage = postService.getPublishedPostsByPage(pageable);
         model.addAttribute("posts", postPage);
