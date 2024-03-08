@@ -1,18 +1,17 @@
 body {
     min-height: 100%;
     background-color: #f7f8fa;
-    background-image: url('/images/indexBackground.webp');
-    background-repeat: no-repeat;
-    background-size: 100% auto;
-    background-position: center top;
+    background: linear-gradient(to left, #ffc992, #e58282);
     background-attachment: scroll;
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
     width: 100%;
+    min-width: 512px;
 }
 html {
     height: 100%;
+    min-width: 512px;
 }
 .editor-container {
     margin: 30px auto;
@@ -24,22 +23,28 @@ html {
 
 }
 
+
+
 .weather-container {
-    background-color: #f9d5b0;
+    background-color: #ffddb9;
     padding: 20px;
     border-radius: 10px;
     color: #d8896e;
     font-family: 'Arial', sans-serif;
-    position: absolute;
-    top: 130px;
-    right: 10px;
+    position: relative;
+    max-height: 800px;
+    height: 100%;
+    top: 10px;
+    left: 10px;
     padding: 20px;
     border: 1px solid #d8896e;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    width: auto;
+    width: 100%;
     max-width: 370px;
     box-sizing: border-box;
     display: flex;
+    align-content: space-around;
+    flex-wrap: wrap;
     flex-direction: column;
     align-items: flex-start;
     font-size: 0.9em;
@@ -68,3 +73,73 @@ html {
 .weather-details {
     margin-top: 10px;
 }
+
+.card-body {
+    background-color: #ffdbbf !important;
+}
+@media (max-width: 768px) {
+    .body{
+        overflow-x: scroll;
+    }
+}
+
+
+@keyframes ldio-4pqo44ipw4-o {
+    0%    { opacity: 1; transform: translate(0 0) }
+    49.99% { opacity: 1; transform: translate(80px,0) }
+    50%    { opacity: 0; transform: translate(80px,0) }
+    100%    { opacity: 0; transform: translate(0,0) }
+}
+
+@keyframes ldio-4pqo44ipw4 {
+    0% { transform: translate(0,0) }
+    50% { transform: translate(80px,0) }
+    100% { transform: translate(0,0) }
+}
+
+.ldio-4pqo44ipw4 div {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    top: 60px;
+    left: 20px;
+}
+
+.ldio-4pqo44ipw4 div:nth-child(1) {
+    background: #fe514c;
+    animation: ldio-4pqo44ipw4 1s linear infinite;
+    animation-delay: -0.5s;
+}
+
+.ldio-4pqo44ipw4 div:nth-child(2) {
+    background: #ffb80c;
+    animation: ldio-4pqo44ipw4 1s linear infinite;
+    animation-delay: 0s;
+}
+
+.ldio-4pqo44ipw4 div:nth-child(3) {
+    background: #fe514c;
+    animation: ldio-4pqo44ipw4-o 1s linear infinite;
+    animation-delay: -0.5s;
+}
+
+.loadingio-spinner-dual-ball-l2u3038qtw8 {
+    width: 200px;
+    height: 200px;
+    display: inline-block;
+    overflow: hidden;
+    background: none;
+}
+
+.ldio-4pqo44ipw4 {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: translateZ(0) scale(1);
+    backface-visibility: hidden;
+    transform-origin: 0 0;
+}
+
+.ldio-4pqo44ipw4 div { box-sizing: content-box; }
+

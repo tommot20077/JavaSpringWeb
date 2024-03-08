@@ -49,57 +49,55 @@
         </ul>
     </div>
 </nav>
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="jumbotron" style="display: block" th:if="${!userLoggedIn}">
+                <h1 class="display-4">歡迎來到我的部落格!</h1>
+                <p class="lead">這是一個簡易實作部落格首頁。</p>
+                <hr class="my-4">
+                <p>其中主要使用Java Spring boot最為後端架構</p>
+                <a>目前開發狀態: 維護中</a>
+                <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
+                <br>
+                <br>
+                <a class="btn btn-primary btn-lg" href="/register" role="button">立即註冊</a>
+                <a class="btn btn-secondary btn-lg" href="/login" role="button">登入</a>
+            </div>
 
-<div id="index-weather" class="weather-container">
-
-</div>
-
-<div class="container mt-5">
-    <div class="jumbotron" th:if="${!userLoggedIn}">
-        <h1 class="display-4">歡迎來到我的部落格!</h1>
-        <p class="lead">這是一個簡易實作部落格首頁。</p>
-        <hr class="my-4">
-        <p>其中主要使用Java Spring boot最為後端架構</p>
-        <a>目前開發狀態: 維護中</a>
-        <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
-        <br>
-        <br>
-        <a class="btn btn-primary btn-lg" href="/register" role="button">立即註冊</a>
-        <a class="btn btn-secondary btn-lg" href="/login" role="button">登入</a>
-    </div>
-
-    <div class="jumbotron" th:if="${userLoggedIn}">
-        <h1 class="display-4">歡迎 [[${session.currentUsername}]]!</h1>
-        <p class="lead">這是一個簡易實作部落格首頁。</p>
-        <hr class="my-4">
-        <p>其中主要使用Java Spring boot最為後端架構</p>
-        <a>目前開發狀態: 維護中</a>
-        <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
-    </div>
+            <div class="jumbotron" th:if="${userLoggedIn}">
+                <h1 class="display-4">歡迎 [[${session.currentUsername}]]!</h1>
+                <p class="lead">這是一個簡易實作部落格首頁。</p>
+                <hr class="my-4">
+                <p>其中主要使用Java Spring boot最為後端架構</p>
+                <a>目前開發狀態: 維護中</a>
+                <a href="https://github.com/tommot20077/JavaSpringWeb">(點擊前往我的github)</a>
+            </div>
 
 
 
-    <div class="container mt-4">
-
-        <div th:if="${posts}">
-            <div th:each="post, iterStat : ${posts}" th:if="${iterStat.count <= 5}">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</a>
-                            <a th:unless="${post.isDeleted}" th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
-                        </h5>
+            <div class="container mt-12">
+                <div th:if="${posts}">
+                    <div th:each="post, iterStat : ${posts}" th:if="${iterStat.count <= 5}">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</a>
+                                    <a th:unless="${post.isDeleted}" th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}" th:href="@{/article/{id}(id=${post.articleId})}">文章標題</a>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${posts.size() > 5}" class="text-center">
+                        <a href="/article?page=1" class="btn btn-info">更多文章</a>
                     </div>
                 </div>
             </div>
-            <div th:if="${posts.size() > 5}" class="text-center">
-                <a href="/article" class="btn btn-info">更多文章</a>
-            </div>
+            <br><br>
         </div>
+        <div id="index-weather" class="weather-container col-md-4 col-12"></div>
+
     </div>
-    <br><br>
-
-
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

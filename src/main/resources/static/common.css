@@ -10,6 +10,7 @@ body {
     background-color: #fff4e6;
     color: #481d07;
     padding-top: 72px;
+
 }
 
 .confirm-card {
@@ -166,6 +167,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,.1);
     margin-bottom: 20px;
+    background-color: #ffd7bd;
 }
 
 .editor-container {

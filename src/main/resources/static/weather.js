@@ -1,6 +1,12 @@
+indexWeather = document.getElementById('index-weather');
 function fetchWeather() {
     const weatherCache = localStorage.getItem('weatherCache');
     const weatherData = weatherCache && JSON.parse(weatherCache);
+    indexWeather.innerHTML =
+        `<div class="loadingio-spinner-dual-ball-l2u3038qtw8">
+                     <div class="ldio-4pqo44ipw4">
+                     <div></div><div></div><div></div>
+                     </div></div>`;
 
     if (weatherData && (new Date().getTime() - weatherData.timestamp < 1000 * 60 * 15)) {
         updateIndexWithWeatherData(weatherData.data);
@@ -22,7 +28,6 @@ function fetchWeather() {
                 }));
             })
             .catch(error => {
-                const indexWeather = document.getElementById('index-weather');
                 indexWeather.innerHTML = `<p>${error}</p>`;
             });
     }
