@@ -100,8 +100,6 @@
             <span class="ql-formats">
                     <button class="ql-link"></button>
                     <button class="ql-image"></button>
-                    <button class="ql-video"></button>
-                    <button class="ql-formula"></button>
                 </span>
             <span class="ql-formats">
                     <button class="ql-clean"></button>
@@ -141,6 +139,17 @@
                                 selectLocalImage();
                             } else {
                                 this.quill.format('image', false);
+                            }
+                        },
+                        'link': function() {
+                            const range = quill.getSelection();
+                            let selectedText = quill.getText(range.index, range.length);
+                            let link = prompt('請輸入連結URL:');
+                            if (link) {
+                                quill.formatText(range.index, range.length, { 'link': link });
+                                if (selectedText.trim().length === 0) {
+                                    quill.insertText(range.index + range.length, link, 'link', link);
+                                }
                             }
                         }
                     },

@@ -122,8 +122,6 @@
                 <span class="ql-formats">
                     <button class="ql-link"></button>
                     <button class="ql-image"></button>
-                    <button class="ql-video"></button>
-                    <button class="ql-formula"></button>
                 </span>
                     <span class="ql-formats">
                     <button class="ql-clean"></button>
@@ -164,9 +162,6 @@
     }
 
 
-
-
-
     document.addEventListener('DOMContentLoaded', function() {
         const quill = new Quill('#editor', {
             modules: {
@@ -180,7 +175,19 @@
                             } else {
                                 this.quill.format('image', false);
                             }
-                        }
+                        },
+                        'link': function() {
+                            const range = quill.getSelection();
+                            let selectedText = quill.getText(range.index, range.length);
+                            let link = prompt('請輸入連結URL:');
+                            if (link) {
+                                quill.formatText(range.index, range.length, { 'link': link });
+                                if (selectedText.trim().length === 0) {
+                                    quill.insertText(range.index + range.length, link, 'link', link);
+                                }
+                            }
+                        },
+
                     }
                 },
             },
@@ -217,11 +224,9 @@
 
 
 
-
         let autoSaveTimer = null
         const autoSaveToggle =document.getElementById('autoSave-toggle');
-        const storedAutoSaveState = localStorage.getItem('autoSaveState') === 'true';
-        autoSaveToggle.checked = storedAutoSaveState;
+        autoSaveToggle.checked = localStorage.getItem('autoSaveState') === 'true';
 
         function handleAutoSaveChange() {
             localStorage.setItem('autoSaveState', autoSaveToggle.checked);
