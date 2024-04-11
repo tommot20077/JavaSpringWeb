@@ -55,7 +55,7 @@ public class User {
     @Getter
     @Setter
     @Column(nullable = false, columnDefinition = "varchar(100) default 'Etc/UTC'")
-    private String timezone;
+    private String timezone = "Etc/UTC";
 
     public Long getId() {
         return id;

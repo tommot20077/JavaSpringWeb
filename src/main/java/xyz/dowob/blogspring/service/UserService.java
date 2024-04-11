@@ -45,6 +45,9 @@ public class UserService{
     }
 
     public void registerUser(User user, String confirmPassword) throws Userdata_UpdateException {
+        if (user.getUsername().isBlank() || user.getPassword().isBlank()|| confirmPassword.isBlank()) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.WRONG_INPUT);
+        }
         if (!user.getPassword().equals(confirmPassword)) {
             throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_NOT_MATCH);
         }
