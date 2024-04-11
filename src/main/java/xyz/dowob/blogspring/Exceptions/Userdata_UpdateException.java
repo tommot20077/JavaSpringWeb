@@ -25,7 +25,8 @@ public class Userdata_UpdateException extends Exception {
         EMAIL_ALREADY_EXISTS("電子郵件已經存在"),
         USER_SEND_EMAIL_LIMIT("每小時的發信次數已達上限，請稍後再試。"),
         TOKEN_INVALID("無效的token"),
-        USER_NOT_FOUND("找不到使用者");
+        USER_NOT_FOUND("找不到使用者"),
+        WRONG_INPUT("輸入錯誤");
 
 
 

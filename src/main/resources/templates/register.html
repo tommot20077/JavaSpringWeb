@@ -48,9 +48,9 @@
 
     <div class="container">
         <div class="form-header"><h1>註冊帳號</h1></div>
-        <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+        <div th:if="${errorMessage}" id = "errorMessage" class="error" th:text="${errorMessage}"></div>
 
-        <form method="post" action="#" th:action="@{/register}" th:object="${user}">
+        <form method="post" action="#" th:action="@{/register}" th:object="${user}" >
             <div class="form-group">
                 <label for="username">用戶名稱:</label>
                 <input type="text" class="form-control" id="username" th:field="*{username}" required />
@@ -120,8 +120,15 @@
 
 
         document.getElementById("save-button").addEventListener('click', () => {
-            showSpinner();
-            this.disabled = true;
+            let repass = document.getElementById("confirmPassword").value
+            if (repass == null || repass.value !== document.getElementById("password").value || repass.trim() === "") {
+                document.getElementById("errorMessage").innerHTML = "密碼不一致";
+                return false;
+            } else {
+                showSpinner();
+                this.disabled = true;
+            }
+
         });
 
 

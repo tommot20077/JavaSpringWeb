@@ -69,7 +69,7 @@ public class UserController {
         try {
             userService.registerUser(user ,confirmPassword);
             return "redirect:/register_success";
-        }catch (Userdata_UpdateException e){
+        }catch (Exception e){
             String errorMessage = e.getMessage();
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             redirectAttributes.addFlashAttribute("user", user);
