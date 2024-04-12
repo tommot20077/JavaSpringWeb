@@ -146,7 +146,9 @@ public class UserService{
 
     }
     public void resetPassword(User user, String token, String newPassword, String confirmPassword) throws Userdata_UpdateException {
-        if (user == null) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USER_NOT_FOUND);
+        if (user == null) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USER_NOT_FOUND);
+        }
         if (tokenService.resetPasswordVerifyToken(token)) {
             if (newPassword.equals(confirmPassword)) {
                 if (userInspection.isValidPassword(newPassword, user.getUsername())) {
@@ -206,7 +208,9 @@ public class UserService{
     }
 
     public Long verifyRememberMeToken(String base64Token) {
-        if (base64Token == null) return null;
+        if (base64Token == null) {
+            return null;
+        }
         String argonToken = new String(Base64.getDecoder().decode(base64Token), StandardCharsets.UTF_8);
         PersistentLogin persistentLogin = persistentLoginRepository.findByToken(argonToken).orElse(null);
         if (persistentLogin != null){
@@ -224,7 +228,10 @@ public class UserService{
         String base64RememberMeToken = Base64.getEncoder().encodeToString(hashRememberMeToken.getBytes(StandardCharsets.UTF_8));
 
         int expireTimeDays = 14;
-        PersistentLogin persistentLogin = new PersistentLogin();
+        PersistentLogin persistentLogin = persistentLoginRepository.findByUser_Id(userId).orElse(null);
+        if (persistentLogin == null) {
+             persistentLogin = new PersistentLogin();
+        }
         persistentLogin.setUser(getUserById(userId));
         persistentLogin.createOrUpdateUserRememberMeToken(hashRememberMeToken, expireTimeDays);
         persistentLoginRepository.save(persistentLogin);
@@ -242,7 +249,7 @@ public class UserService{
     public void deleteRememberMeCookie(HttpServletResponse response, HttpSession session, Cookie[] cookies){
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("REMEMBER_ME")) {
+                if ("REMEMBER_ME".equals(cookie.getName())) {
                     Long userId = (Long) session.getAttribute("currentUserId");
                     persistentLoginRepository.findByUser_Id(userId).ifPresent(persistentLoginRepository::delete);
                     Cookie rememberMeCookie = new Cookie("REMEMBER_ME", null);
@@ -257,7 +264,7 @@ public class UserService{
     }
 
     public String getClientIp(HttpServletRequest request) {
-        String remoteAddr = "";
+        String remoteAddr;
 
         if (request.getHeader("X-Forwarded-For") != null) {
             remoteAddr = request.getHeader("X-Forwarded-For").split(",")[0];
