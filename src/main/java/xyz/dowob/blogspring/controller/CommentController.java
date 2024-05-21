@@ -31,6 +31,7 @@ import static xyz.dowob.blogspring.functions.FormattedTimeForUser.formattedTimeF
 @Controller
 public class CommentController {
     private final CommentService commentService;
+
     private final UserService userService;
 
     @Autowired
@@ -40,24 +41,24 @@ public class CommentController {
     }
 
     @PostMapping("/article/{articleId}/comment")
-    public ResponseEntity<?> postComment(@PathVariable long articleId, @RequestBody @Valid CommentDto commentDto, HttpSession session){
+    public ResponseEntity<?> postComment(@PathVariable long articleId, @RequestBody @Valid CommentDto commentDto, HttpSession session) {
         String commentUsername = (String) session.getAttribute("currentUsername");
-        if (session.getAttribute("currentUserId") == null){
+        if (session.getAttribute("currentUserId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
 
         boolean result = commentService.saveComment(commentDto.getDelta(), articleId, commentUsername);
-        if(result){
+        if (result) {
             return ResponseEntity.ok(Map.of("message", "評論保存成功"));
-        }else {
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "評論不可僅有空白或空白字符"));
         }
     }
 
     @GetMapping("/article/{articleId}/comment")
-    public ResponseEntity<?> getComments(@PathVariable long articleId ,@RequestParam(defaultValue = "0") int page, HttpSession session){
+    public ResponseEntity<?> getComments(@PathVariable long articleId, @RequestParam(defaultValue = "0") int page, HttpSession session) {
         User user;
-        if (session.getAttribute("currentUserId") != null){
+        if (session.getAttribute("currentUserId") != null) {
             user = userService.getUserById((Long) session.getAttribute("currentUserId"));
         } else {
             user = null;
@@ -74,7 +75,7 @@ public class CommentController {
                 commentData.put("commentId", comment.getCommentId());
                 commentData.put("authorName", comment.getAuthor().getUsername());
                 commentData.put("authorId", comment.getAuthor().getId());
-                commentData.put("update_time", formattedTimeForUser(comment.getUpdate_time(),user));
+                commentData.put("update_time", formattedTimeForUser(comment.getUpdate_time(), user));
                 commentData.put("isDeleted", comment.isDeleted());
                 return commentData;
             } catch (JsonProcessingException e) {
@@ -91,8 +92,8 @@ public class CommentController {
     }
 
     @PostMapping("/article/{articleId}/comment/image")
-    public ResponseEntity<?> handleCommentImageUpload(@PathVariable long articleId, @RequestParam("image")MultipartFile file, HttpSession session){
-        if (session.getAttribute("currentUserId") == null){
+    public ResponseEntity<?> handleCommentImageUpload(@PathVariable long articleId, @RequestParam("image") MultipartFile file, HttpSession session) {
+        if (session.getAttribute("currentUserId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
         }
         try {
@@ -105,10 +106,10 @@ public class CommentController {
     }
 
     @GetMapping("/comment/edit/{commentId}")
-    public String editCommentForm(@PathVariable Long commentId, Model model, HttpSession session){
+    public String editCommentForm(@PathVariable Long commentId, Model model, HttpSession session) {
         try {
             String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
-            if (commentService.getCommentByCommentId(commentId).isDeleted() || !commentService.isUserEditable(commentId, currentUserId)){
+            if (commentService.getCommentByCommentId(commentId).isDeleted() || !commentService.isUserEditable(commentId, currentUserId)) {
                 return "redirect:/";
             }
             Comment comment = commentService.getCommentByCommentId(commentId);
@@ -120,44 +121,43 @@ public class CommentController {
     }
 
     @GetMapping("/comment/{commentId}/content")
-    public ResponseEntity<?> getCommentContent(@PathVariable long commentId){
+    public ResponseEntity<?> getCommentContent(@PathVariable long commentId) {
         try {
             Comment comment = commentService.getCommentByCommentId(commentId);
             Map<String, Object> contentDelta = commentService.convertCommentStructure(comment.getContent(), comment);
             return ResponseEntity.ok(Map.of("delta", contentDelta));
-        } catch (Commentdata_UpdateException |JsonProcessingException e) {
+        } catch (Commentdata_UpdateException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         }
     }
 
 
-
     @PutMapping("/comment/edit/{commentId}")
-    public ResponseEntity<?> editComment(@PathVariable long commentId, @RequestBody @Valid CommentDto commentDto, HttpSession session){
+    public ResponseEntity<?> editComment(@PathVariable long commentId, @RequestBody @Valid CommentDto commentDto, HttpSession session) {
         try {
-            if (session.getAttribute("currentUserId") == null){
+            if (session.getAttribute("currentUserId") == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
             String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
             commentService.editComment(commentDto.getDelta(), commentId, currentUserId);
             return ResponseEntity.ok(Map.of("message", "評論修改成功"));
 
-        }catch (Commentdata_UpdateException e){
+        } catch (Commentdata_UpdateException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
 
     }
 
     @DeleteMapping("/comment/delete/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable long commentId, HttpSession session){
+    public ResponseEntity<?> deleteComment(@PathVariable long commentId, HttpSession session) {
         try {
-            if (session.getAttribute("currentUserId") == null){
+            if (session.getAttribute("currentUserId") == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
             String currentUserId = Long.toString((Long) session.getAttribute("currentUserId"));
             commentService.deleteComment(commentId, currentUserId);
             return ResponseEntity.ok(Map.of("message", "評論刪除成功"));
-        }catch (Commentdata_UpdateException e){
+        } catch (Commentdata_UpdateException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
     }

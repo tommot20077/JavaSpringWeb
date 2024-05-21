@@ -21,27 +21,31 @@ import java.util.Map;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+
     private final PostService postService;
+
     private final UserService userService;
+
     private final DeltaToJsonConverter deltaToJsonConverter = new DeltaToJsonConverter();
+
     @Autowired
-    public CommentService(CommentRepository commentRepository,  PostService postService, UserService userService) {
+    public CommentService(CommentRepository commentRepository, PostService postService, UserService userService) {
         this.commentRepository = commentRepository;
         this.postService = postService;
         this.userService = userService;
     }
 
-    public Page<Comment> getCommentsByArticleId(Long articleId, Pageable pageable){
-        return commentRepository.findCommentsPageByPost_ArticleId(articleId , pageable);
+    public Page<Comment> getCommentsByArticleId(Long articleId, Pageable pageable) {
+        return commentRepository.findCommentsPageByPost_ArticleId(articleId, pageable);
     }
 
     public Comment getCommentByCommentId(Long commentId) throws Commentdata_UpdateException {
         return commentRepository.findCommentByCommentId(commentId)
-                .orElseThrow(() -> new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_NOT_FOUND));
+                                .orElseThrow(() -> new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_NOT_FOUND));
     }
 
     @Transactional
-    public boolean saveComment(Map<String,Object> delta, Long articleId, String commentUsername){
+    public boolean saveComment(Map<String, Object> delta, Long articleId, String commentUsername) {
         try {
             String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
             Comment comment = new Comment();
@@ -57,7 +61,7 @@ public class CommentService {
             comment.setDeleted(false);
             commentRepository.save(comment);
             return true;
-        }catch (JsonProcessingException | Postdata_UpdateException e){
+        } catch (JsonProcessingException | Postdata_UpdateException e) {
             return false;
         }
 
@@ -79,7 +83,7 @@ public class CommentService {
             String json = deltaToJsonConverter.convertCommentDeltaToJson(delta);
             if (json == null || json.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(delta)) {
                 throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.COMMENT_INVALID);
-            }else if (json.length() > 10000){
+            } else if (json.length() > 10000) {
                 throw new Commentdata_UpdateException(Commentdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
             }
 

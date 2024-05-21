@@ -107,7 +107,6 @@ public class UserService{
             boolean emailChanged = false;
 
             if(StringUtils.isNotBlank(newInputUser.getEmail()) && !newInputUser.getEmail().equals(repositoryUser.getEmail())){
-                // 如果電子郵件在資料庫中不存在，則不應拋出異常
                 if (userInspection.hasEmail(newInputUser.getEmail()) != null) {
                     repositoryUser.setEmail(newInputUser.getEmail());
                     emailChanged = true;

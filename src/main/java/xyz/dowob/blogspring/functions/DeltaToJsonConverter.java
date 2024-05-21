@@ -20,8 +20,8 @@ public class DeltaToJsonConverter {
     public String convertArticleDeltaToJson(List<Map<String,Object>> delta) throws JsonProcessingException {
         if (delta != null) {
             Map<String, List<Map<String, Object>>> wrappedDelta = new HashMap<>();
-            wrappedDelta.put("delta", delta); // 包装delta数组与"delta"键
-            return objectMapper.writeValueAsString(wrappedDelta); // 转换整个结构为JSON字符串
+            wrappedDelta.put("delta", delta);
+            return objectMapper.writeValueAsString(wrappedDelta);
         }
         return null;
     }
@@ -61,15 +61,12 @@ public class DeltaToJsonConverter {
                         Map<String, Object> imageOp = new HashMap<>();
                         imageOp.put("insert", Collections.singletonMap("image", imageUrl));
                         standardDeltaOps.add(imageOp);
-                        // Also add a new line after image as per Quill's standard format
                         standardDeltaOps.add(Collections.singletonMap("insert", "\n"));
                     }
                 } else {
-                    // If it's not an image or any other type of object, add it as it is
                     standardDeltaOps.add(op);
                 }
             } else {
-                // If the map doesn't contain 'insert' or is not a Map type, leave it unchanged
                 standardDeltaOps.add(op);
             }
         }

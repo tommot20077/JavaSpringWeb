@@ -236,12 +236,16 @@ public class UserController {
         return "reset_password";
     }
 
+    Logger logger = LoggerFactory.getLogger(UserController.class);
     @PostMapping("/sendResetPasswordMail")
     public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> keyword, HttpSession session){
         String username_Or_Email = keyword.get("usernameOrEmail");
+        logger.info("usernameOrEmail: " + username_Or_Email);
         try {
             User user = userService.getUserByUsernameOrEmail(username_Or_Email);
+            logger.info("user: " + user);
             userService.sendResetPasswordMail(user);
+            logger.info("驗證信已發送");
             session.setAttribute("resetPasswordUserID", user.getId());
             return ResponseEntity.ok("驗證信已發送");
         } catch (Userdata_UpdateException | UsernameNotFoundException e) {
@@ -325,8 +329,8 @@ public class UserController {
     public ResponseEntity<String> getWeather(HttpServletRequest request) {
         Logger logger = LoggerFactory.getLogger(RcloneExecutor.class);
         String clientIp = userService.getClientIp(request);
-        boolean CanFetchData = apiTokenService.incrementTokenAndCheckLimit(clientIp);
-        if (!CanFetchData) {
+        boolean canFetchData = apiTokenService.incrementTokenAndCheckLimit(clientIp);
+        if (!canFetchData) {
             logger.error("超過每小時請求限制");
             return ResponseEntity.status(429).body("請求過於頻繁，請稍後再試");
         }

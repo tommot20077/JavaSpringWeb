@@ -29,7 +29,6 @@ public class RcloneExecutor {
         try {
             Process process = processBuilder.start();
 
-            // 讀取命令的正常輸出
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -37,7 +36,6 @@ public class RcloneExecutor {
                 }
             }
 
-            // 讀取錯誤輸出（如果存在）
             try (BufferedReader readerError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
                 String line;
                 while ((line = readerError.readLine()) != null) {

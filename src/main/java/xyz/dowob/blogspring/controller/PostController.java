@@ -62,12 +62,10 @@ public class PostController {
         try {
             String username = (String) session.getAttribute("currentUsername");
             Long newPostId = postService.addNewPost(username);
-            // 這裡使用 RedirectView 來重定向到編輯文章的頁面
             return new RedirectView("/article/" + newPostId + "/edit");
 
         }catch (Postdata_UpdateException | JsonProcessingException e){
             redirectAttributes.addFlashAttribute("errorMessage", "無法創建新文章");
-            // 當錯誤發生時重定向回首頁或錯誤頁面
             return new RedirectView("/error");
         }
     }
@@ -120,7 +118,6 @@ public class PostController {
             String errorMessage = e.getMessage();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", errorMessage));
         } catch (Exception e) {
-            // 捕获其他所有的异常
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
@@ -141,8 +138,9 @@ public class PostController {
                 if (session.getAttribute("currentUserId") != null) {
                     userId = (Long) session.getAttribute("currentUserId");
                 }
-                if (userId == null || !(userId.equals(post.getAuthor().getId())))
+                if (userId == null || !(userId.equals(post.getAuthor().getId()))) {
                     return "redirect:/";
+                }
             }
 
             if (session.getAttribute("currentUserId") != null) {

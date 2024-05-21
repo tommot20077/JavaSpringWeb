@@ -22,7 +22,6 @@ public class SearchController {
         this.postRepository = postRepository;
     }
 
-    // 修改GetMapping以包含defaultValue，並使keyword與type參數選填
     @GetMapping("/search")
     public String search(
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,

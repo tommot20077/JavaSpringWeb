@@ -19,10 +19,10 @@ public class ApiTokenService {
     }
 
 
-@Transactional
+    @Transactional
     public boolean incrementTokenAndCheckLimit(String ipAddress) {
-         final int MAX_REQUESTS_PER_HOUR = 30;
-        Optional<ApiToken> optionalApiToken  = apiTokenRepository.findApiTokenByIpAddress(ipAddress);
+        final int MAX_REQUESTS_PER_HOUR = 30;
+        Optional<ApiToken> optionalApiToken = apiTokenRepository.findApiTokenByIpAddress(ipAddress);
         ApiToken token;
         if (optionalApiToken.isPresent()) {
             token = optionalApiToken.get();

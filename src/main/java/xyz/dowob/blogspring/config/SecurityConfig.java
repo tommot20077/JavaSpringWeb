@@ -31,11 +31,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
 
         http
                 .csrf((csrf) -> csrf
-                        .csrfTokenRepository(csrfTokenRepository)
+                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
                 )
 
 
