@@ -55,7 +55,7 @@ public class CommentService {
             }
 
             comment.setContent(json);
-            comment.setPost(postService.getPostByArticle_id(articleId));
+            comment.setPost(postService.getPostByArticleId(articleId));
             comment.setAuthor(userService.getUserByUsername(commentUsername));
             comment.setCommentInArticleId(commentRepository.findCommentsListByPost_ArticleId(articleId).size() + 1);
             comment.setDeleted(false);

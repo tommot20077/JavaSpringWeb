@@ -12,6 +12,8 @@ import java.util.Optional;
 public class ApiTokenService {
     private final ApiTokenRepository apiTokenRepository;
 
+    private final int MAX_REQUESTS_PER_HOUR = 30;
+
 
     @Autowired
     public ApiTokenService(ApiTokenRepository apiTokenRepository) {
@@ -21,7 +23,6 @@ public class ApiTokenService {
 
     @Transactional
     public boolean incrementTokenAndCheckLimit(String ipAddress) {
-        final int MAX_REQUESTS_PER_HOUR = 30;
         Optional<ApiToken> optionalApiToken = apiTokenRepository.findApiTokenByIpAddress(ipAddress);
         ApiToken token;
         if (optionalApiToken.isPresent()) {

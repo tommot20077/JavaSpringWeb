@@ -34,7 +34,7 @@ public class RememberMeAuthenticationFilter extends OncePerRequestFilter {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("REMEMBER_ME")) {
+                    if ("REMEMBER_ME".equals(cookie.getName())) {
                         Long userId = userService.verifyRememberMeToken(cookie.getValue());
                         if (userId != null) {
                             Cache userCache = cacheManager.getCache("user");

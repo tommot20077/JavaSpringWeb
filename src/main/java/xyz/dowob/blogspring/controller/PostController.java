@@ -90,7 +90,7 @@ public class PostController {
     public ResponseEntity<?> deleteArticleImage(@RequestBody @Valid ImageDto imageDto, HttpSession session){
         Long articleId = imageDto.getArticleId();
         try {
-            Post post = postService.getPostByArticle_id(articleId);
+            Post post = postService.getPostByArticleId(articleId);
             if (session.getAttribute("currentUserId") == null || !(post.getAuthor().getId().equals (session.getAttribute("currentUserId")))){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
@@ -127,7 +127,7 @@ public class PostController {
         try {
             Long userId = null;
             User user = null;
-            Post post = postService.getPostByArticle_id(articleId);
+            Post post = postService.getPostByArticleId(articleId);
             if (post.isDeleted()){
                 return "redirect:/";
             }
@@ -160,7 +160,7 @@ public class PostController {
     @GetMapping("/article/{articleId}/content")
     public ResponseEntity<?> getArticleContent(@PathVariable long articleId){
         try {
-            Post articleContent = postService.getPostByArticle_id(articleId);
+            Post articleContent = postService.getPostByArticleId(articleId);
             if (articleContent.isDeleted()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "文章已刪除"));
             }
@@ -222,7 +222,7 @@ public class PostController {
     public String editPostForm(@PathVariable Long articleId, Model model, HttpSession session, RedirectAttributes redirectAttributes){
         try {
             String username = (String) session.getAttribute("currentUsername");
-            Post post = postService.getPostByArticle_id(articleId);
+            Post post = postService.getPostByArticleId(articleId);
             if (post.isDeleted()){
                 return "redirect:/";
             }
@@ -258,7 +258,7 @@ public class PostController {
     public ResponseEntity<?> publishArticle (HttpSession session, @RequestBody @Valid PublishRequestDto publishRequest) {
         try {
             Long userId = (Long) session.getAttribute("currentUserId");
-            if (userId == null || !(postService.getUserByArticle_Id(publishRequest.getId()).getId().equals(userId))) {
+            if (userId == null || !(postService.getUserByArticleId(publishRequest.getId()).getId().equals(userId))) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入有編輯此文章權限的帳號"));
             }
             postService.updatePostPublish(publishRequest);

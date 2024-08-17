@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Optional<Post> findByArticleId(Long article_id);
+    Optional<Post> findByArticleId(Long articleId);
 
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% AND p.deleted = false AND p.published = true")
     Page<Post> searchByTitleFiltered(@Param("keyword") String keyword, Pageable pageable);
@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.author.id = :authorID AND p.deleted = false")
     Page<Post> findByAuthorID(@Param("authorID") long id, Pageable pageable);
 
-    Page<Post> findByPublishedTrueAndAuthorIdAndDeletedFalse(Long authorID, Pageable pageable);
+    Page<Post> findByPublishedTrueAndAuthorIdAndDeletedFalse(Long authorId, Pageable pageable);
     Page<Post> findByPublishedTrueAndDeletedFalse(Pageable pageable);
 
 }

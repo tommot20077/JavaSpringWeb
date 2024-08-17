@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -191,7 +192,6 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/profile";
         }
-
     }
 
 
@@ -226,7 +226,6 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/profile";
         }
-
     }
 
 
@@ -283,15 +282,15 @@ public class UserController {
             int pageSize = 6;
             Page<Post> posts;
             User user = userService.getUserById(id);
-            Pageable pageable = PageRequest.of(page -1, pageSize);
+            Pageable pageable = PageRequest.of(page -1, pageSize, Sort.by("updateTime").descending());
             if (session.getAttribute("currentUserId") != null){
                 userid = (Long) session.getAttribute("currentUserId");
             }
 
             if (id == userid) {
-                posts = postService.getAllPostsByAuthorID(id, pageable);
+                posts = postService.getPostsByAuthorId(id, pageable, false);
             } else {
-                posts = postService.getPublishedPostsByAuthorID(id, pageable);
+                posts = postService.getPostsByAuthorId(id, pageable, true);
             }
             model.addAttribute("user", user);
             model.addAttribute("postPage", posts);

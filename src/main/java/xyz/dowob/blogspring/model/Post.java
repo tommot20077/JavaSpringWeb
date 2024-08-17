@@ -16,7 +16,7 @@ public class Post {
     @NotBlank(message = "標題為必填選項")
     private String title;
 
-    @Column(nullable = false , columnDefinition = "TEXT")
+    @Column(nullable = false , columnDefinition = "mediumtext")
     @NotBlank(message = "文章內容為必填選項")
     private String content;
 

@@ -99,7 +99,7 @@
         <ul class="pagination justify-content-center">
             <!-- 跳至首頁 -->
             <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=0)}" aria-label="First" th:if="${pageNum > 1}">
+                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=1)}" aria-label="First" th:if="${pageNum > 1}">
                     <span aria-hidden="true">««</span>
                 </a>
             </li>
@@ -127,7 +127,7 @@
             </li>
 
             <!-- 跳至尾頁 -->
-            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
+            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'" th:if="${pageNum < totalPages}">
                 <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${totalPages})}" aria-label="Last" th:if="${page < totalPages}">
                     <span aria-hidden="true">»»</span>
                 </a>

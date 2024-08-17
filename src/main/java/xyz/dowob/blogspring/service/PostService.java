@@ -34,6 +34,8 @@ public class PostService {
     private final UserRepository userRepository;
     private final DeltaToJsonConverter deltaToJsonConverter = new DeltaToJsonConverter();
 
+    private final int MAX_CONTENT_LENGTH = 5500000;
+
     @Autowired
     public PostService(PostRepository postRepository, UserRepository userRepository){
         this.postRepository = postRepository;
@@ -42,7 +44,9 @@ public class PostService {
     }
     @Transactional(rollbackFor = {Postdata_UpdateException.class, JsonProcessingException.class})
     public Long addNewPost(String username) throws Postdata_UpdateException, JsonProcessingException {
-        if (username == null || username.trim().isEmpty()) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.DID_NOT_LOGIN);
+        if (username == null || username.trim().isEmpty()) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.DID_NOT_LOGIN);
+        }
         Post post = new Post();
 
 
@@ -56,41 +60,41 @@ public class PostService {
         return post.getArticleId();
     }
     public void updatePostWithContent(Long articleId, ArticleDto articleDto) throws Postdata_UpdateException, JsonProcessingException {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Post post = getPostByArticle_id(articleId);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Post post = getPostByArticleId(articleId);
 
-            String stringTitle = articleDto.getTitle();
-            if (stringTitle == null || stringTitle.isBlank() ) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
-            if (stringTitle.length() > 250) throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
-            post.setTitle(stringTitle);
-
-            List<Map<String, Object>> standardContents = deltaToJsonConverter.convertToStandardDeltaFormat(articleDto.getDeltaContent());
-            String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(standardContents);
-
-            Map<String, Object> map = objectMapper.readValue(convertContent, new TypeReference<>() {
-            });
-            Object opsValue = map.get("delta");
-            Map<String, Object> modifiedContent = new HashMap<>();
-            modifiedContent.put("ops", opsValue);
-
-
-            if  (convertContent == null || convertContent.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(modifiedContent)) {
-                throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
-            }else if (convertContent.length() > 21000) {
-                throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
-            }
-
-
-            post.setContent(convertContent);
-            postRepository.save(post);
-        } catch (Postdata_UpdateException | JsonProcessingException e) {
-            throw e;
+        String stringTitle = articleDto.getTitle();
+        if (stringTitle == null || stringTitle.isBlank() ) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
         }
+        if (stringTitle.length() > 250) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.TITLE_TOO_LONG);
+        }
+        post.setTitle(stringTitle);
+
+        List<Map<String, Object>> standardContents = deltaToJsonConverter.convertToStandardDeltaFormat(articleDto.getDeltaContent());
+        String convertContent = deltaToJsonConverter.convertArticleDeltaToJson(standardContents);
+
+        Map<String, Object> map = objectMapper.readValue(convertContent, new TypeReference<>() {
+        });
+        Object opsValue = map.get("delta");
+        Map<String, Object> modifiedContent = new HashMap<>();
+        modifiedContent.put("ops", opsValue);
+
+
+        if  (convertContent == null || convertContent.isBlank() || EditorMethod.isOnlyWhiteSpaceOrEmpty(modifiedContent)) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_INVALID);
+        }else if (convertContent.length() > MAX_CONTENT_LENGTH) {
+            throw new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.CONTENT_TOO_LONG);
+        }
+
+
+        post.setContent(convertContent);
+        postRepository.save(post);
     }
 
     public void deletePost(Long articleId, String username) throws Postdata_UpdateException {
-        Post post = getPostByArticle_id(articleId);
+        Post post = getPostByArticleId(articleId);
         if (post.getAuthor().getUsername().equals(username)) {
             post.setDeleted(true);
             postRepository.save(post);
@@ -117,9 +121,7 @@ public class PostService {
 
     public void updatePostPublish(PublishRequestDto publishRequest) throws Postdata_UpdateException {
         try {
-            System.out.println("id: "+publishRequest.getId());
-            System.out.println("isPublished: "+publishRequest.getIsPublished());
-            Post post = getPostByArticle_id(publishRequest.getId());
+            Post post = getPostByArticleId(publishRequest.getId());
             post.setPublished(publishRequest.getIsPublished());
             postRepository.save(post);
         } catch (Postdata_UpdateException e) {
@@ -140,7 +142,7 @@ public class PostService {
 
 
     @Transactional
-    public Post getPostByArticle_id(Long articleId) throws Postdata_UpdateException {
+    public Post getPostByArticleId(Long articleId) throws Postdata_UpdateException {
         Post post = postRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new Postdata_UpdateException(Postdata_UpdateException.ErrorCode.POST_NOT_FOUND));
         if (post != null) {
@@ -149,18 +151,16 @@ public class PostService {
         return post;
     }
 
-    public User getUserByArticle_Id(Long articleId) {
+    public User getUserByArticleId(Long articleId) {
         return userRepository.findByPostsArticleId(articleId)
                 .orElseThrow(() -> new UsernameNotFoundException("找不到ID為" + articleId + "的使用者。"));
     }
 
-    public Page<Post> getAllPostsByAuthorID(long authorID, Pageable pageable) {
-        return postRepository.findByAuthorID(authorID, pageable);
+    public Page<Post> getPostsByAuthorId(long authorId, Pageable pageable, boolean isPublished) {
+        if (isPublished) {
+            return postRepository.findByPublishedTrueAndAuthorIdAndDeletedFalse(authorId, pageable);
+        }else {
+            return postRepository.findByAuthorID(authorId, pageable);
+        }
     }
-
-    public Page<Post> getPublishedPostsByAuthorID(long authorID, Pageable pageable){
-        return postRepository.findByPublishedTrueAndAuthorIdAndDeletedFalse(authorID, pageable);
-    }
-
-
 }

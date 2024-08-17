@@ -53,7 +53,7 @@ public class ImageAccessFilter implements Filter {
 
     private boolean isArticleIdSuspendedOrDeleted(String articleId, Long currentUserId) {
         try {
-            Post post = postService.getPostByArticle_id(Long.parseLong(articleId));
+            Post post = postService.getPostByArticleId(Long.parseLong(articleId));
             if (post.isDeleted()) {
                 return true;
             } else if (!post.isPublished()){

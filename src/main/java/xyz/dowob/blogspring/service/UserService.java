@@ -165,15 +165,15 @@ public class UserService{
         }
     }
 
-    public User getUserByUsernameOrEmail(String username_or_email) throws Userdata_UpdateException {
+    public User getUserByUsernameOrEmail(String usernameOrEmail) throws Userdata_UpdateException {
         User user;
         try {
-            user = getUserByUsername(username_or_email);
+            user = getUserByUsername(usernameOrEmail);
         } catch (UsernameNotFoundException e) {
             try {
-                user = getUserByEmail(username_or_email);
+                user = getUserByEmail(usernameOrEmail);
             } catch (UsernameNotFoundException e1) {
-                throw new UsernameNotFoundException("找不到" + username_or_email + "的使用者資料。");
+                throw new UsernameNotFoundException("找不到" + usernameOrEmail + "的使用者資料。");
             }
         }
         return user;
@@ -194,10 +194,7 @@ public class UserService{
             .orElseThrow(() -> new UsernameNotFoundException("找不到電子郵件為" + email + "的使用者。"));
     }
 
-
-
-
-
+    @SuppressWarnings("unused")
     public void deleteUser(Long id) {
         if (userRepository.existsById(id)){
             userRepository.deleteById(id);

@@ -20,7 +20,9 @@ import xyz.dowob.blogspring.service.PostService;
 @EnableWebSecurity
 public class SecurityConfig {
     private final PostService postService;
+
     private final HttpServletRequest httpRequest;
+
     @Autowired
     public SecurityConfig(PostService postService, HttpServletRequest httpRequest) {
         this.postService = postService;
@@ -28,37 +30,29 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf((csrf) -> csrf
-                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
-                )
+        http.csrf((csrf) -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
 
 
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionConcurrency((concurrency) -> concurrency
-                                .maximumSessions(1)
-                                .maxSessionsPreventsLogin(false)
-                                .expiredSessionStrategy(event -> event.getResponse().sendRedirect("/login"))
-                        )
-                )
-                .addFilterBefore(rememberMeAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                                                   .sessionConcurrency((concurrency) -> concurrency.maximumSessions(1)
+                                                                                                   .maxSessionsPreventsLogin(false)
+                                                                                                   .expiredSessionStrategy(event -> event.getResponse()
+                                                                                                                                         .sendRedirect(
+                                                                                                                                                 "/login"))))
+            .addFilterBefore(rememberMeAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public FilterRegistrationBean<ImageAccessFilter> registerImageAccessFilter(){
+    public FilterRegistrationBean<ImageAccessFilter> registerImageAccessFilter() {
         FilterRegistrationBean<ImageAccessFilter> ImageAccessBean = new FilterRegistrationBean<>();
         ImageAccessBean.setFilter(new ImageAccessFilter(postService, httpRequest));
         ImageAccessBean.addUrlPatterns("/extra/*");
         return ImageAccessBean;
     }
-
-
 
     @Bean
     public RememberMeAuthenticationFilter rememberMeAuthenticationFilter() {
