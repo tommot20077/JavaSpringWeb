@@ -115,6 +115,7 @@
                                     const contentDisplay = document.getElementById('content-display');
                                     const contentQuill = new Quill(contentDisplay, {
                                         modules: {
+	                                        syntax: true,
                                             toolbar: false
                                         },
                                         readOnly: true,
@@ -234,7 +235,10 @@
                                     commentsDisplay.appendChild(wrapperDiv);
 
                                     const singleCommentQuill = new Quill(commentDiv, {
-                                        modules: { toolbar: false },
+                                        modules: {
+											toolbar: false,
+	                                        syntax: true
+                                        },
                                         readOnly: true,
                                         theme: 'snow'
                                     });

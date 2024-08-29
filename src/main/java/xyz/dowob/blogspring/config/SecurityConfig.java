@@ -32,10 +32,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.csrf((csrf) -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-
-
             .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                                                    .sessionConcurrency((concurrency) -> concurrency.maximumSessions(1)
                                                                                                    .maxSessionsPreventsLogin(false)

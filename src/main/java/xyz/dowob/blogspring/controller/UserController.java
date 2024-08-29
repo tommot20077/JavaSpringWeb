@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,8 +68,15 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String processRegistrationForm(@ModelAttribute("user") @Valid User user, RedirectAttributes redirectAttributes, @NotNull @RequestParam("confirmPassword") String confirmPassword) {
+    public String processRegistrationForm(@ModelAttribute("user") @Valid User user, BindingResult result, RedirectAttributes redirectAttributes, @NotNull @RequestParam("confirmPassword") String confirmPassword) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", result);
+            redirectAttributes.addFlashAttribute("user", user);
+            return "redirect:/register";
+        }
+
         try {
+            logger.debug("user: " + user);
             userService.registerUser(user ,confirmPassword);
             return "redirect:/register_success";
         }catch (Exception e){

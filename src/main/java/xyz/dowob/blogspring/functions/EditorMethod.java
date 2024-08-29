@@ -77,15 +77,12 @@ public class EditorMethod {
             UserConfig userConfig = UserConfig.standardSetupCommand("config.properties");
             String extraPrefix = "/extra";
             String relativePathStr = imageUrl.startsWith(extraPrefix) ? imageUrl.substring(extraPrefix.length()) : imageUrl;
-            System.out.println("relativePathStr: " + relativePathStr);
-            String ImagePath = userConfig.getImagePath() + "/";
-            Path imagePath = Paths.get(ImagePath);
+            String imagePathString = userConfig.getImagePath() + "/";
+            Path imagePath = Paths.get(imagePathString);
 
-            System.out.println("imagePath: " + imagePath);
             if (Files.exists(imagePath)) {
-                String DeletePath = ImagePath + relativePathStr;
-                Path deletePath = Paths.get(DeletePath);
-                System.out.println("deletePath: " + deletePath);
+                String deletePathString = imagePathString + relativePathStr;
+                Path deletePath = Paths.get(deletePathString);
                 Files.deleteIfExists(deletePath);
             }
         } catch (IOException e) {

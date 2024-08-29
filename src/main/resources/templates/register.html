@@ -50,7 +50,8 @@
         <div class="form-header"><h1>註冊帳號</h1></div>
         <div th:if="${errorMessage}" id = "errorMessage" class="error" th:text="${errorMessage}"></div>
 
-        <form method="post" action="#" th:action="@{/register}" th:object="${user}" >
+        <form method="post" action="#" th:action="@{/register}" th:object="${user}">
+	        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="form-group">
                 <label for="username">用戶名稱:</label>
                 <input type="text" class="form-control" id="username" th:field="*{username}" required />
@@ -84,12 +85,14 @@
     </div>
 
     <div id="password-rule" class="password-card">
-        <h4>密碼規則</h4>
+        <h4>規則</h4>
         <ul>
-            <li id="rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
-            <li id="rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
-            <li id="rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
-            <li id="rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
+	        <li id="ac-rule-special"><span class="status"></span>使用名稱不可有特殊字元</li>
+	        <li id="ac-rule-length"><span class="status"></span>使用名稱長度必須至少 4 個字元</li>
+            <li id="ps-rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
+            <li id="ps-rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
+            <li id="ps-rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
+            <li id="ps-rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
         </ul>
     </div>
 
@@ -98,13 +101,17 @@
             hideSpinner();
         });
 
+        document.getElementById("username").addEventListener("input", function(e) {
+	        const value = e.target.value;
+	        updateStatus(document.getElementById("ac-rule-special"), /^[a-zA-Z0-9]*$/.test(value));
+	        updateStatus(document.getElementById("ac-rule-length"), value.length >= 4);
+        });
         document.getElementById("password").addEventListener("input", function(e) {
             const value = e.target.value;
-
-            updateStatus(document.getElementById("rule-upper"), /[A-Z]/.test(value));
-            updateStatus(document.getElementById("rule-lower"), /[a-z]/.test(value));
-            updateStatus(document.getElementById("rule-number"), /[0-9]/.test(value));
-            updateStatus(document.getElementById("rule-length"), value.length >= 8);
+            updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(value));
+            updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(value));
+            updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(value));
+            updateStatus(document.getElementById("ps-rule-length"), value.length >= 8);
         });
 
         function updateStatus(element, isValid) {

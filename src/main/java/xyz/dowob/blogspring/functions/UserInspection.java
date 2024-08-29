@@ -10,23 +10,36 @@ import java.util.regex.Pattern;
 @Service
 public class UserInspection {
     private final UserRepository userRepository;
+
     @Autowired
     public UserInspection(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
 
-    public boolean isValidPassword(String password,String username) throws Userdata_UpdateException {
-        if(password == null || password.trim().isEmpty()) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_LENGTH_INVALID);
-        if(password.length() < 8) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_LENGTH_INVALID);
-        if(password.equals(username)) throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_CONTAINS_USERNAME);
-        boolean hasUpper = false, hasLower = false, hasDigit = false;
-        for(char ch : password.toCharArray()){
-            if(Character.isUpperCase(ch)) hasUpper = true;
-            if(Character.isLowerCase(ch)) hasLower = true;
-            if(Character.isDigit(ch)) hasDigit = true;
+    public boolean isValidPassword(String password, String username) throws Userdata_UpdateException {
+        if (password == null || password.trim().isEmpty()) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_LENGTH_INVALID);
         }
-        if(!(hasUpper && hasLower && hasDigit)) {
+        if (password.length() < 8) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_LENGTH_INVALID);
+        }
+        if (password.equals(username)) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_CONTAINS_USERNAME);
+        }
+        boolean hasUpper = false, hasLower = false, hasDigit = false;
+        for (char ch : password.toCharArray()) {
+            if (Character.isUpperCase(ch)) {
+                hasUpper = true;
+            }
+            if (Character.isLowerCase(ch)) {
+                hasLower = true;
+            }
+            if (Character.isDigit(ch)) {
+                hasDigit = true;
+            }
+        }
+        if (!(hasUpper && hasLower && hasDigit)) {
             throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.PASSWORD_COMPLEXITY_INSUFFICIENT);
         }
         return true;
@@ -34,15 +47,16 @@ public class UserInspection {
     }
 
 
-
-
-
     public boolean isValidUsername(String username) throws Userdata_UpdateException {
-        if(userRepository.findByUsername(username).isPresent()) {
+        String trimmedUsername = username.trim();
+        if (userRepository.findByUsername(trimmedUsername).isPresent()) {
             throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USERNAME_ALREADY_EXISTS);
         }
-        if(!Pattern.matches("^[a-zA-Z0-9]+$", username)){
+        if (!Pattern.matches("^[a-zA-Z0-9]+$", trimmedUsername)) {
             throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USERNAME_CONTAINS_ILLEGAL_CHARACTERS);
+        }
+        if (trimmedUsername.length() < 4 || trimmedUsername.length() > 20) {
+            throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.USERNAME_LENGTH_INVALID);
         }
         return true;
     }
@@ -50,12 +64,12 @@ public class UserInspection {
 
     public String hasEmail(String email) throws Userdata_UpdateException {
         if (email != null && !email.trim().isEmpty()) {
-            if (userRepository.findByEmail(email).isPresent()){
+            if (userRepository.findByEmail(email).isPresent()) {
                 throw new Userdata_UpdateException(Userdata_UpdateException.ErrorCode.EMAIL_ALREADY_EXISTS);
             }
             return email;
         } else {
-           return null;
+            return null;
         }
     }
 

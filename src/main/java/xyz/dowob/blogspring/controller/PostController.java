@@ -94,8 +94,6 @@ public class PostController {
             if (session.getAttribute("currentUserId") == null || !(post.getAuthor().getId().equals (session.getAttribute("currentUserId")))){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "請先登入"));
             }
-            System.out.println("imageUrl: " + imageDto.getUrl());
-            System.out.println("articleId: " + articleId);
             postService.deleteArticleImage(imageDto.getUrl());
             return ResponseEntity.ok(Map.of("message", "圖片已刪除"));
         } catch (Postdata_UpdateException e) {
