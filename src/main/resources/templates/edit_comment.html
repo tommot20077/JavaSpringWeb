@@ -1,416 +1,452 @@
 <!DOCTYPE html>
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}, POSTID=${comment.getPost.getArticleId()}">
-<div id="myElement" th:attr="commentId=${comment.getCommentId}, postId=${comment.getPost.getArticleId()}"></div>
-<head>
-    <meta charset="UTF-8">
-    <title>編輯評論</title>
+    <div id="myElement" th:attr="commentId=${comment.getCommentId}, postId=${comment.getPost.getArticleId()}"></div>
+    <head>
+        <meta charset="UTF-8">
+        <title>編輯評論</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <link rel="stylesheet" href="/common.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+        <link rel="stylesheet" href="/common.css">
+        <link rel="stylesheet" href="/quill-editor-font.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
 
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 
 
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/search">搜尋</a>
-            </li>
-            <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    歡迎 [[${session.currentUsername}]]!
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile">更新資料</a>
-                    <a class="dropdown-item" href="/new_article">新增文章</a>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="/">我的Blog Web</a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">搜尋</a>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                        <a class="nav-link dropdown-toggle"
+                           id="dropdownMenuButton"
+                           data-bs-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false"> 歡迎 [[${session.currentUsername}]]! </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/profile">更新資料</a> <a class="dropdown-item" href="/new_article">新增文章</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" th:if="${userLoggedIn}">
+                        <a class="nav-link" href="/logout">登出</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <br><br><br>
+        <div class="container">
+            <div class="article-controller">
+                <h2 class="article-title">編輯評論</h2>
+                <div class="autoSave-controller">
+                    <a>自動更新</a> <label for="autoSave-toggle" class="toggle-switch"> <input type="checkbox" id="autoSave-toggle">
+                    <span class="switch-slider round"></span> </label>
                 </div>
-            </li>
-            <li class="nav-item" th:if="${userLoggedIn}">
-                <a class="nav-link" href="/logout">登出</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<br><br><br>
-<div class="container">
-    <div class="article-controller">
-        <h2 class="article-title">編輯評論</h2>
-        <div class="autoSave-controller">
-            <a>自動更新</a>
-            <label for="autoSave-toggle" class="toggle-switch">
-                <input type="checkbox" id="autoSave-toggle">
-                <span class="switch-slider round"></span>
-            </label>
-        </div>
-    </div>
-    <div class="editor-container">
-        <div id="toolbar-container">
+            </div>
+            <div class="editor-container">
+                <div id="toolbar-container">
                 <span class="ql-formats">
-                    <select class="ql-font"></select>
-                    <select class="ql-size"></select>
-                </span>
-            <span class="ql-formats">
+                    <select class="ql-font">
+                        <option value="Arial">Arial</option>
+                        <option value='Times-New-Roman'>Times New Roman</option>
+                        <option value="sans-serif">Sans Serif</option>
+                        <option value='SimHei'>黑體</option>
+                        <option value='SimSun'>宋體</option>
+                        <option value='Microsoft-YaHei'>微軟雅黑體</option>
+                        <option value='KaiTi'>楷體</option>
+                        <option value="FangSong">仿宋體</option>
+                    </select>
+                    <select class="ql-size">
+                        <option value="16px">14px</option>
+                        <option value="16px">16px</option>
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                        <option value="22px">22px</option>
+                        <option value="26px">26px</option>
+                        <option value="28px">28px</option>
+                        <option value="30px">30px</option>
+                    </select>
+                </span> <span class="ql-formats">
                     <button class="ql-bold"></button>
                     <button class="ql-italic"></button>
                     <button class="ql-underline"></button>
                     <button class="ql-strike"></button>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <select class="ql-color"></select>
                     <select class="ql-background"></select>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-script" value="sub"></button>
                     <button class="ql-script" value="super"></button>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-header" value="1"></button>
                     <button class="ql-header" value="2"></button>
                     <button class="ql-blockquote"></button>
                     <button class="ql-code-block"></button>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-list" value="ordered"></button>
                     <button class="ql-list" value="bullet"></button>
                     <button class="ql-indent" value="-1"></button>
                     <button class="ql-indent" value="+1"></button>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-direction" value="rtl"></button>
                     <select class="ql-align"></select>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-link"></button>
                     <button class="ql-image"></button>
-                </span>
-            <span class="ql-formats">
+                </span> <span class="ql-formats">
                     <button class="ql-clean"></button>
                 </span>
+                </div>
+                <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
+            </div>
+            <div class="bottom-group">
+                <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
+                <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回評論文章</a>
+                <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除評論</button>
+            </div>
         </div>
-        <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
-    <div class="bottom-group">
-        <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
-        <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回評論文章</a>
-        <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除評論</button>
-    </div>
-</div>
-<script>
-    const myElement = document.getElementById('myElement');
-    const commentId = myElement.getAttribute('commentId');
-    const postID = myElement.getAttribute('postId');
-    var globalImageUrl = null;
-    var quill;
-    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-    let currentImageUrls = new Set();
+        <script>
+            const myElement = document.getElementById('myElement');
+            const commentId = myElement.getAttribute('commentId');
+            const postID = myElement.getAttribute('postId');
+            var globalImageUrl = null;
+            var quill;
+            var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            let currentImageUrls = new Set();
 
 
+            document.addEventListener('DOMContentLoaded', function () {
+                var fonts = [
+                    "Arial",
+                    "Times-New-Roman",
+                    "sans-serif",
+                    "SimHei",
+                    "SimSun",
+                    "Microsoft-YaHei",
+                    "KaiTi",
+                    "FangSong",
+                ];
+                const sizes = [false, "16px", "18px", "20px", "22px", "26px", "28px", "30px"];
+
+                const Size = Quill.import("formats/size");
+                Size.whitelist = sizes;
+                const Font = Quill.import("formats/font");
+                Font.whitelist = fonts;
+                Quill.register(Font, true);
+                Quill.register(Size, true);
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-        hideSpinner();
-         quill = new Quill('#editor', {
-            modules: {
-                syntax: true,
-                toolbar: {
-                    container: '#toolbar-container',
-                    handlers: {
-                        'image': function (value) {
-                            if (value) {
-                                selectLocalImage();
-                            } else {
-                                this.quill.format('image', false);
-                            }
-                        },
-                        'link': function() {
-                            const range = quill.getSelection();
-                            let selectedText = quill.getText(range.index, range.length);
-                            let link = prompt('請輸入連結URL:');
-                            if (link) {
-                                quill.formatText(range.index, range.length, { 'link': link });
-                                if (selectedText.trim().length === 0) {
-                                    quill.insertText(range.index + range.length, link, 'link', link);
+                hideSpinner();
+                quill = new Quill('#editor', {
+                    modules: {
+                        syntax: true,
+                        toolbar: {
+                            container: '#toolbar-container',
+                            handlers: {
+                                'image': function (value) {
+                                    if (value) {
+                                        selectLocalImage();
+                                    } else {
+                                        this.quill.format('image', false);
+                                    }
+                                },
+                                'link': function () {
+                                    const range = quill.getSelection();
+                                    let selectedText = quill.getText(range.index, range.length);
+                                    let link = prompt('請輸入連結URL:');
+                                    if (link) {
+                                        quill.formatText(range.index, range.length, {'link': link});
+                                        if (selectedText.trim().length === 0) {
+                                            quill.insertText(range.index + range.length, link, 'link', link);
+                                        }
+                                    }
                                 }
-                            }
-                        }
+                            },
+                        },
                     },
-                },
-            },
-            theme: 'snow',
-        });
-        fetch('/comment/' + commentId + '/content')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('網路回應錯誤.');
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result && result.hasOwnProperty('delta')) {
-                    quill.setContents(result.delta);
-                }
-                let content = result.delta;
-                if (content && content.ops && Array.isArray(content.ops)) {
-                    content.ops.forEach((op) => {
-                        if (op.insert && op.insert.image) {
-                            currentImageUrls.add(op.insert.image);
+                    theme: 'snow',
+                });
+                fetch('/comment/' + commentId + '/content')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('網路回應錯誤.');
                         }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (result && result.hasOwnProperty('delta')) {
+                            quill.setContents(result.delta);
+                        }
+                        let content = result.delta;
+                        if (content && content.ops && Array.isArray(content.ops)) {
+                            content.ops.forEach((op) => {
+                                if (op.insert && op.insert.image) {
+                                    currentImageUrls.add(op.insert.image);
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('發生錯誤，無法讀取評論內容:', error);
+                        showToast("發生錯誤，無法讀取評論內容。", false);
+                    });
+                quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
+
+                let autoSaveTimer = null;
+                const autoSaveToggle = document.getElementById('autoSave-toggle');
+                const storedAutoSaveState = localStorage.getItem('autoSaveState') === 'true';
+                autoSaveToggle.checked = storedAutoSaveState;
+
+                function handleAutoSaveChange() {
+                    localStorage.setItem('autoSaveState', autoSaveToggle.checked);
+                    if (autoSaveToggle.checked) {
+                        if (!autoSaveTimer) {
+                            autoSaveTimer = setInterval(function () {
+                                showToast("自動保存中", true);
+                                saveComment()
+                            }, 60000);
+                        }
+                    } else {
+                        if (autoSaveTimer) {
+                            clearInterval(autoSaveTimer);
+                            autoSaveTimer = null;
+                        }
+                    }
+                }
+
+                handleAutoSaveChange();
+                autoSaveToggle.addEventListener('change', handleAutoSaveChange);
+
+
+                document.getElementById('save-comment-button').addEventListener('click', function () {
+                    showSpinner();
+                    saveComment();
+                });
+
+                quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
+            });
+
+            function deleteUnnecessaryImage() {
+                let newImageUrls = new Set();
+                quill.getContents().ops.forEach((op) => {
+                    if (op.insert && op.insert.image) {
+                        newImageUrls.add(op.insert.image);
+                        console.log('currentImageUrls:', currentImageUrls);
+                    }
+                });
+                let deletedImageUrls = Array.from(currentImageUrls).filter(image => !newImageUrls.has(image));
+                currentImageUrls = new Set(newImageUrls);
+
+                if (deletedImageUrls.length > 0) {
+                    deletedImageUrls.forEach(url => {
+                        fetch('/new_article/image/deleted', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [csrfHeader]: csrfToken
+                            },
+                            body: JSON.stringify({
+                                imageUrl: url,
+                                articleId: postID
+
+                            })
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    showToast('資料庫圖片刪除成功', true);
+                                }
+                            })
+                            .catch(error => {
+                                showToast('資料庫圖片刪除失敗', false);
+                            });
                     });
                 }
-            })
-            .catch(error => {
-                console.error('發生錯誤，無法讀取評論內容:', error);
-                showToast("發生錯誤，無法讀取評論內容。", false);
-            });
-        quill.getModule('toolbar').addHandler('image', selectLocalImage);
-
-
-        let autoSaveTimer = null;
-        const autoSaveToggle = document.getElementById('autoSave-toggle');
-        const storedAutoSaveState = localStorage.getItem('autoSaveState') === 'true';
-        autoSaveToggle.checked = storedAutoSaveState;
-
-        function handleAutoSaveChange () {
-            localStorage.setItem('autoSaveState', autoSaveToggle.checked);
-            if (autoSaveToggle.checked) {
-                if (!autoSaveTimer) {
-                    autoSaveTimer = setInterval(function () {
-                        showToast("自動保存中", true);
-                        saveComment()
-                    }, 60000);
-                }
-            } else {
-                if (autoSaveTimer) {
-                    clearInterval(autoSaveTimer);
-                    autoSaveTimer = null;
-                }
             }
-        }
-        handleAutoSaveChange();
-        autoSaveToggle.addEventListener('change', handleAutoSaveChange);
 
+            function showToast(message, isSuccess) {
+                const toastContainer = document.querySelector('.my-toast-container');
+                const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('alert', toastClass);
+                toastElement.textContent = message;
 
-        document.getElementById('save-comment-button').addEventListener('click', function () {
-            showSpinner();
-            saveComment();
-        });
-
-        quill.getModule('toolbar').addHandler('image', selectLocalImage);
-
-    });
-
-    function deleteUnnecessaryImage() {
-        let newImageUrls = new Set();
-        quill.getContents().ops.forEach((op) => {
-            if (op.insert && op.insert.image) {
-                newImageUrls.add(op.insert.image);
-                console.log('currentImageUrls:', currentImageUrls);
+                toastContainer.appendChild(toastElement);
+                setTimeout(() => toastElement.remove(), 5000);
             }
-        });
-        let deletedImageUrls = Array.from(currentImageUrls).filter(image => !newImageUrls.has(image));
-        currentImageUrls = new Set(newImageUrls);
 
-        if (deletedImageUrls.length > 0) {
-            deletedImageUrls.forEach(url => {
-                fetch('/new_article/image/deleted', {
-                    method: 'POST',
+
+            function selectLocalImage() {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.click();
+                input.onchange = () => {
+                    const file = input.files[0];
+                    if (file) {
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        fetch('/article/' + postID + '/comment/image', {
+                            headers: {
+                                [csrfHeader]: csrfToken
+                            },
+                            method: 'POST',
+                            body: formData
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    return response.json().then(data => {
+                                        throw new Error(data.message);
+                                    });
+                                }
+                            }).then(result => {
+                            const range = quill.getSelection();
+                            globalImageUrl = result.imageUrl;
+                            quill.insertEmbed(range.index, 'image', globalImageUrl);
+                        }).catch((error) => {
+                            hideSpinner();
+                            showToast("圖片上傳失敗: " + error.message, false);
+                        });
+                    }
+                };
+            }
+
+            function saveComment() {
+                const editorContent = quill.getContents();
+                const postUrl = '/comment/edit/' + commentId;
+                fetch(postUrl, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         [csrfHeader]: csrfToken
                     },
                     body: JSON.stringify({
-                        imageUrl: url,
-                        articleId: postID
-
+                        delta: editorContent
                     })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            showToast('資料庫圖片刪除成功', true);
-                        }
-                    })
-                    .catch(error => {
-                        showToast('資料庫圖片刪除失敗', false);
-                    });
-            });
-        }
-    }
-
-    function showToast(message, isSuccess) {
-        const toastContainer = document.querySelector('.my-toast-container');
-        const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
-        const toastElement = document.createElement('div');
-        toastElement.classList.add('alert', toastClass);
-        toastElement.textContent = message;
-
-        toastContainer.appendChild(toastElement);
-        setTimeout(() => toastElement.remove(), 5000);
-    }
-
-
-
-    function selectLocalImage() {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.click();
-        input.onchange = () => {
-            const file = input.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('image', file);
-                fetch('/article/' + postID + '/comment/image', {
-                    headers: {
-                        [csrfHeader]: csrfToken
-                    },
-                    method: 'POST',
-                    body: formData
                 })
                     .then(response => {
                         if (response.ok) {
                             return response.json();
-                        }else {
+                        } else {
                             return response.json().then(data => {
                                 throw new Error(data.message);
                             });
                         }
-                    }).then(result => {
-                    const range = quill.getSelection();
-                    globalImageUrl = result.imageUrl;
-                    quill.insertEmbed(range.index, 'image', globalImageUrl);
-                }).catch((error) => {
-                    hideSpinner();
-                    showToast("圖片上傳失敗: " + error.message, false);
-                });
-            }
-        };
-    }
-
-    function saveComment() {
-        const editorContent = quill.getContents();
-        const postUrl = '/comment/edit/' + commentId;
-        fetch(postUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify({
-                delta: editorContent
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }else {
-                    return response.json().then(data => {
-                        throw new Error(data.message);
+                    })
+                    .then(data => {
+                        deleteUnnecessaryImage();
+                        hideSpinner();
+                        showToast("評論更新成功", true);
+                    })
+                    .catch((error) => {
+                        hideSpinner();
+                        showToast("評論更新失敗: " + error.message, false);
                     });
-                }
-            })
-            .then(data =>{
-                deleteUnnecessaryImage();
-                hideSpinner();
-                showToast("評論更新成功", true);
-            })
-            .catch((error) => {
-                hideSpinner();
-                showToast("評論更新失敗: " + error.message, false);
-            });
-    }
+            }
 
 
+            document.getElementById('delete-comment-button').addEventListener('click', function () {
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('modal').style.display = 'block';
 
-
-
-    document.getElementById('delete-comment-button').addEventListener('click', function() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('modal').style.display = 'block';
-
-        document.getElementById('cancel-delete').addEventListener('click', function() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('modal').style.display = 'none';
-        });
-
-        document.getElementById('confirm-delete').addEventListener('click', function() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('modal').style.display = 'none';
-            showSpinner();
-            const postUrl = '/comment/delete/' + commentId;
-            fetch(postUrl, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfHeader]: csrfToken
-                },
-                method: 'DELETE'
-
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }else {
-                        return response.json().then(data => {
-                            throw new Error(data.message);
-                        });
-                    }
-                })
-                .then(data =>{
-                    hideSpinner();
-                    showToast("評論刪除成功", true);
-                    setTimeout(() => window.location.href = '/article/' + postID, 1000);
-                })
-                .catch((error) => {
-                    hideSpinner();
-                    showToast("評論刪除失敗: " + error.message, false);
+                document.getElementById('cancel-delete').addEventListener('click', function () {
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('modal').style.display = 'none';
                 });
-        });
+
+                document.getElementById('confirm-delete').addEventListener('click', function () {
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('modal').style.display = 'none';
+                    showSpinner();
+                    const postUrl = '/comment/delete/' + commentId;
+                    fetch(postUrl, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [csrfHeader]: csrfToken
+                        },
+                        method: 'DELETE'
+
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                return response.json().then(data => {
+                                    throw new Error(data.message);
+                                });
+                            }
+                        })
+                        .then(data => {
+                            hideSpinner();
+                            showToast("評論刪除成功", true);
+                            setTimeout(() => window.location.href = '/article/' + postID, 1000);
+                        })
+                        .catch((error) => {
+                            hideSpinner();
+                            showToast("評論刪除失敗: " + error.message, false);
+                        });
+                });
 
 
-    });
+            });
 
-    function showSpinner() {
-        document.getElementById('loading-spinner').style.display = 'flex';
-    }
-    function hideSpinner() {
-        document.getElementById('loading-spinner').style.display = 'none';
-    }
+            function showSpinner() {
+                document.getElementById('loading-spinner').style.display = 'flex';
+            }
 
-</script>
-<br>
+            function hideSpinner() {
+                document.getElementById('loading-spinner').style.display = 'none';
+            }
+
+        </script>
+        <br>
 
 
-<div class="overlay" id="overlay"></div>
-<div class="confirm-card" id="modal">
-    <div class="confirm-card-body">
-        <p>你確定要刪除這則評論嗎?</p>
-        <button class="btn btn-danger" id="confirm-delete">確認刪除</button>
-        <button class="btn btn-primary" id="cancel-delete">取消</button>
-    </div>
-</div>
+        <div class="overlay" id="overlay"></div>
+        <div class="confirm-card" id="modal">
+            <div class="confirm-card-body">
+                <p>你確定要刪除這則評論嗎?</p>
+                <button class="btn btn-danger" id="confirm-delete">確認刪除</button>
+                <button class="btn btn-primary" id="cancel-delete">取消</button>
+            </div>
+        </div>
 
-<div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
+        <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
 
-<div id="loading-spinner" class="loading-spinner-container">
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-</div>
+        <div id="loading-spinner" class="loading-spinner-container">
+            <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
 
-</body>
+    </body>
 </html>

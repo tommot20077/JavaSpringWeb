@@ -1,556 +1,598 @@
 <!DOCTYPE html>
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
-<div id="myElement" th:attr="login-User-id=${session.currentUserId}, data-post-id=${post.getArticleId}"></div>
+    <div id="myElement" th:attr="login-User-id=${session.currentUserId}, data-post-id=${post.getArticleId}"></div>
 
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${post.title}">文章標題</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <link rel="stylesheet" href="/common.css">
-    <link rel="stylesheet" href="/article_detail.css">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="${post.title}">文章標題</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+        <link rel="stylesheet" href="/common.css">
+        <link rel="stylesheet" href="/article_detail.css">
+        <link rel="stylesheet" href="/quill-editor-font.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
-
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-</head>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    </head>
 
 
-<body>
+    <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/search">搜尋</a>
-            </li>
-            <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    歡迎 [[${session.currentUsername}]]!
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile">更新資料</a>
-                    <a class="dropdown-item" href="/new_article">新增文章</a>
-                    <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="/">我的Blog Web</a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">搜尋</a>
+                    </li>
+                    <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                        <a class="nav-link dropdown-toggle"
+                           id="dropdownMenuButton"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false"> 歡迎 [[${session.currentUsername}]]! </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/profile">更新資料</a> <a class="dropdown-item" href="/new_article">新增文章</a>
+                            <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" th:if="${!userLoggedIn}">
+                        <a class="nav-link" href="/login">登入</a>
+                    </li>
+                    <li class="nav-item" th:if="${!userLoggedIn}">
+                        <a class="nav-link" href="/register">註冊</a>
+                    </li>
+                    <li class="nav-item" th:if="${userLoggedIn}">
+                        <a class="nav-link" href="/logout">登出</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+        <div class="container mt-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-top">
+                    <div>
+                        <h1 class="card-title" th:text="${post.title}">文章標題</h1>
+                        <p class="card-subtitle mb-2 card-subtitle-author"
+                           th:text="|作者: ${post.author.username} |"
+                           th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
+                        <p class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
+                        <p class="card-subtitle mb-2 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p>
+                    </div>
+                    <div th:if="${session.currentUserId == post.author.getId()}">
+                        <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
+                    </div>
                 </div>
-            </li>
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/login">登入</a>
-            </li>
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/register">註冊</a>
-            </li>
-            <li class="nav-item" th:if="${userLoggedIn}">
-                <a class="nav-link" href="/logout">登出</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+                <div class="card-body">
+                    <div id="content-display"
+                         class="content-quill-container mb-4"
+                         style="background-color: #ffefe6; border-radius: 10px; padding: 20px;"
+                         th:attr="data-post-id=${post.getArticleId}">
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                var fonts = [
+                                    "Arial",
+                                    "Times-New-Roman",
+                                    "sans-serif",
+                                    "SimHei",
+                                    "SimSun",
+                                    "Microsoft-YaHei",
+                                    "KaiTi",
+                                    "FangSong",
+                                ];
+                                const sizes = [false, "16px", "18px", "20px", "22px", "26px", "28px", "30px"];
 
+                                const Size = Quill.import("formats/size");
+                                Size.whitelist = sizes;
+                                const Font = Quill.import("formats/font");
+                                Font.whitelist = fonts;
+                                Quill.register(Font, true);
+                                Quill.register(Size, true);
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-top">
-            <div>
-                <h1 class="card-title" th:text="${post.title}">文章標題</h1>
-                <p class="card-subtitle mb-2 card-subtitle-author" th:text="|作者: ${post.author.username} |" th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
-                <p class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
-                <p class="card-subtitle mb-2 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p>
-            </div>
-            <div th:if="${session.currentUserId == post.author.getId()}">
-                <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
-            </div>
-        </div>
-        <div class="card-body">
-            <div id="content-display" class="content-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;" th:attr="data-post-id=${post.getArticleId}">
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        let BlockEmbed = Quill.import('blots/block/embed');
-                        class ImageBlot extends BlockEmbed {
-                            static create(value) {
-                                let node = super.create();
-                                node.setAttribute('src', value.url);
-                                if(value.id) {
-                                    node.setAttribute('id', value.id);
-                                }
-                                return node;
-                            }
+                                let BlockEmbed = Quill.import('blots/block/embed');
 
-                            static value(node) {
-                                return {
-                                    url: node.getAttribute('src'),
-                                    id: node.getAttribute('id')
-                                };
-                            }
-                        }
-
-                        ImageBlot.blotName = 'customImage';
-                        ImageBlot.tagName = 'img';
-                        Quill.register(ImageBlot);
-
-
-                        var contentDisplay = document.getElementById('content-display');
-                        var postID = contentDisplay.getAttribute('data-post-id');
-                        fetch('/article/' + postID + '/content')
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('網路回應錯誤.');
-                                }
-                                return response.json();
-                            })
-                            .then(result => {
-                                if (result) {
-                                    const contentDisplay = document.getElementById('content-display');
-                                    const contentQuill = new Quill(contentDisplay, {
-                                        modules: {
-	                                        syntax: true,
-                                            toolbar: false
-                                        },
-                                        readOnly: true,
-                                        theme: 'snow'
-                                    });
-                                    contentQuill.setContents(result.delta);
-                                } else {
-                                    showToast("無法讀取文章內容。", false);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('發生錯誤，無法讀取文章內容:', error);
-                                showToast("發生錯誤，無法讀取文章內容。", false);
-                            });
-                    });
-                </script>
-            </div>
-        </div>
-    </div>
-
-    <hr>
-    <h2>評論區</h2>
-    <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;">
-        <script>
-            const myElement = document.getElementById('myElement');
-            const postID = myElement.getAttribute('data-post-id');
-            let currentPage = 0;
-            let varTotalPages = 1;
-            var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-            document.addEventListener('DOMContentLoaded', function() {
-                loadCommentPage(0);
-            });
-
-            function loadCommentPage(pageNumber) {
-                const commentsDisplay = document.getElementById('comments-display');
-                commentsDisplay.innerHTML =
-                    `<div class="loadingio-spinner-dual-ball-l2u3038qtw8"><div class="ldio-4pqo44ipw4">
-                     <div></div><div></div><div></div>
-                     </div></div>`;
-                commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
-
-
-                pageNumber = parseInt(pageNumber, 10);
-                if (pageNumber >= 0 && pageNumber < varTotalPages) {
-                    currentPage = pageNumber;
-                }else {
-                    showToast('無效的頁碼:', false);
-                    return;
-                }
-
-
-                fetch('/article/' + postID + '/comment?page=' + pageNumber)
-                    .then(response => response.json())
-                    .then(data => {
-                        const { comments, currentPage, totalPages } = data;
-                        varTotalPages = totalPages;
-
-                        if (comments.length === 0) {
-                            commentsDisplay.textContent = '空空如也的評論(°ﾛ°٥)';
-                            commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
-                            document.getElementById('pagination-control').style.display = 'none';
-                        } else {
-                            if (totalPages === 1){
-                                document.getElementById('pagination-control').style.display = 'none';
-                            }
-                            commentsDisplay.innerHTML = '';
-                            fillPageSelect()
-                            comments.forEach(commentData => {
-                                if (!commentData.isDeleted) {
-                                    const wrapperDiv  = document.createElement('div');
-                                    wrapperDiv.classList.add('comment-wrapper');
-
-                                    const commentTopDiv = document.createElement('div');
-                                    commentTopDiv.classList.add('comment-top');
-
-                                    const commentSerialNumberDiv = document.createElement('div');
-                                    commentSerialNumberDiv.classList.add('comment-serial-number');
-                                    commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
-
-                                    const publishedTimeDiv = document.createElement('div');
-                                    publishedTimeDiv.classList.add('comment-Time-number');
-                                    publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
-
-                                    if (canEditComment(commentData.authorId)) {
-                                        let commentId = String(commentData.commentId);
-                                        const editButton = document.createElement('a');
-                                        editButton.href = `/comment/edit/`+ commentId;
-                                        editButton.classList.add('btn');
-                                        editButton.classList.add('btn-primary');
-                                        editButton.textContent = "編輯";
-                                        editButton.style.cssText = "float: right;";
-                                        publishedTimeDiv.appendChild(editButton);
+                                class ImageBlot extends BlockEmbed {
+                                    static create(value) {
+                                        let node = super.create();
+                                        node.setAttribute('src', value.url);
+                                        if (value.id) {
+                                            node.setAttribute('id', value.id);
+                                        }
+                                        return node;
                                     }
 
-                                    const authorDiv = document.createElement('div');
-                                    authorDiv.classList.add('comment-author');
-                                    const authorLink = document.createElement('a');
-                                    authorLink.href = '/user/' + commentData.authorId;
-                                    authorLink.textContent = "評論者: " + commentData.authorName;
-                                    authorLink.target = '_blank';
-                                    authorDiv.appendChild(authorLink);
-
-                                    const commentDiv = document.createElement('div');
-                                    commentDiv.classList.add('comment-content');
-
-                                    const hrLine = document.createElement('hr');
-                                    hrLine.classList.add('hr-line');
-
-                                    commentTopDiv.appendChild(authorDiv);
-                                    commentTopDiv.appendChild(commentSerialNumberDiv);
-                                    wrapperDiv.appendChild(commentTopDiv);
-                                    wrapperDiv.appendChild(publishedTimeDiv);
-                                    wrapperDiv.appendChild(commentDiv);
-
-                                    commentsDisplay.appendChild(wrapperDiv);
-
-                                    const singleCommentQuill = new Quill(commentDiv, {
-                                        modules: {
-											toolbar: false,
-	                                        syntax: true
-                                        },
-                                        readOnly: true,
-                                        theme: 'snow'
-                                    });
-                                    singleCommentQuill.setContents(commentData.delta);
-                                }else {
-                                    const wrapperDiv  = document.createElement('div');
-                                    wrapperDiv.classList.add('comment-wrapper');
-
-                                    const commentTopDiv = document.createElement('div');
-                                    commentTopDiv.classList.add('comment-top');
-
-                                    const commentSerialNumberDiv = document.createElement('div');
-                                    commentSerialNumberDiv.classList.add('comment-serial-number');
-                                    commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
-
-                                    const publishedTimeDiv = document.createElement('div');
-                                    publishedTimeDiv.classList.add('comment-Time-number');
-                                    publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
-
-                                    const authorDiv = document.createElement('div');
-                                    authorDiv.classList.add('comment-author');
-                                    const authorLink = document.createElement('a');
-                                    authorLink.href = '/user/' + commentData.authorId;
-                                    authorLink.textContent = "評論者: " + commentData.authorName;
-                                    authorLink.target = '_blank';
-                                    authorDiv.appendChild(authorLink);
-
-                                    const commentDiv = document.createElement('div');
-                                    commentDiv.classList.add('comment-content');
-                                    commentDiv.textContent = "該評論已被刪除";
-
-                                    const hrLine = document.createElement('hr');
-                                    hrLine.classList.add('hr-line');
-
-                                    commentTopDiv.appendChild(authorDiv);
-                                    commentTopDiv.appendChild(commentSerialNumberDiv);
-                                    wrapperDiv.appendChild(commentTopDiv);
-                                    wrapperDiv.appendChild(publishedTimeDiv);
-                                    wrapperDiv.appendChild(commentDiv);
-
-                                    commentsDisplay.appendChild(wrapperDiv);
-
+                                    static value(node) {
+                                        return {
+                                            url: node.getAttribute('src'),
+                                            id: node.getAttribute('id')
+                                        };
+                                    }
                                 }
+
+                                ImageBlot.blotName = 'customImage';
+                                ImageBlot.tagName = 'img';
+                                Quill.register(ImageBlot);
+
+
+                                var contentDisplay = document.getElementById('content-display');
+                                var postID = contentDisplay.getAttribute('data-post-id');
+                                fetch('/article/' + postID + '/content')
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('網路回應錯誤.');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(result => {
+                                        if (result) {
+                                            const contentDisplay = document.getElementById('content-display');
+                                            const contentQuill = new Quill(contentDisplay, {
+                                                modules: {
+                                                    syntax: true,
+                                                    toolbar: false
+                                                },
+                                                readOnly: true,
+                                                theme: 'snow'
+                                            });
+                                            contentQuill.setContents(result.delta);
+                                        } else {
+                                            showToast("無法讀取文章內容。", false);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('發生錯誤，無法讀取文章內容:', error);
+                                        showToast("發生錯誤，無法讀取文章內容。", false);
+                                    });
                             });
-                            updatePagination(currentPage);
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <h2>評論區</h2>
+            <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;">
+                <script>
+                    const myElement = document.getElementById('myElement');
+                    const postID = myElement.getAttribute('data-post-id');
+                    let currentPage = 0;
+                    let varTotalPages = 1;
+                    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        loadCommentPage(0);
+                    });
+
+                    function loadCommentPage(pageNumber) {
+                        const commentsDisplay = document.getElementById('comments-display');
+                        commentsDisplay.innerHTML =
+                            `<div class="loadingio-spinner-dual-ball-l2u3038qtw8"><div class="ldio-4pqo44ipw4">
+                     <div></div><div></div><div></div>
+                     </div></div>`;
+                        commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
+
+
+                        pageNumber = parseInt(pageNumber, 10);
+                        if (pageNumber >= 0 && pageNumber < varTotalPages) {
+                            currentPage = pageNumber;
+                        } else {
+                            showToast('無效的頁碼:', false);
+                            return;
                         }
-                    }).catch(error => console.error('Error loading comments:', error));
-            }
-            function updatePagination(current) {
-                const currentPageSelect = document.getElementById('currentPageSelect');
-                if (!currentPageSelect) {
-                    showToast("找不到ID為'currentPageSelect'的元素，請檢查html結構。", false);
-                    return;
-                }
-                document.getElementById('firstPage').classList.toggle('disabled', current === 0);
-                document.getElementById('prevPage').classList.toggle('disabled', current === 0);
-                document.getElementById('nextPage').classList.toggle('disabled', current === varTotalPages - 1);
-                document.getElementById('lastPage').classList.toggle('disabled', current === varTotalPages - 1);
-                currentPageSelect.value = current + 1;
-            }
-            function fillPageSelect() {
-                const currentPageSelect = document.getElementById('currentPageSelect');
-                currentPageSelect.innerHTML = '';
-                for (let i = 1; i <= varTotalPages; i++) {
-                    const option = document.createElement('option');
-                    option.value = String(i);
-                    option.textContent = `第${i}頁`;
-                    if (i === currentPage + 1) {
-                        option.selected = true;
+
+
+                        fetch('/article/' + postID + '/comment?page=' + pageNumber)
+                            .then(response => response.json())
+                            .then(data => {
+                                const {comments, currentPage, totalPages} = data;
+                                varTotalPages = totalPages;
+
+                                if (comments.length === 0) {
+                                    commentsDisplay.textContent = '空空如也的評論(°ﾛ°٥)';
+                                    commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
+                                    document.getElementById('pagination-control').style.display = 'none';
+                                } else {
+                                    if (totalPages === 1) {
+                                        document.getElementById('pagination-control').style.display = 'none';
+                                    }
+                                    commentsDisplay.innerHTML = '';
+                                    fillPageSelect()
+                                    comments.forEach(commentData => {
+                                        if (!commentData.isDeleted) {
+                                            const wrapperDiv = document.createElement('div');
+                                            wrapperDiv.classList.add('comment-wrapper');
+
+                                            const commentTopDiv = document.createElement('div');
+                                            commentTopDiv.classList.add('comment-top');
+
+                                            const commentSerialNumberDiv = document.createElement('div');
+                                            commentSerialNumberDiv.classList.add('comment-serial-number');
+                                            commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
+
+                                            const publishedTimeDiv = document.createElement('div');
+                                            publishedTimeDiv.classList.add('comment-Time-number');
+                                            publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
+
+                                            if (canEditComment(commentData.authorId)) {
+                                                let commentId = String(commentData.commentId);
+                                                const editButton = document.createElement('a');
+                                                editButton.href = `/comment/edit/` + commentId;
+                                                editButton.classList.add('btn');
+                                                editButton.classList.add('btn-primary');
+                                                editButton.textContent = "編輯";
+                                                editButton.style.cssText = "float: right;";
+                                                publishedTimeDiv.appendChild(editButton);
+                                            }
+
+                                            const authorDiv = document.createElement('div');
+                                            authorDiv.classList.add('comment-author');
+                                            const authorLink = document.createElement('a');
+                                            authorLink.href = '/user/' + commentData.authorId;
+                                            authorLink.textContent = "評論者: " + commentData.authorName;
+                                            authorLink.target = '_blank';
+                                            authorDiv.appendChild(authorLink);
+
+                                            const commentDiv = document.createElement('div');
+                                            commentDiv.classList.add('comment-content');
+
+                                            const hrLine = document.createElement('hr');
+                                            hrLine.classList.add('hr-line');
+
+                                            commentTopDiv.appendChild(authorDiv);
+                                            commentTopDiv.appendChild(commentSerialNumberDiv);
+                                            wrapperDiv.appendChild(commentTopDiv);
+                                            wrapperDiv.appendChild(publishedTimeDiv);
+                                            wrapperDiv.appendChild(commentDiv);
+
+                                            commentsDisplay.appendChild(wrapperDiv);
+
+                                            const singleCommentQuill = new Quill(commentDiv, {
+                                                modules: {
+                                                    toolbar: false,
+                                                    syntax: true
+                                                },
+                                                readOnly: true,
+                                                theme: 'snow'
+                                            });
+                                            singleCommentQuill.setContents(commentData.delta);
+                                        } else {
+                                            const wrapperDiv = document.createElement('div');
+                                            wrapperDiv.classList.add('comment-wrapper');
+
+                                            const commentTopDiv = document.createElement('div');
+                                            commentTopDiv.classList.add('comment-top');
+
+                                            const commentSerialNumberDiv = document.createElement('div');
+                                            commentSerialNumberDiv.classList.add('comment-serial-number');
+                                            commentSerialNumberDiv.textContent = commentData.commentInArticleId + " F";
+
+                                            const publishedTimeDiv = document.createElement('div');
+                                            publishedTimeDiv.classList.add('comment-Time-number');
+                                            publishedTimeDiv.textContent = "最後更新時間: " + commentData.update_time;
+
+                                            const authorDiv = document.createElement('div');
+                                            authorDiv.classList.add('comment-author');
+                                            const authorLink = document.createElement('a');
+                                            authorLink.href = '/user/' + commentData.authorId;
+                                            authorLink.textContent = "評論者: " + commentData.authorName;
+                                            authorLink.target = '_blank';
+                                            authorDiv.appendChild(authorLink);
+
+                                            const commentDiv = document.createElement('div');
+                                            commentDiv.classList.add('comment-content');
+                                            commentDiv.textContent = "該評論已被刪除";
+
+                                            const hrLine = document.createElement('hr');
+                                            hrLine.classList.add('hr-line');
+
+                                            commentTopDiv.appendChild(authorDiv);
+                                            commentTopDiv.appendChild(commentSerialNumberDiv);
+                                            wrapperDiv.appendChild(commentTopDiv);
+                                            wrapperDiv.appendChild(publishedTimeDiv);
+                                            wrapperDiv.appendChild(commentDiv);
+
+                                            commentsDisplay.appendChild(wrapperDiv);
+
+                                        }
+                                    });
+                                    updatePagination(currentPage);
+                                }
+                            }).catch(error => console.error('Error loading comments:', error));
                     }
-                    currentPageSelect.appendChild(option);
-                }
-                updatePagination(currentPage);
-                currentPageSelect.addEventListener('change', function () {
-                    const selectedPage = parseInt(this.value, 10) - 1;
-                    if (selectedPage !== currentPage) {
-                        if (typeof loadCommentPage === 'function') {
-                            loadCommentPage(selectedPage);
+
+                    function updatePagination(current) {
+                        const currentPageSelect = document.getElementById('currentPageSelect');
+                        if (!currentPageSelect) {
+                            showToast("找不到ID為'currentPageSelect'的元素，請檢查html結構。", false);
+                            return;
                         }
+                        document.getElementById('firstPage').classList.toggle('disabled', current === 0);
+                        document.getElementById('prevPage').classList.toggle('disabled', current === 0);
+                        document.getElementById('nextPage').classList.toggle('disabled', current === varTotalPages - 1);
+                        document.getElementById('lastPage').classList.toggle('disabled', current === varTotalPages - 1);
+                        currentPageSelect.value = current + 1;
                     }
-                });
-            }
 
-            function canEditComment(commentAuthorId) {
-                const myElement = document.getElementById('myElement');
-                const currentUserId = myElement.getAttribute('login-User-id');
-                if (currentUserId === null) {
-                    return false;
-                }else {
-                    return currentUserId === String(commentAuthorId);
-                }
+                    function fillPageSelect() {
+                        const currentPageSelect = document.getElementById('currentPageSelect');
+                        currentPageSelect.innerHTML = '';
+                        for (let i = 1; i <= varTotalPages; i++) {
+                            const option = document.createElement('option');
+                            option.value = String(i);
+                            option.textContent = `第${i}頁`;
+                            if (i === currentPage + 1) {
+                                option.selected = true;
+                            }
+                            currentPageSelect.appendChild(option);
+                        }
+                        updatePagination(currentPage);
+                        currentPageSelect.addEventListener('change', function () {
+                            const selectedPage = parseInt(this.value, 10) - 1;
+                            if (selectedPage !== currentPage) {
+                                if (typeof loadCommentPage === 'function') {
+                                    loadCommentPage(selectedPage);
+                                }
+                            }
+                        });
+                    }
 
-            }
-        </script>
-    </div>
-    <nav aria-label="評論分頁" class="mt-4">
-        <ul class="pagination justify-content-center" id="pagination-control">
-            <li class="page-item" id="firstPage">
-                <a class="page-link" aria-label="First" onclick="loadCommentPage(0)">
-                    <span aria-hidden="true">««</span>
-                </a>
-            </li>
-            <li class="page-item" id="prevPage">
-                <a class="page-link" aria-label="Previous" onclick="loadCommentPage(currentPage - 1)">
-                    <span aria-hidden="true">«</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <label>
-                    <select class="page-link" id="currentPageSelect" aria-label="Current page" style="font-size:1em; padding: 0.5em;"></select>
-                </label>
-            </li>
-            <li class="page-item" id="nextPage">
-                <a class="page-link" aria-label="Next" onclick="loadCommentPage(currentPage + 1)">
-                    <span aria-hidden="true">»</span>
-                </a>
-            </li>
-            <li class="page-item" id="lastPage">
-                <a class="page-link" aria-label="Last" onclick="loadCommentPage(varTotalPages-1)">
-                    <span aria-hidden="true">»»</span>
-                </a>
-        </ul>
-    </nav>
+                    function canEditComment(commentAuthorId) {
+                        const myElement = document.getElementById('myElement');
+                        const currentUserId = myElement.getAttribute('login-User-id');
+                        if (currentUserId === null) {
+                            return false;
+                        } else {
+                            return currentUserId === String(commentAuthorId);
+                        }
+
+                    }
+                </script>
+            </div>
+            <nav aria-label="評論分頁" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination-control">
+                    <li class="page-item" id="firstPage">
+                        <a class="page-link" aria-label="First" onclick="loadCommentPage(0)"> <span aria-hidden="true">««</span> </a>
+                    </li>
+                    <li class="page-item" id="prevPage">
+                        <a class="page-link" aria-label="Previous" onclick="loadCommentPage(currentPage - 1)"> <span aria-hidden="true">«</span> </a>
+                    </li>
+                    <li class="page-item">
+                        <label> <select class="page-link" id="currentPageSelect" aria-label="Current page" style="font-size:1em; padding: 0.5em;"></select>
+                        </label>
+                    </li>
+                    <li class="page-item" id="nextPage">
+                        <a class="page-link" aria-label="Next" onclick="loadCommentPage(currentPage + 1)"> <span aria-hidden="true">»</span> </a>
+                    </li>
+                    <li class="page-item" id="lastPage">
+                        <a class="page-link" aria-label="Last" onclick="loadCommentPage(varTotalPages-1)"> <span aria-hidden="true">»»</span> </a>
+                </ul>
+            </nav>
 
 
-    <div class="editor-container">
-        <div id="toolbar-container">
+            <div class="editor-container">
+                <div id="toolbar-container">
             <span class="ql-formats">
-                <select class="ql-font"></select>
-                <select class="ql-size"></select>
-            </span>
-            <span class="ql-formats">
+                    <select class="ql-font">
+                        <option value="Arial">Arial</option>
+                        <option value='Times-New-Roman'>Times New Roman</option>
+                        <option value="sans-serif">Sans Serif</option>
+                        <option value='SimHei'>黑體</option>
+                        <option value='SimSun'>宋體</option>
+                        <option value='Microsoft-YaHei'>微軟雅黑體</option>
+                        <option value='KaiTi'>楷體</option>
+                        <option value="FangSong">仿宋體</option>
+                    </select>
+                    <select class="ql-size">
+                        <option value="16px">14px</option>
+                        <option value="16px">16px</option>
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                        <option value="22px">22px</option>
+                        <option value="26px">26px</option>
+                        <option value="28px">28px</option>
+                        <option value="30px">30px</option>
+                    </select>
+                </span> <span class="ql-formats">
                 <button class="ql-bold"></button>
                 <button class="ql-italic"></button>
                 <button class="ql-underline"></button>
                 <button class="ql-strike"></button>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <select class="ql-color"></select>
                 <select class="ql-background"></select>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-script" value="sub"></button>
                 <button class="ql-script" value="super"></button>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-header" value="1"></button>
                 <button class="ql-header" value="2"></button>
                 <button class="ql-blockquote"></button>
                 <button class="ql-code-block"></button>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-list" value="ordered"></button>
                 <button class="ql-list" value="bullet"></button>
                 <button class="ql-indent" value="-1"></button>
                 <button class="ql-indent" value="+1"></button>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-direction" value="rtl"></button>
                 <select class="ql-align"></select>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-link"></button>
                 <button class="ql-image"></button>
-            </span>
-            <span class="ql-formats">
+            </span> <span class="ql-formats">
                 <button class="ql-clean"></button>
             </span>
-        </div>
+                </div>
 
-        <div id="editor" style="max-height: 500px; overflow-y: auto;">
-            <script>
-                const quill = new Quill('#editor', {
-                    modules: {
-                        syntax: true,
-                        toolbar: {
-                            container: '#toolbar-container',
-                            handlers: {
-                                'image': function(value) {
-                                    if (value) {
-                                        var Element = document.getElementById('myElement');
-                                        var postID = Element.getAttribute('data-post-id');
-                                        selectLocalImage(postID);
-                                    } else {
-                                        this.quill.format('image', false);
-                                    }
-                                },
-                                'link': function() {
-                                    const range = quill.getSelection();
-                                    let selectedText = quill.getText(range.index, range.length);
-                                    let link = prompt('請輸入連結URL:');
-                                    if (link) {
-                                        quill.formatText(range.index, range.length, { 'link': link });
-                                        if (selectedText.trim().length === 0) {
-                                            quill.insertText(range.index + range.length, link, 'link', link);
+                <div id="editor" style="max-height: 500px; overflow-y: auto;">
+                    <script>
+                        const quill = new Quill('#editor', {
+                            modules: {
+                                syntax: true,
+                                toolbar: {
+                                    container: '#toolbar-container',
+                                    handlers: {
+                                        'image': function (value) {
+                                            if (value) {
+                                                var Element = document.getElementById('myElement');
+                                                var postID = Element.getAttribute('data-post-id');
+                                                selectLocalImage(postID);
+                                            } else {
+                                                this.quill.format('image', false);
+                                            }
+                                        },
+                                        'link': function () {
+                                            const range = quill.getSelection();
+                                            let selectedText = quill.getText(range.index, range.length);
+                                            let link = prompt('請輸入連結URL:');
+                                            if (link) {
+                                                quill.formatText(range.index, range.length, {'link': link});
+                                                if (selectedText.trim().length === 0) {
+                                                    quill.insertText(range.index + range.length, link, 'link', link);
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            }
-                        },
-                    },
-                    theme: 'snow',
-                });
-            </script>
+                                },
+                            },
+                            theme: 'snow',
+                        });
+                    </script>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
         </div>
-    </div>
-    <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
-</div>
-<script>
+        <script>
 
 
-    var globalImageUrl = null;
-    function showToast(message, isSuccess) {
-        const toastContainer = document.querySelector('.my-toast-container');
-        const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
-        const toastElement = document.createElement('div');
-        toastElement.classList.add('alert', toastClass);
-        toastElement.textContent = message;
-        toastContainer.appendChild(toastElement);
-        setTimeout(() => toastElement.remove(), 5000);
-    }
-    function selectLocalImage(postID) {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.click();
-        input.onchange = () => {
-            const file = input.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('image', file);
-                fetch('/article/' + postID + '/comment/image', {
+            var globalImageUrl = null;
+
+            function showToast(message, isSuccess) {
+                const toastContainer = document.querySelector('.my-toast-container');
+                const toastClass = isSuccess ? 'alert-success' : 'alert-danger';
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('alert', toastClass);
+                toastElement.textContent = message;
+                toastContainer.appendChild(toastElement);
+                setTimeout(() => toastElement.remove(), 5000);
+            }
+
+            function selectLocalImage(postID) {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.click();
+                input.onchange = () => {
+                    const file = input.files[0];
+                    if (file) {
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        fetch('/article/' + postID + '/comment/image', {
+                            method: 'POST',
+                            headers: {
+                                [csrfHeader]: csrfToken
+                            },
+                            body: formData
+
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    return response.json().then(data => {
+                                        throw new Error(data.message);
+                                    });
+                                }
+                            }).then(result => {
+                            const range = quill.getSelection();
+                            globalImageUrl = result.imageUrl;
+                            quill.insertEmbed(range.index, 'image', globalImageUrl);
+                        }).catch((error) => {
+                            hideSpinner();
+                            showToast("圖片上傳失敗: " + error.message, false);
+                        });
+                    }
+                };
+            }
+
+
+            document.getElementById('save-comment-button').addEventListener('click', function () {
+                showSpinner();
+                const editorContent = quill.getContents();
+                var postID = this.getAttribute('postID');
+                const postUrl = '/article/' + postID + '/comment';
+                fetch(postUrl, {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         [csrfHeader]: csrfToken
                     },
-                    body: formData
-
+                    body: JSON.stringify({
+                        delta: editorContent
+                    })
                 })
                     .then(response => {
                         if (response.ok) {
                             return response.json();
-                        }else {
+                        } else {
                             return response.json().then(data => {
                                 throw new Error(data.message);
                             });
                         }
-                    }).then(result => {
-                    const range = quill.getSelection();
-                    globalImageUrl = result.imageUrl;
-                    quill.insertEmbed(range.index, 'image', globalImageUrl);
-                }).catch((error) => {
-                    hideSpinner();
-                    showToast("圖片上傳失敗: " + error.message, false);
-                });
-            }
-        };
-    }
+                    })
+                    .then(data => {
+                        hideSpinner();
+                        showToast("評論發表成功", true);
+                        setTimeout(() => window.location.reload(), 3000);
 
-
-
-
-    document.getElementById('save-comment-button').addEventListener('click', function() {
-        showSpinner();
-        const editorContent = quill.getContents();
-        var postID = this.getAttribute('postID');
-        const postUrl = '/article/' + postID + '/comment';
-        fetch(postUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify({
-                delta: editorContent
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }else {
-                    return response.json().then(data => {
-                        throw new Error(data.message);
+                    })
+                    .catch((error) => {
+                        hideSpinner();
+                        showToast("評論發表失敗: " + error.message, false);
                     });
+
+                function showSpinner() {
+                    document.getElementById('loading-spinner').style.display = 'flex';
                 }
-            })
-            .then(data =>{
-                hideSpinner();
-                showToast("評論發表成功", true);
-                setTimeout(() => window.location.reload(), 3000);
 
-            })
-            .catch((error) => {
-                hideSpinner();
-                showToast("評論發表失敗: " + error.message, false);
+                function hideSpinner() {
+                    document.getElementById('loading-spinner').style.display = 'none';
+                }
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    hideSpinner();
+                });
             });
-        function showSpinner() {
-            document.getElementById('loading-spinner').style.display = 'flex';
-        }
-        function hideSpinner() {
-            document.getElementById('loading-spinner').style.display = 'none';
-        }
+        </script>
+        <br>
+        <div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
+        <div id="loading-spinner" class="loading-spinner-container">
+            <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            hideSpinner();
-        });
-    });
-</script>
-<br>
-<div class="my-toast-container" aria-live="polite" style="position: fixed; bottom: 0; right: 0; z-index: 1050;"></div>
-<div id="loading-spinner" class="loading-spinner-container">
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-</div>
-
-</body>
+    </body>
 </html>
