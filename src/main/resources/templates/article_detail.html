@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quilljs-markdown@1.2.0/dist/quilljs-markdown-common-style.css">
         <link rel="stylesheet" href="/common.css">
         <link rel="stylesheet" href="/article_detail.css">
         <link rel="stylesheet" href="/quill-editor-font.css">
@@ -18,6 +19,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/quilljs-markdown@latest/dist/quilljs-markdown.js"></script>
 
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
@@ -446,6 +448,7 @@
 
                 <div id="editor" style="max-height: 500px; overflow-y: auto;">
                     <script>
+                        Quill.register('modules/QuillMarkdown', QuillMarkdown, true);
                         const quill = new Quill('#editor', {
                             modules: {
                                 syntax: true,
@@ -474,6 +477,7 @@
                                         }
                                     }
                                 },
+                                QuillMarkdown: {},
                             },
                             theme: 'snow',
                         });
@@ -483,8 +487,6 @@
             <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
         </div>
         <script>
-
-
             var globalImageUrl = null;
 
             function showToast(message, isSuccess) {

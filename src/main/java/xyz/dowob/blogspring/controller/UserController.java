@@ -76,7 +76,6 @@ public class UserController {
         }
 
         try {
-            logger.debug("user: " + user);
             userService.registerUser(user ,confirmPassword);
             return "redirect:/register_success";
         }catch (Exception e){
@@ -243,16 +242,12 @@ public class UserController {
         return "reset_password";
     }
 
-    Logger logger = LoggerFactory.getLogger(UserController.class);
     @PostMapping("/sendResetPasswordMail")
     public ResponseEntity<?> sendResetPasswordMail(@RequestBody Map<String, String> keyword, HttpSession session){
         String username_Or_Email = keyword.get("usernameOrEmail");
-        logger.info("usernameOrEmail: " + username_Or_Email);
         try {
             User user = userService.getUserByUsernameOrEmail(username_Or_Email);
-            logger.info("user: " + user);
             userService.sendResetPasswordMail(user);
-            logger.info("驗證信已發送");
             session.setAttribute("resetPasswordUserID", user.getId());
             return ResponseEntity.ok("驗證信已發送");
         } catch (Userdata_UpdateException | UsernameNotFoundException e) {
