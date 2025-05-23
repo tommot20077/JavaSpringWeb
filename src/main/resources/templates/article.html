@@ -1,146 +1,242 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" th:with="userLoggedIn=${session.currentUsername != null}">
-<head>
-    <meta charset="UTF-8">
-    <title>文章列表</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>文章列表</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link rel="stylesheet" href="/common.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+        <link rel="stylesheet" href="/common.css">
+        <link rel="stylesheet" href="/article.css"> <!-- Link the new CSS -->
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
 
-    <style>
-        .fixed-bottom-nav {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 50px;
-            width: auto;
-            background-color: rgba(255, 255, 255, 0);
-            z-index: 1030;
-            text-align: center;
-        }
+        <style>
+            /* Styles moved to common.css */
+        </style>
+    </head>
+    <body class="min-vh-100">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="/">我的Blog Web</a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon-custom">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ml-auto">
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            list-style-type: none;
-            padding-left: 0;
-        }
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">搜尋</a>
+                    </li>
 
-        .pagination .page-item {
-            margin: 0 5px;
-        }
+                    <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                        <a class="nav-link dropdown-toggle"
+                           id="dropdownMenuButton"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false"> 歡迎 [[${session.currentUsername}]]! </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/profile">更新資料</a> <a class="dropdown-item" href="/new_article">新增文章</a>
+                            <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
+                        </div>
+                    </li>
 
-        .pagination .page-item .page-link {
-            font-size: larger;
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background-color: #e39624">
-    <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ml-auto">
-
-
-            <li class="nav-item">
-                <a class="nav-link" href="/search">搜尋</a>
-            </li>
-
-            <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    歡迎 [[${session.currentUsername}]]!
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile">更新資料</a>
-                    <a class="dropdown-item" href="/new_article">新增文章</a>
-                    <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
-                </div>
-            </li>
-
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/login">登入</a>
-            </li>
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/register">註冊</a>
-            </li>
-            <li class="nav-item" th:if="${userLoggedIn}">
-                <a class="nav-link" href="/logout">登出</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-
-
-<div class="container mt-4">
-    <h2 class="mb-4 text-center">文章列表</h2>
-    <div class="row">
-        <th:block th:each="post,iterStat : ${posts.content}">
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title" th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</h5>
-                        <h5 class="card-title" th:unless="${post.isDeleted}" th:text="${post.title.length() > 30 ? #strings.substring(post.title, 0, 30) + '...' : post.title}">文章標題</h5>
-                        <!--<p class="card-text" th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}">一些簡短的介紹文字...</p>-->
-                        <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
-                        <p class="card-text" th:text="'最後更新: '+${formattedPostUpdateTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
-                        <a target="_blank" th:if="!${post.isDeleted}" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary">閱讀全文 <i class="fas fa-angle-right"></i></a>
-                    </div>
-                </div>
+                    <li class="nav-item" th:if="${!userLoggedIn}">
+                        <a class="nav-link" href="/login">登入</a>
+                    </li>
+                    <li class="nav-item" th:if="${!userLoggedIn}">
+                        <a class="nav-link" href="/register">註冊</a>
+                    </li>
+                    <li class="nav-item" th:if="${userLoggedIn}">
+                        <a class="nav-link" href="/logout">登出</a>
+                    </li>
+                </ul>
             </div>
-        </th:block>
-    </div>
+        </nav>
 
 
-    <nav aria-label="文章分頁" th:if="${totalPages > 1}" class="mt-4 fixed-bottom-nav ">
-        <ul class="pagination justify-content-center">
-            <!-- 跳至首頁 -->
-            <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/article(page=1)}" aria-label="First" th:if="${page > 1}">
-                    <span aria-hidden="true">««</span>
-                </a>
-            </li>
+        <div class="container main-content-area mt-5"> <!-- Note: mt-5 was present in actual file -->
+            <!-- Container for Heading and Toggle Buttons -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                 <h2 class="mb-0 article-list-heading">文章列表</h2> <!-- Removed text-center -->
+                 <div class="view-toggle-buttons d-none d-md-block"> <!-- Buttons container, hidden on sm/xs -->
+                     <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary" title="List View">
+                         <i class="fas fa-list"></i>
+                     </button>
+                     <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active" title="Card View">
+                         <i class="fas fa-th-large"></i>
+                     </button>
+                 </div>
+            </div>
+            <div class="row" id="article-list-row"> <!-- Added ID here -->
+                <th:block th:each="post,iterStat : ${posts.content}">
+                    <!-- Added article-item class -->
+                    <div class="col-md-4 mb-3 article-item">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title truncated-title" th:if="${post.isDeleted}" th:text="'已刪除文章'" data-full-title="已刪除文章">已刪除文章</h5>
+                                <h5 class="card-title truncated-title"
+                                    th:unless="${post.isDeleted}"
+                                    th:text="${post.title}"
+                                    th:attr="data-full-title=${post.title}">文章標題</h5>
+                                <!--<p class="card-text" th:text="${post.content.length() > 100 ? #strings.substring(post.content, 0, 100) + '...' : post.content}">一些簡短的介紹文字...</p>-->
+                                <div class="card-meta">
+                                    <p class="card-text author-text"> <!-- Removed inline style -->
+                                        文章作者: <a th:href="@{/user/{id}(id=${post.author.id})}" th:text="${post.author.username}">未知</a>
+                                    </p>
+                                    <div class="card-dates">
+                                        <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}"></p>
+                                        <p class="card-text" th:text="'最後更新: '+${formattedPostUpdateTimes[iterStat.index]}"></p>
+                                    </div>
+                                </div>
+                                <a target="_blank" th:if="!${post.isDeleted}" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary">閱讀全文
+                                    <i class="fas fa-angle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div> <!-- End of main-content-area -->
 
-            <!-- 前一頁 -->
-            <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/article(page=${page - 1})}" aria-label="Previous" th:if="${page > 1}">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
+        <!-- Pagination moved outside main-content-area -->
+        <nav aria-label="文章分頁" th:if="${totalPages > 1}" class="pagination-container">
+            <ul class="pagination justify-content-center">
+                <!-- 跳至首頁 -->
+                <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/article(page=1)}" aria-label="First" th:if="${page > 1}"> <span aria-hidden="true">««</span> </a>
+                </li>
 
-            <!-- 分頁號碼 -->
-            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-                th:class="page-item"
-                th:classappend="${page eq i} ? 'active'"
-                th:if="${(totalPages le 10) or (i ge (page - 4) and i le (page + 5)) or (totalPages - page lt 5 and i gt totalPages - 10)}"
-            >
-                <a class="page-link" th:href="@{/article(page=${i})}" th:text="${i}">1</a>
-            </li>
+                <!-- 前一頁 -->
+                <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/article(page=${page - 1})}" aria-label="Previous" th:if="${page > 1}">
+                        <span aria-hidden="true">&laquo;</span> </a>
+                </li>
 
-            <!-- 下一頁 -->
-            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/article(page=${page + 1})}" aria-label="Next" th:if="${page < totalPages}">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
+                <!-- 分頁號碼 -->
+                <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                    class="page-item"
+                    th:classappend="${page eq i} ? 'active disabled' : ''"
+                    th:if="${(totalPages le 10) or (i ge (page - 2) and i le (page + 2)) or (page le 3 and i le 5) or (totalPages - page lt 3 and i gt totalPages - 5)}">
+                    <a class="page-link" th:href="@{/article(page=${i})}" th:text="${i}">1</a>
+                </li>
 
-            <!-- 跳至尾頁 -->
-            <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/article(page=${totalPages})}" aria-label="Last" th:if="${page < totalPages}">
-                    <span aria-hidden="true">»»</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
-</body>
+                <!-- 下一頁 -->
+                <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/article(page=${page + 1})}" aria-label="Next" th:if="${page < totalPages}">
+                        <span aria-hidden="true">&raquo;</span> </a>
+                </li>
+
+                <!-- 跳至尾頁 -->
+                <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/article(page=${totalPages})}" aria-label="Last" th:if="${page < totalPages}">
+                        <span aria-hidden="true">»»</span> </a>
+                </li>
+            </ul>
+        </nav>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const paginationContainer = document.querySelector('.pagination-container');
+                if (!paginationContainer) return; // Exit if no pagination
+
+                const paginationItems = paginationContainer.querySelectorAll('.pagination .page-item');
+                const mediaQuerySmall = window.matchMedia('(max-width: 767.98px)'); // Bootstrap's sm breakpoint
+
+                const handlePaginationVisibility = () => {
+                    if (mediaQuerySmall.matches) {
+                        // Small screens: Show only First, Previous, Active, Next, Last
+                        paginationItems.forEach(item => {
+                            const link = item.querySelector('.page-link');
+                            const isFirst = link && link.getAttribute('aria-label') === 'First';
+                            const isPrevious = link && link.getAttribute('aria-label') === 'Previous';
+                            const isNext = link && link.getAttribute('aria-label') === 'Next';
+                            const isLast = link && link.getAttribute('aria-label') === 'Last';
+                            const isActive = item.classList.contains('active');
+                            const isPageNumber = !isFirst && !isPrevious && !isNext && !isLast;
+
+                            if (isPageNumber && !isActive) {
+                                item.style.display = 'none'; // Hide non-active page numbers
+                            } else {
+                                item.style.display = ''; // Show First, Prev, Active, Next, Last
+                            }
+                        });
+                    } else {
+                        // Medium/Large screens: Show all items (as rendered by Thymeleaf)
+                        paginationItems.forEach(item => {
+                            item.style.display = '';
+                        });
+                    }
+                };
+
+                // Initial check
+                handlePaginationVisibility();
+
+                // Listen for screen size changes
+                mediaQuerySmall.addEventListener('change', handlePaginationVisibility);
+            });
+
+            // View Toggle Functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const listButton = document.getElementById('view-toggle-list');
+                const cardButton = document.getElementById('view-toggle-card');
+                const articleRow = document.getElementById('article-list-row');
+                const viewToggleButtons = document.querySelector('.view-toggle-buttons');
+
+                if (!listButton || !cardButton || !articleRow || !viewToggleButtons) {
+                    console.error('View toggle elements not found!');
+                    return;
+                }
+
+                const applyViewMode = (mode) => {
+                    if (mode === 'list') {
+                        articleRow.classList.remove('view-mode-card');
+                        articleRow.classList.add('view-mode-list');
+                        listButton.classList.add('active');
+                        cardButton.classList.remove('active');
+                        localStorage.setItem('articleViewMode', 'list');
+                    } else { // Default to card view
+                        articleRow.classList.remove('view-mode-list');
+                        articleRow.classList.add('view-mode-card');
+                        cardButton.classList.add('active');
+                        listButton.classList.remove('active');
+                        localStorage.setItem('articleViewMode', 'card');
+                    }
+                };
+
+                const handleResize = () => {
+                    // Check if buttons should be visible (Bootstrap md breakpoint)
+                    if (window.innerWidth < 768) {
+                        // Force list view styles via CSS @media query
+                        // No JS class change needed here as CSS handles the override
+                    } else {
+                        // On larger screens, ensure the correct mode from localStorage is applied
+                        const savedMode = localStorage.getItem('articleViewMode') || 'card';
+                        applyViewMode(savedMode);
+                    }
+                };
+
+                // Initial Setup
+                const initialMode = localStorage.getItem('articleViewMode') || 'card'; // Default to card
+                applyViewMode(initialMode);
+                handleResize(); // Run on load to set initial state based on screen size
+
+                // Event Listeners
+                listButton.addEventListener('click', () => applyViewMode('list'));
+                cardButton.addEventListener('click', () => applyViewMode('card'));
+                window.addEventListener('resize', handleResize); // Re-check on resize
+            });
+        </script>
+    </body>
 </html>

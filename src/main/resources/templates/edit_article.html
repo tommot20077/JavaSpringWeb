@@ -147,7 +147,7 @@
                     </div>
                     <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
                 </div>
-                <div class="bottom-group">
+                <div class="bottom-group mt-3">
                     <button type="submit" class="btn btn-primary" id="save-article-button">更新</button>
                     <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回文章</a>
                     <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除文章</button>
@@ -172,6 +172,12 @@
                 const toastElement = document.createElement('div');
                 toastElement.classList.add('alert', toastClass);
                 toastElement.textContent = message;
+
+                // Add progress bar
+                const progressBar = document.createElement('div');
+                progressBar.classList.add('toast-progress-bar');
+                progressBar.style.animationDuration = '5s'; // Match timeout duration
+                toastElement.appendChild(progressBar);
 
                 toastContainer.appendChild(toastElement);
                 setTimeout(() => toastElement.remove(), 5000);

@@ -2,14 +2,15 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>信箱驗證</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/common.css">
     <style>
-        html,body {
+        html, body {
             height: 100%;
-            background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
-            color: #5a2d0c;
+            background-color: #fff;
+            color: #333;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
         body {
@@ -25,45 +26,45 @@
             max-width: 500px;
             margin: 5% auto 50px auto;
             padding: 20px;
-            background-color: #f9e8e0;
-            border: 1px solid #f1c0d1;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .message-header h1 {
             font-size: 2.0rem;
             margin-bottom: 0.5em;
         }
         .verified-message {
-            color: #22bb33;
+            color: #28a745;
         }
         .error-message {
-            color: #bb2124;
+            color: #dc3545;
         }
         .message-content p {
             font-size: 1.2rem;
         }
         .message-footer a {
-            color: white;
+            color: #fff;
             margin: 0.5em;
             font-weight: bold;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color 0.2s;
         }
         .btn-primary {
-            background-color: #f76c5e;
-            border-color: #f76c5e;
+            background-color: #616161;
+            border-color: #616161;
         }
         .btn-outline-primary {
-            background-color: #e12828;
-            border-color: #ffecd2;
-            color: #632e2e; /
+            background-color: #616161;
+            border-color: #616161;
+            color: #333;
         }
         .btn-primary:hover,
         .btn-outline-primary:hover {
-            background-color: #f57170;
-            border-color: #f57170;
-            color: white;
+            background-color: #555;
+            border-color: #555;
+            color: #fff;
         }
     </style>
 </head>

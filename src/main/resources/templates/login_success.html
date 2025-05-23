@@ -2,48 +2,13 @@
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>登入成功</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/common.css">
-    <style>
-        body {
-            margin-top: 80px;
-            background: #fff4e6;
-            background: linear-gradient(135deg, #ffecd2 0%, #f9b9a3 100%);
-            overflow: hidden;
-
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            margin-top: -100px;
-
-
-        }
-        .container > .btn-primary {
-            margin-top: 20px;
-        }
-        .container > p,
-        .card-text {
-            font-size: 1.25rem;
-            color: #5a2c01;
-            margin-bottom: 1rem;
-        }
-        h1,
-        .card-title {
-            font-size: 2.5rem;
-            color: #f75431;
-            margin-bottom: 1.5rem;
-        }
-
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -82,7 +47,7 @@
         </ul>
     </div>
 </nav>
-<div class="container">
+<div class="success-container">
     <h1><i class="fas fa-check-circle text-success"></i> 歡迎回來！</h1>
     <p>登入成功，現在您可以開始使用我們的服務了。</p>
     <div th:if="${session.currentUserEmailStatus}">

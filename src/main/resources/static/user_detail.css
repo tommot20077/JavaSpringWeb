@@ -28,64 +28,134 @@ button:hover {
     text-align:center;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+.card {
+    overflow: hidden;
+
 }
 
-li {
-    margin: 5px 0;
+.badge-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    z-index: 1;
+}
+.badge-rotated {
+    position: absolute;
+    top: 60px;
+    left: -90px;
+    transform: rotate(-45deg);
+    transform-origin: top left;
+    white-space: nowrap;
+
+    width: 170px;
+    height: 60px;
+    padding-top: 40px;
+    padding-left: 50px;
+    padding-right: 1em;
+    padding-bottom: 0.3em;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    color: white;
+
+
+}
+
+.badge-rotated.badge-success {
+    background-color: #28a745;
+}
+.badge-rotated.badge-secondary {
+    background-color: #6c757d;
+}
+
+.card-body {
+    justify-content: normal;
+    min-height: 0;
+}
+
+
+
+
+
+.pagination-container {
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+}
+
+.pagination .page-item .page-link {
+    color: #1D1D1F; /* Near black */
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    margin: 0 2px;
+    border-radius: 0.25rem;
+    position: relative;
+    display: block;
+    line-height: 1.25;
+    background-color: #fff;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1D1D1F; /* Near black */
+    border-color: #1D1D1F;
+    color: #fff;
+    z-index: 3;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #8e8e93;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #ddd;
+}
+
+.pagination .page-item:not(.active) .page-link:hover {
+    background-color: #e9ecef;
+    color: #1D1D1F; /* Near black on hover */
+    border-color: #dee2e6;
+    z-index: 2;
+    text-decoration: none;
 }
 
 .pagination {
     display: flex;
-    justify-content: center;
     padding-left: 0;
     list-style: none;
+    border-radius: 0.25rem;
+    justify-content: center;
 }
 
-.pagination li {
-    margin: 0 5px;
+.page-item:first-child .page-link {
+    margin-left: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+.page-item:last-child .page-link {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
 }
 
-.pagination li a {
-    border: 1px solid #ddd;
-    padding: 5px 10px;
-    text-decoration: none;
-    color: #f76c5e;
+
+
+#article-list-row .article-item .card {
+    overflow: visible;
 }
 
-.pagination .page-item {
-    margin: 0 5px;
+.badge-container {
+
+
 }
 
-.pagination .page-item .page-link {
-    font-size: larger;
-}
 
-.pagination li.active a,
-.pagination li a:hover {
-    background-color: #f93118;
-    color: white;
+.user-info-card .card-header h1.card-title {
+    margin-bottom: 0.5rem;
 }
-
-.pagination li.disabled a {
-    color: #ccc;
-    pointer-events: none;
-}
-
-.pagination-arrows span {
-    border: 1px solid #ddd;
-    padding: 5px 10px;
-}
-
-.fixed-bottom-nav {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 20px;
-    width: auto;
-    background-color: rgba(255, 255, 255, 0);
-    z-index: 1030;
-    text-align: center;
+.user-info-card .card-body p.card-subtitle {
+    margin-bottom: 0.25rem;
 }

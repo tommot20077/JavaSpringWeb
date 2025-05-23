@@ -37,3 +37,4 @@ build/
 /src/main/resources/application-prod.properties
 /src/main/resources/application-prod.properties
 /logs/blog-web.log
+/.clinerules/前端更新.md

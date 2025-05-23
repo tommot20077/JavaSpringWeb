@@ -1,154 +1,171 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>註冊頁面</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/common.css">
-    <link rel="stylesheet" href="/password-card.css">
-    <style>
-        .form-header {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #481d07;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>註冊頁面</title>
 
-        .form-footer {
-            text-align: center;
-            margin-top: 20px;
-        }
+        <link rel="stylesheet" href="/common.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/register.css">
 
-        .btn
-        {
-            color: #282828;
-        }
-        .container {
-            max-width: 520px;
-            margin-top: 50px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #ff740045;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-        }
-        .form-control {
-            width: 100%;
-        }
+    </head>
+    <body>
+        <nav class="navbar fixed-top">
+            <a class="navbar-brand" href="/">我的Blog Web</a>
+        </nav>
 
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <a class="navbar-brand" href="/">我的Blog Web</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
+        <div class="main-content-wrapper">
+            <div class="content-area">
+                <div class="register-container">
+                    <div class="form-header"><h1>註冊帳號</h1></div>
+                    <div th:if="${errorMessage}" id="errorMessage" class="error" th:text="${errorMessage}"></div>
 
+                    <form method="post" action="#" th:action="@{/register}" th:object="${user}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="form-group">
+                            <label for="username">用戶名稱:</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" required />
+                        </div>
 
-    <div class="container">
-        <div class="form-header"><h1>註冊帳號</h1></div>
-        <div th:if="${errorMessage}" id = "errorMessage" class="error" th:text="${errorMessage}"></div>
+                        <div class="form-group">
+                            <label for="password">用戶密碼:</label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}" required />
+                        </div>
 
-        <form method="post" action="#" th:action="@{/register}" th:object="${user}">
-	        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <div class="form-group">
-                <label for="username">用戶名稱:</label>
-                <input type="text" class="form-control" id="username" th:field="*{username}" required />
+                        <div class="form-group">
+                            <label for="confirmPassword">確認密碼:</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">電子信箱:</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="birthdate">生日日期:</label>
+                            <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" />
+                        </div>
+
+                        <div class="form-footer">
+                            <input id="save-button" type="submit" class="btn btn-primary" value="提交" />
+                            <a href="/" class="btn btn-secondary">返回首頁</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="password-rule">
+                    <h4>規則</h4>
+                    <ul>
+                        <li id="ac-rule-special"><span class="status"></span>使用名稱不可有特殊字元</li>
+                        <li id="ac-rule-length"><span class="status"></span>使用名稱長度必須至少 4 個字元</li>
+                        <li id="ps-rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
+                        <li id="ps-rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
+                        <li id="ps-rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
+                        <li id="ps-rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
+                    </ul>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="password">用戶密碼:</label>
-                <input type="password" class="form-control" id="password" th:field="*{password}" required />
-            </div>
+        <div id="loading-spinner" class="loading-spinner-container">
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        </div>
 
-            <div class="form-group">
-                <label for="confirmPassword">確認密碼:</label>
-                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required />
-            </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Ensure spinner is hidden on load, CSS should also handle this by default
+                const spinner = document.getElementById('loading-spinner');
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
 
-            <div class="form-group">
-                <label for="email">電子信箱:</label>
-                <input type="email" class="form-control" id="email" th:field="*{email}" />
-            </div>
+                const usernameInput = document.getElementById("username");
+                const passwordInput = document.getElementById("password");
+                const confirmPasswordInput = document.getElementById("confirmPassword");
+                const saveButton = document.getElementById("save-button");
+                const errorMessageDiv = document.getElementById("errorMessage"); // Assuming this is where you show general errors
 
-            <div class="form-group">
-                <label for="birthdate">生日日期:</label>
-                <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" />
-            </div>
+                if (usernameInput) {
+                    usernameInput.addEventListener("input", function(e) {
+                        const value = e.target.value;
+                        updateStatus(document.getElementById("ac-rule-special"), /^[a-zA-Z0-9]*$/.test(value));
+                        updateStatus(document.getElementById("ac-rule-length"), value.length >= 4);
+                    });
+                }
 
-            <div class="form-footer">
-                <a href="/" class="btn btn-link">返回首頁</a>
-                <input id="save-button" type="submit" class="btn btn-primary" value="提交" />
-            </div>
-        </form>
-    </div>
+                if (passwordInput) {
+                    passwordInput.addEventListener("input", function(e) {
+                        const value = e.target.value;
+                        updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(value));
+                        updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(value));
+                        updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(value));
+                        updateStatus(document.getElementById("ps-rule-length"), value.length >= 8);
+                    });
+                }
 
-    <div id="password-rule" class="password-card">
-        <h4>規則</h4>
-        <ul>
-	        <li id="ac-rule-special"><span class="status"></span>使用名稱不可有特殊字元</li>
-	        <li id="ac-rule-length"><span class="status"></span>使用名稱長度必須至少 4 個字元</li>
-            <li id="ps-rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
-            <li id="ps-rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
-            <li id="ps-rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
-            <li id="ps-rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
-        </ul>
-    </div>
+                if (saveButton) {
+                    saveButton.closest('form').addEventListener('submit', (event) => { // Listen on form submit for better practice
+                        const passwordValue = passwordInput ? passwordInput.value : "";
+                        const confirmPasswordValue = confirmPasswordInput ? confirmPasswordInput.value : "";
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            hideSpinner();
-        });
+                        // Clear previous error messages specifically for password mismatch
+                        if (errorMessageDiv && errorMessageDiv.dataset.type === "passwordMismatch") {
+                            errorMessageDiv.textContent = '';
+                            errorMessageDiv.style.display = 'none';
+                        }
 
-        document.getElementById("username").addEventListener("input", function(e) {
-	        const value = e.target.value;
-	        updateStatus(document.getElementById("ac-rule-special"), /^[a-zA-Z0-9]*$/.test(value));
-	        updateStatus(document.getElementById("ac-rule-length"), value.length >= 4);
-        });
-        document.getElementById("password").addEventListener("input", function(e) {
-            const value = e.target.value;
-            updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(value));
-            updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(value));
-            updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(value));
-            updateStatus(document.getElementById("ps-rule-length"), value.length >= 8);
-        });
 
-        function updateStatus(element, isValid) {
-            const statusElement = element.querySelector('.status');
-            if (isValid) {
-                statusElement.className = "status correct";
-                element.style.color = 'green';
-            } else {
-                statusElement.className = "status incorrect";
-                element.style.color = 'red';
+                        if (confirmPasswordValue === null || confirmPasswordValue.trim() === "" || confirmPasswordValue !== passwordValue) {
+                            if (errorMessageDiv) {
+                                errorMessageDiv.textContent = "密碼不一致";
+                                errorMessageDiv.style.display = 'block'; // Make sure error is visible
+                                errorMessageDiv.dataset.type = "passwordMismatch"; // Mark the error type
+                            }
+                            event.preventDefault(); // Prevent form submission
+                            return false;
+                        } else {
+                            showSpinner();
+                            saveButton.disabled = true; // Disable the button
+                        }
+                    });
+                }
+            });
+
+            function updateStatus(element, isValid) {
+                if (!element) return;
+                const statusElement = element.querySelector('.status');
+                if (statusElement) {
+                    if (isValid) {
+                        statusElement.className = "status correct";
+                        element.style.color = 'green';
+                    } else {
+                        statusElement.className = "status incorrect";
+                        element.style.color = 'red';
+                    }
+                }
             }
-        }
 
-
-        document.getElementById("save-button").addEventListener('click', () => {
-            let repass = document.getElementById("confirmPassword").value
-            if (repass == null || repass.value !== document.getElementById("password").value || repass.trim() === "") {
-                document.getElementById("errorMessage").innerHTML = "密碼不一致";
-                return false;
-            } else {
-                showSpinner();
-                this.disabled = true;
+            function showSpinner() {
+                const spinner = document.getElementById('loading-spinner');
+                if (spinner) {
+                    spinner.style.display = 'flex';
+                }
             }
 
-        });
-
-
-        function showSpinner() {
-            document.getElementById('loading-spinner').style.display = 'flex';
-        }
-        function hideSpinner() {
-            document.getElementById('loading-spinner').style.display = 'none';
-        }
-    </script>
-
-    <div id="loading-spinner" class="loading-spinner-container">
-        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-    </div>
-</body>
+            // hideSpinner function was present in original HTML but not called after form submission.
+            // It's typically called after the async operation (form submission) completes.
+            // For now, it's kept if needed elsewhere, or called on DOMContentLoaded.
+            function hideSpinner() {
+                const spinner = document.getElementById('loading-spinner');
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
+            }
+        </script>
+    </body>
 </html>

@@ -5,8 +5,7 @@
         <meta charset="UTF-8">
         <title>編輯評論</title>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
@@ -27,7 +26,7 @@
 
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background-color: #e39624">
             <a class="navbar-brand" href="/">我的Blog Web</a>
             <button class="navbar-toggler"
                     type="button"
@@ -68,8 +67,8 @@
                     <span class="switch-slider round"></span> </label>
                 </div>
             </div>
-            <div class="editor-container">
-                <div id="toolbar-container">
+<div class="editor-container">
+                    <div id="toolbar-container">
                 <span class="ql-formats">
                     <select class="ql-font">
                         <option value="Arial">Arial</option>
@@ -121,10 +120,10 @@
                 </span> <span class="ql-formats">
                     <button class="ql-clean"></button>
                 </span>
+                    </div>
+                    <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
                 </div>
-                <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
-            </div>
-            <div class="bottom-group">
+<div class="bottom-group mt-3">
                 <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
                 <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回評論文章</a>
                 <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除評論</button>
@@ -297,6 +296,13 @@
                 const toastElement = document.createElement('div');
                 toastElement.classList.add('alert', toastClass);
                 toastElement.textContent = message;
+
+                // Add progress bar
+                const progressBar = document.createElement('div');
+                progressBar.classList.add('toast-progress-bar');
+                progressBar.style.animationDuration = '5s'; // Match timeout duration (5000ms)
+                toastElement.appendChild(progressBar);
+                // ---
 
                 toastContainer.appendChild(toastElement);
                 setTimeout(() => toastElement.remove(), 5000);

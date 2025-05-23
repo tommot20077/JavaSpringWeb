@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -93,10 +94,10 @@ public class UserController {
     }
 
     @GetMapping("/verify")
-    public ModelAndView verifyEmail(@RequestParam String token) {
+    public ModelAndView verifyEmail(@RequestParam(defaultValue = "") String token) {
         ModelAndView modelAndView = new ModelAndView("verify");
         try {
-            if (tokenService.verifyActiveEmailToken(token)) {
+            if (StringUtils.hasText(token) && tokenService.verifyActiveEmailToken(token)) {
                 modelAndView.addObject("message", "驗證成功");
                 modelAndView.addObject("verified", true);
             } else {
@@ -166,7 +167,10 @@ public class UserController {
                                     .collect(Collectors.toList());
             model.addAttribute("timezones", timezones);
 
-            long userid = (Long) session.getAttribute("currentUserId");
+            Long userid = (Long) session.getAttribute("currentUserId");
+            if (userid == null) {
+                return "redirect:/login";
+            }
             User user = userService.getUserById(userid);
             model.addAttribute("user", user);
             return "profile";
@@ -349,7 +353,7 @@ public class UserController {
             logger.info("成功獲取天氣資料");
             return ResponseEntity.ok(weatherResponse);
         } catch (Exception e) {
-            logger.error("無法獲取天氣資料: " + e.getMessage());
+            logger.error("無法獲取天氣資料: {}", e.getMessage());
             return ResponseEntity.status(500).body("請求錯誤，請稍後再試");
         }
     }

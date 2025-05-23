@@ -1,0 +1,175 @@
+body {
+    background-color: #f8f8f8;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container.main-content-area {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+}
+
+.mt-5 {
+    margin-top: 30px !important;
+}
+
+.container.main-content-area .article-list-heading {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.view-toggle-buttons .btn {
+    margin-left: 5px;
+}
+.view-toggle-buttons .btn.active {
+     background-color: #1D1D1F; /* Near black */
+     color: white;
+     cursor: default;
+}
+.view-toggle-buttons .btn:not(.active):hover {
+     background-color: #e2e6ea;
+}
+
+
+.card {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 230px;
+}
+
+.card-title {
+    color: #1d1d1f;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 4.5em;
+}
+
+.card-meta {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.card-meta .author-text {
+    margin-bottom: 0.5rem;
+}
+
+.card-meta .card-dates p {
+    margin-bottom: 0.25rem;
+}
+
+.card-meta a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.card-meta a:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background-color: #1D1D1F; /* Near black */
+    border-color: #1D1D1F;
+    color: #FFFFFF; /* Ensure text is white */
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    margin-top: 1rem;
+    align-self: flex-start;
+}
+
+#article-list-row.view-mode-list .article-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+#article-list-row.view-mode-card .article-item {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+@media (min-width: 992px) {
+    #article-list-row.view-mode-card .article-item {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+
+.btn-primary:hover {
+    background-color: #4a4a4a; /* Lighter gray for hover */
+    border-color: #4a4a4a;
+    color: #FFFFFF; /* Keep text white */
+}
+
+.btn-primary i {
+    margin-left: 5px;
+}
+
+@media (max-width: 767.98px) {
+    .container.main-content-area {
+         padding: 1rem;
+    }
+
+    #article-list-row .article-item {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .view-toggle-buttons {
+        display: none !important;
+    }
+
+    .card-title {
+        min-height: auto;
+    }
+}
+
+.pagination-container {
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+
+.pagination .page-item .page-link {
+    color: #1D1D1F; /* Near black for pagination links */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1D1D1F; /* Near black */
+    border-color: #1D1D1F;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #8e8e93; /* Keep lighter grey for disabled */
+}

@@ -2,9 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>搜尋</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/search.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -62,20 +64,20 @@
     </div>
 </nav>
 
-<div class="container mt-4">
-    <form th:action="@{/search}" method="get" class="justify-content-center form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="輸入搜索關鍵字..." aria-label="搜索" name="keyword">
-        <select class="form-control mr-sm-2" name="type">
-            <option value="users">用戶</option>
-            <option value="posts">文章</option>
+<div th:classappend="${not #strings.isEmpty(keyword) ? 'search-container-top' : 'search-container-center'}" class="search-container">
+    <form th:action="@{/search}" method="get" class="search-form">
+        <input class="form-control search-input" type="text" placeholder="輸入搜索關鍵字..." aria-label="搜索" name="keyword" th:value="${keyword}">
+        <select class="form-control search-select" name="type">
+            <option value="users" th:selected="${type == 'users'}">用戶</option>
+            <option value="posts" th:selected="${type == 'posts' or #strings.isEmpty(type)}">文章</option>
         </select>
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜尋</button>
+        <button class="btn btn-primary search-button" type="submit">搜尋</button>
     </form>
 </div>
 
-<div class="container mt-4" th:if="${not #strings.isEmpty(keyword)}">
+<div class="search-results-container container mt-4" th:if="${not #strings.isEmpty(keyword)}">
+    <h2 class="search-results-heading">搜尋結果</h2>
     <div th:if="${type == 'users'}">
-        <h2 th:if="${usersPage != null and usersPage.totalElements > 0}">用戶</h2>
         <div class="list-group">
             <th:block th:if="${usersPage != null and usersPage.totalElements > 0}" th:each="user : ${usersPage.content}">
                 <a class="list-group-item list-group-item-action" th:href="@{/user/{id}(id=${user.getId()})}" th:text="${user.getUsername()}">
@@ -87,18 +89,20 @@
     </div>
 
     <div th:if="${type == 'posts'}">
-        <h2 th:if="${postsPage != null and postsPage.totalElements > 0}">文章</h2>
         <div class="list-group">
             <th:block th:if="${postsPage != null and postsPage.totalElements > 0}" th:each="post : ${postsPage.content}">
-                <a class="list-group-item list-group-item-action" th:href="@{/article/{id}(id=${post.articleId})}" th:text="${post.title.length() > 50 ? #strings.substring(post.title, 0, 50) + '...' : post.title}">
-                    文章標題
+                <a class="list-group-item list-group-item-action search-article-item" th:href="@{/article/{id}(id=${post.articleId})}">
+                    <div class="search-article-title" th:text="${post.title.length() > 50 ? #strings.substring(post.title, 0, 50) + '...' : post.title}">
+                        文章標題
+                    </div>
+                    <div class="search-article-author">
+                        作者: <span th:text="${post.author.username}">作者名稱</span>
+                    </div>
                 </a>
             </th:block>
         </div>
         <p th:if="${postsPage == null or postsPage.totalElements == 0}" class="alert alert-warning">未找到相關文章。</p>
     </div>
-
-
 
     <div class="mt-4" th:if="${usersPage != null and usersPage.getTotalElements > 0}">
         <nav aria-label="用戶搜尋分頁">
@@ -109,7 +113,7 @@
                     </a>
                 </li>
 
-                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active' : ''">
+                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active disabled' : ''">
                     <a class="page-link" th:href="@{/search(keyword=${keyword}, type='users', page=${i})}" th:text="${i}">1</a>
                 </li>
 
@@ -122,17 +126,16 @@
         </nav>
     </div>
 
-
     <div class="mt-4" th:if="${postsPage != null and postsPage.totalElements > 0}">
-        <nav aria-label="用戶搜尋分頁">
-            <ul class="pagination">
+        <nav aria-label="文章搜尋分頁">
+            <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${page == 1} ? 'disabled' : ''">
                     <a class="page-link" th:href="@{/search(keyword=${keyword}, type='posts', page=${page - 1})}" th:if="${page > 1}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
 
-                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active' : ''">
+                <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item" th:classappend="${page == i} ? 'active disabled' : ''">
                     <a class="page-link" th:href="@{/search(keyword=${keyword}, type='posts', page=${i})}" th:text="${i}">1</a>
                 </li>
 

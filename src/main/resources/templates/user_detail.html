@@ -1,24 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
-    <title>用戶主頁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <!-- Added viewport -->
+    <title>用戶主頁 - [[${user.getUsername()}]]</title> <!-- Updated title -->
+
+    <!-- Bootstrap and Font Awesome -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"> <!-- Added Font Awesome -->
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/article.css"> <!-- Added article.css -->
     <link rel="stylesheet" href="/user_detail.css">
 
+    <!-- JS Libraries -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script> <!-- Correct Popper path -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script> <!-- Added Font Awesome JS -->
+    <!-- Removed highlight.js and katex as they are not in article.html -->
 
 </head>
-<body>
+<body class="min-vh-100"> <!-- Added min-vh-100 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <!-- Using custom icon bars like article.html -->
+        <span class="navbar-toggler-icon-custom">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
@@ -48,94 +67,209 @@
     </div>
 </nav>
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h1 class="card-title" th:text="${user.getUsername()}">用戶名稱</h1>
-            <br>
-            <p class="card-subtitle mb-2 text-muted" th:text="|用戶ID: ${user.getId()} |">用戶ID</p>
-            <p class="card-subtitle mb-2 text-muted" th:text="|電子信箱: ${user.getEmail()} |">電子信箱
-                <a class="card-subtitle mb-2 text-muted" th:if="${user.getEmailActiveStatus()}">
-                    <a th:text="${user.getEmailActiveStatus()}">(信箱已驗證)</a>
-                </a>
-                <a class="card-subtitle mb-2 text-muted" th:if="${!user.getEmailActiveStatus()}">
-                    <a th:text="${user.getEmailActiveStatus()}">(信箱未驗證)</a>
-                </a>
+<!-- User Info Card -->
+<div class="container mt-5 pt-4 mb-4"> <!-- Added pt-4 for spacing below fixed navbar, mb-4 for spacing below -->
+    <div class="row justify-content-center"> <div class="col-md-8"> <!-- Added row/col structure -->
+            <div class="card user-info-card"> <!-- Added class for potential specific styling -->
+                <div class="card-header">
+                    <h1 class="card-title" th:text="${user.getUsername()}">用戶名稱</h1>
+                </div>
+        <div class="card-body">
+            <p class="card-subtitle mb-2 text-muted" th:text="|用戶ID: ${user.getId()}|">用戶ID</p>
+            <p class="card-subtitle mb-2 text-muted">
+                電子信箱: [[${user.getEmail()}]]
+                <span th:if="${user.getEmailActiveStatus()}" class="text-success">(信箱已驗證)</span>
+                <span th:if="${!user.getEmailActiveStatus()}" class="text-danger">(信箱未驗證)</span>
             </p>
-            <p class="card-subtitle mb-2 text-muted" th:text="|用戶註冊時間: ${formattedUserTime} |">用戶註冊時間</p>
-
-            <!--<p class="card-subtitle mb-2 text-muted" th:text="|用戶最後登入時間: ${user.getLastLoginTime()} |">用戶最後登入時間</p> -->
+            <p class="card-subtitle mb-2 text-muted" th:text="|用戶註冊時間: ${formattedUserTime}|">用戶註冊時間</p>
         </div>
     </div>
+</div> </div> <!-- Close col-md-8 and row -->
 </div>
 
-<div class="search-results" th:if="${postPage != null}">
-    <h2>用戶文章</h2>
-    <div class="row" style="margin-right: 0;margin-left: 0">
-        <div th:each="post, iterStat : ${postPage.content}" class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body" style="background-color: #ffbca8">
-                    <div class="card-title">
-                        <span th:if="${post.published}" class="badge badge-success mr-2">已發布</span>
-                        <span th:if="${!post.published}" class="badge badge-secondary mr-2">未發布</span>
-                        <a th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}"
-                           th:href="@{/article/{id}(id=${post.articleId})}">文章標題
-                        </a>
+<!-- User Posts Section - Styled like article.html -->
+<div class="container main-content-area"> <!-- Removed mt-4, spacing handled above -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+         <h2 class="mb-0 article-list-heading">用戶文章</h2>
+         <!-- Added View Toggle Buttons -->
+         <div class="view-toggle-buttons d-none d-md-block"> <!-- Buttons container, hidden on sm/xs -->
+             <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary" title="List View">
+                 <i class="fas fa-list"></i>
+             </button>
+             <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active" title="Card View">
+                 <i class="fas fa-th-large"></i>
+             </button>
+         </div>
+    </div>
+    <div class="row view-mode-card" id="article-list-row"> <!-- Default to card view, add ID -->
+        <th:block th:if="${postPage != null}" th:each="post,iterStat : ${postPage.content}">
+            <!-- Article Item Card -->
+            <div class="col-md-4 mb-3 article-item">
+                <div class="card position-relative h-100"> <!-- Added position-relative and h-100 -->
+                    <!-- Rotated Badge -->
+                    <div class="badge-container">
+                        <span th:if="${post.published}" class="badge badge-rotated badge-success">已發布</span>
+                        <span th:if="${!post.published}" class="badge badge-rotated badge-secondary">未發布</span>
+                    </div>
+                    <div class="card-body d-flex flex-column"> <!-- Added flex classes -->
+                        <h5 class="card-title truncated-title"
+                            th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}"
+                            th:attr="data-full-title=${post.title}"
+                            th:title="${post.title}">文章標題</h5> <!-- Added th:title for default tooltip -->
+                        <div class="card-meta mt-auto"> <!-- Added mt-auto -->
+                            <!-- Author is implicit -->
+                            <div class="card-dates">
+                                <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}"></p>
+                                <p class="card-text" th:text="'最後更新時間: '+${formattedPostUpdateTimes[iterStat.index]}"></p>
+                            </div>
+                        </div>
+                        <a target="_blank" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary mt-3">閱讀全文 <!-- Added mt-3 -->
+                            <i class="fas fa-angle-right"></i></a>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent">
-                    <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
-                    <p class="card-text" th:text="'最後更新時間: '+${formattedPostUpdateTimes[iterStat.index]}" style="margin-top: 0;margin-bottom: 0;"></p>
-                </div>
             </div>
-        </div>
+        </th:block>
+        <!-- Handle case where there are no posts -->
+         <div class="col-12" th:if="${postPage == null or postPage.totalElements == 0}">
+             <p>該用戶尚未發布任何文章。</p>
+         </div>
     </div>
+</div> <!-- End of main-content-area -->
 
+<!-- Pagination - Styled like article.html -->
+<nav aria-label="用戶文章分頁" th:if="${postPage != null and totalPages > 1}" class="pagination-container">
+    <ul class="pagination justify-content-center">
+        <!-- 跳至首頁 -->
+        <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=1)}" aria-label="First" th:if="${pageNum > 1}"> <span aria-hidden="true">««</span> </a>
+        </li>
+        <!-- 前一頁 -->
+        <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${pageNum - 1})}" aria-label="Previous" th:if="${pageNum > 1}">
+                <span aria-hidden="true">&laquo;</span> </a>
+        </li>
+        <!-- 分頁號碼 -->
+        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+            class="page-item"
+            th:classappend="${pageNum eq i} ? 'active disabled' : ''"
+            th:if="${(totalPages le 10) or (i ge (pageNum - 2) and i le (pageNum + 2)) or (pageNum le 3 and i le 5) or (totalPages - pageNum lt 3 and i gt totalPages - 5)}">
+            <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${i})}" th:text="${i}">1</a>
+        </li>
+        <!-- 下一頁 -->
+        <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
+            <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${pageNum + 1})}" aria-label="Next" th:if="${pageNum < totalPages}">
+                <span aria-hidden="true">&raquo;</span> </a>
+        </li>
+        <!-- 跳至尾頁 -->
+        <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
+            <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=${totalPages})}" aria-label="Last" th:if="${pageNum < totalPages}">
+                <span aria-hidden="true">»»</span> </a>
+        </li>
+    </ul>
+</nav>
 
-</div>
+<!-- Pagination Visibility Script from article.html -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paginationContainer = document.querySelector('.pagination-container');
+        if (!paginationContainer) return; // Exit if no pagination
 
-<div class="mt-4" th:if="${postPage != null and postPage.totalElements > 0}">
-    <nav aria-label="用戶文章分頁" th:if="${totalPages > 1}" class="mt-4 fixed-bottom-nav ">
-        <ul class="pagination justify-content-center">
-            <!-- 跳至首頁 -->
-            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()}, page=1)}" aria-label="First" th:if="${pageNum > 1}">
-                    <span aria-hidden="true">««</span>
-                </a>
-            </li>
+        const paginationItems = paginationContainer.querySelectorAll('.pagination .page-item');
+        const mediaQuerySmall = window.matchMedia('(max-width: 767.98px)'); // Bootstrap's sm breakpoint
 
-            <!-- 前一頁 -->
-            <li class="page-item" th:classappend="${pageNum == 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum - 1})}" aria-label="Previous" th:if="${pageNum > 1}">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
+        const handlePaginationVisibility = () => {
+            if (mediaQuerySmall.matches) {
+                // Small screens: Show only First, Previous, Active, Next, Last
+                paginationItems.forEach(item => {
+                    const link = item.querySelector('.page-link');
+                    const isFirst = link && link.getAttribute('aria-label') === 'First';
+                    const isPrevious = link && link.getAttribute('aria-label') === 'Previous';
+                    const isNext = link && link.getAttribute('aria-label') === 'Next';
+                    const isLast = link && link.getAttribute('aria-label') === 'Last';
+                    const isActive = item.classList.contains('active');
+                    const isPageNumber = !isFirst && !isPrevious && !isNext && !isLast;
 
-            <!-- 分頁號碼 -->
-            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-                th:class="page-item"
-                th:classappend="${pageNum eq i} ? 'active'"
-                th:if="${(totalPages le 10) or (i ge (pageNum - 4) and i le (pageNum + 5)) or (totalPages - pageNum lt 5 and i gt totalPages - 10)}"
-            >
-                <a class="page-link" th:href="@{/user/{id} (id=${user.getId()}, page=${i})}" th:text="${i}">1</a>
-            </li>
+                    if (isPageNumber && !isActive) {
+                        item.style.display = 'none'; // Hide non-active page numbers
+                    } else {
+                        item.style.display = ''; // Show First, Prev, Active, Next, Last
+                    }
+                });
+            } else {
+                // Medium/Large screens: Show all items (as rendered by Thymeleaf)
+                paginationItems.forEach(item => {
+                    item.style.display = '';
+                });
+            }
+        };
 
-            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${pageNum + 1})}" aria-label="Next" th:if="${pageNum < totalPages}">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
+        // Initial check
+        handlePaginationVisibility();
 
-            <!-- 跳至尾頁 -->
-            <li class="page-item" th:classappend="${pageNum == totalPages} ? 'disabled'" th:if="${pageNum < totalPages}">
-                <a class="page-link" th:href="@{/user/{id}(id=${user.getId()},page=${totalPages})}" aria-label="Last" th:if="${page < totalPages}">
-                    <span aria-hidden="true">»»</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+        // Listen for screen size changes
+        mediaQuerySmall.addEventListener('change', handlePaginationVisibility);
 
+        // Tooltip for truncated titles (optional enhancement)
+        const truncatedTitles = document.querySelectorAll('.truncated-title[data-full-title]');
+        truncatedTitles.forEach(title => {
+            // Basic tooltip using the title attribute (already added in HTML)
+            // More advanced tooltips would require Bootstrap's JS or another library
+        });
+    });
+</script>
+
+<!-- View Toggle Functionality Script (Copied from article.html) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const listButton = document.getElementById('view-toggle-list');
+        const cardButton = document.getElementById('view-toggle-card');
+        const articleRow = document.getElementById('article-list-row');
+        const viewToggleButtons = document.querySelector('.view-toggle-buttons');
+
+        // Check if elements exist before proceeding
+        if (!listButton || !cardButton || !articleRow || !viewToggleButtons) {
+            console.warn('View toggle elements not found on this page, skipping toggle setup.');
+            return; // Exit if elements aren't present
+        }
+
+        const applyViewMode = (mode) => {
+            if (mode === 'list') {
+                articleRow.classList.remove('view-mode-card');
+                articleRow.classList.add('view-mode-list');
+                listButton.classList.add('active');
+                cardButton.classList.remove('active');
+                localStorage.setItem('userArticleViewMode', 'list'); // Use a unique key for user page
+            } else { // Default to card view
+                articleRow.classList.remove('view-mode-list');
+                articleRow.classList.add('view-mode-card');
+                cardButton.classList.add('active');
+                listButton.classList.remove('active');
+                localStorage.setItem('userArticleViewMode', 'card'); // Use a unique key for user page
+            }
+        };
+
+        const handleResize = () => {
+            // Check if buttons should be visible (Bootstrap md breakpoint)
+            if (window.innerWidth < 768) {
+                // CSS media queries in article.css should handle forcing list view style
+            } else {
+                // On larger screens, ensure the correct mode from localStorage is applied
+                const savedMode = localStorage.getItem('userArticleViewMode') || 'card'; // Use unique key
+                applyViewMode(savedMode);
+            }
+        };
+
+        // Initial Setup
+        const initialMode = localStorage.getItem('userArticleViewMode') || 'card'; // Use unique key, default card
+        applyViewMode(initialMode);
+        handleResize(); // Run on load to set initial state based on screen size
+
+        // Event Listeners
+        listButton.addEventListener('click', () => applyViewMode('list'));
+        cardButton.addEventListener('click', () => applyViewMode('card'));
+        window.addEventListener('resize', handleResize); // Re-check on resize
+    });
+</script>
 
 </body>
 </html>

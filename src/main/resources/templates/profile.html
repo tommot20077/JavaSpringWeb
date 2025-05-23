@@ -1,247 +1,425 @@
 <!DOCTYPE html>
-<html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>更新資料</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Using Bootstrap for grid/basic layout, but custom styles will override -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/common.css">
-    <link rel="stylesheet" href="/password-card.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 400px;
-            margin-top: 50px;
-            padding: 20px;
-            background-color: #fff7ef;
-            border: 1px solid #f9aa33;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-        }
-        .form-group label {
-            color: #481d07;
-        }
-        .error, .alert {
-            color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-primary, .btn-secondary {
-            margin-top: 10px;
-        }
-        .btn-secondary {
-            background-color: #ff551a;
-        }
-        .btn-secondary:hover {
-            background-color: #ff1b1b;
-            border-color: #ff1b1b;
-            color: #f9f9f9;
-        }
-    </style>
+    <link rel="stylesheet" href="/profile.css"> <!-- New CSS for profile page styling -->
+    <link rel="stylesheet" href="/password-card.css"> <!-- Keep for password rules styling initially -->
+
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-    <a class="navbar-brand" href="/">我的Blog Web</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/search">搜尋</a>
-            </li>
-            <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    歡迎 [[${session.currentUsername}]]!
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile">更新資料</a>
-                    <a class="dropdown-item" href="/new_article">新增文章</a>
-                    <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
-                </div>
-            </li>
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/login">登入</a>
-            </li>
-            <li class="nav-item" th:if="${!userLoggedIn}">
-                <a class="nav-link" href="/register">註冊</a>
-            </li>
-            <li class="nav-item" th:if="${userLoggedIn}">
-                <a class="nav-link" href="/logout">登出</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<div class="container">
-    <div th:if="${!session.currentUserEmailStatus}">
-        <h1>更新個人資料  (未驗證信箱)</h1>
-    </div>
-    <div th:if="${session.currentUserEmailStatus}">
-        <h1>更新個人資料  (已驗證信箱)</h1>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="/">我的Blog Web</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <!-- Standard Bootstrap Toggler Icon (or keep custom if preferred and styled in common.css) -->
+            <span class="navbar-toggler-icon"></span>
+            <!-- If using custom icon styled in common.css:
+            <span class="navbar-toggler-icon-custom">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </span>
+             -->
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">搜尋</a>
+                </li>
+                <li class="nav-item dropdown" th:if="${userLoggedIn}">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       id="navbarDropdownMenuLink"
+                       role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        歡迎 [[${session.currentUsername}]]!
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="/profile">更新資料</a>
+                        <a class="dropdown-item" href="/new_article">新增文章</a>
+                        <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
+                    </div>
+                </li>
+                <li class="nav-item" th:if="${!userLoggedIn}">
+                    <a class="nav-link" href="/login">登入</a>
+                </li>
+                <li class="nav-item" th:if="${!userLoggedIn}">
+                    <a class="nav-link" href="/register">註冊</a>
+                </li>
+                <li class="nav-item" th:if="${userLoggedIn}">
+                    <a class="nav-link" href="/logout">登出</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" id="basic-tab" data-toggle="tab" href="#basic">一般設定</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="important-tab" data-toggle="tab" href="#important">重要設定</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="basic">
-            <form th:action="@{/basicProfile}" th:object="${user}" method="post">
-                <br>
-                <div class="form-group">
-                    <label for="birthdate">生日</label>
-                    <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" >
-                </div>
-                <div class="form-group">
-                    <label for="timezone">用戶時區</label>
-                    <select id="timezone" class="form-control" th:field="*{timezone}">
-                        <th:block th:each="timezone : ${timezones}">
-                            <option th:value="${timezone}" th:text="${timezone}" th:selected="${timezone == user.timezone}"></option>
-                        </th:block>
-                    </select>
+    <div class="main-content-wrapper">
+        <div class="content-area">
+            <!-- New wrapper for profile container and password rules -->
+            <div class="profile-layout-wrapper">
+                <div class="profile-container"> <!-- Changed from register-container -->
+                    <div class="form-header">
+                        <h1 th:if="${!session.currentUserEmailStatus}">更新個人資料 <span class="email-status">(未驗證信箱)</span></h1>
+                    <h1 th:if="${session.currentUserEmailStatus}">更新個人資料 <span class="email-status">(已驗證信箱)</span></h1>
                 </div>
 
-                <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-                <div th:if="${success}">
-                    <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="baseSuccessMessage">
-                        <span th:text="${success}"></span>
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs profile-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="basic-tab" data-toggle="tab" href="#basic">一般設定</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="important-tab" data-toggle="tab" href="#important">重要設定</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Basic Settings Tab -->
+                    <div class="tab-pane fade show active" id="basic">
+                        <form th:action="@{/basicProfile}" th:object="${user}" method="post" class="profile-form">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <div class="form-group">
+                                <label for="birthdate">生日</label>
+                                <!-- Add th:max to set max date to today -->
+                                <input type="date" class="form-control" id="birthdate" th:field="*{birthdate}" th:max="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" >
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">用戶時區</label>
+                                <select id="timezone" class="form-control" th:field="*{timezone}">
+                                    <th:block th:each="timezone : ${timezones}">
+                                        <option th:value="${timezone}" th:text="${timezone}" th:selected="${timezone == user.timezone}"></option>
+                                    </th:block>
+                                </select>
+                            </div>
+
+                            <div th:if="${basicErrorMessage}" class="error-message" th:text="${basicErrorMessage}"></div>
+                            <div th:if="${basicSuccessMessage}">
+                                <div class="success-message" role="alert" id="baseSuccessMessage">
+                                    <span th:text="${basicSuccessMessage}"></span>
+                                </div>
+                            </div>
+                            <div class="form-footer">
+                                <button id="save-base-button" type="submit" class="btn btn-primary">更新</button>
+                                <a href="/" class="btn btn-secondary">回到首頁</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Important Settings Tab -->
+                    <div class="tab-pane fade" id="important">
+                        <form th:action="@{/importantProfile}" th:object="${user}" method="post" class="profile-form">
+                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <div class="form-group">
+                                <label for="originPassword">原本密碼</label>
+                                <input type="password" class="form-control" id="originPassword" name="originPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="username">更換使用者名稱</label>
+                                <input type="text" class="form-control" id="username" th:field="*{username}">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">更換密碼</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">重複更換密碼</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+                            </div>
+                            <div class="form-group">
+                                <label for="email">更新Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}">
+                            </div>
+
+                            <div th:if="${importantErrorMessage}" class="error-message" th:text="${importantErrorMessage}"></div>
+                             <div th:if="${importantSuccessMessage}">
+                                <div class="success-message" role="alert" id="importantSuccessMessage">
+                                    <span th:text="${importantSuccessMessage}"></span>
+                                </div>
+                            </div>
+                            <div class="form-footer">
+                                <button id="save-important-button" type="submit" class="btn btn-primary">更新後登出</button>
+                                <a href="/" class="btn btn-secondary">回到首頁</a>
+                            </div>
+                        </form>
+                    </div>
                     </div>
                 </div>
-                <button id="save-base-button" type="submit" class="btn btn-primary">更新</button>
-                <a href="/" class="btn btn-secondary">回到首頁</a>
-            </form>
-        </div>
-        <div class="tab-pane fade" id="important">
-            <form th:action="@{/importantProfile}" th:object="${user}" method="post">
-                <br>
-                <div class="form-group">
-                    <label for="originPassword">原本密碼</label>
-                    <input type="password" class="form-control" id="originPassword" name="originPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="username">更換使用者名稱</label>
-                    <input type="text" class="form-control" id="username" th:field="*{username}">
-                </div>
-                <div class="form-group">
-                    <label for="password">更換密碼</label>
-                    <input type="password" class="form-control" id="password" th:field="*{password}">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">重複更換密碼</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
-                </div>
 
-                <div class="form-group">
-                    <label for="email">更新Email</label>
-                    <input type="email" class="form-control" id="email" th:field="*{email}">
+                <!-- Password Rules (Initially hidden, shown when important tab is active) -->
+                <div id="password-rule-container" style="display: none;">
+                     <h4>密碼規則</h4>
+                     <ul>
+                     <!-- Rules similar to register page, but only password rules needed here -->
+                     <li id="ps-rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
+                     <li id="ps-rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
+                     <li id="ps-rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
+                         <li id="ps-rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
+                     </ul>
                 </div>
-                <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-                <div th:if="${success}">
-                    <div th:attr="data-success=${success}" class="alert alert-success" role="alert" id="successMessage">
-                        <span th:text="${success}"></span>
-                    </div>
-                </div>
-                <button id="save-important-button" type="submit" class="btn btn-primary">更新後登出</button>
-                <a href="/" class="btn btn-secondary">回到首頁</a>
-            </form>
+            </div> <!-- End profile-layout-wrapper -->
         </div>
     </div>
-</div>
 
-<div id="password-rule" class="password-card" style="display: none">
-    <h4>密碼規則</h4>
-    <ul>
-        <li id="rule-length"><span class="status"></span>密碼長度必須至少 8 個字元</li>
-        <li id="rule-upper"><span class="status"></span>密碼必須包含至少一個大寫字母</li>
-        <li id="rule-lower"><span class="status"></span>密碼必須包含至少一個小寫字母</li>
-        <li id="rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
-    </ul>
-</div>
+    <div id="loading-spinner" class="loading-spinner-container">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
 
-<script type="text/javascript">
-    document.getElementById("save-important-button").addEventListener('click', () => {
-        this.disabled = true;
-        showSpinner();
-        const successMessageElement = document.getElementById('successMessage');
-        const successMessage = successMessageElement ? successMessageElement.dataset.success : null;
-        if (successMessage) {
-            hideSpinner();
-            setTimeout(() => {
-                window.location.href = '/logout';
-            }, 3000);
-        }else {
-            hideSpinner();
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) spinner.style.display = 'none'; // Hide spinner on load
+
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+            const saveImportantButton = document.getElementById("save-important-button");
+            const saveBaseButton = document.getElementById("save-base-button");
+            const importantForm = saveImportantButton ? saveImportantButton.closest('form') : null;
+            const baseForm = saveBaseButton ? saveBaseButton.closest('form') : null;
+            const passwordRuleContainer = document.getElementById('password-rule-container');
+            const importantTabLink = document.getElementById('important-tab');
+            const basicTabLink = document.getElementById('basic-tab');
+            const profileLayoutWrapper = document.querySelector('.profile-layout-wrapper'); // Get the wrapper
+
+            // --- Password Rule Validation ---
+            if (passwordInput) {
+                passwordInput.addEventListener("input", function(e) {
+                    const value = e.target.value;
+                    updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(value));
+                    updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(value));
+                    updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(value));
+                    updateStatus(document.getElementById("ps-rule-length"), value.length >= 8);
+                });
+            }
+
+            // --- Show/Hide Password Rules based on Tab ---
+            if (importantTabLink && basicTabLink && passwordRuleContainer) {
+                importantTabLink.addEventListener('click', function () {
+                    passwordRuleContainer.style.display = 'block'; // Or 'flex', 'grid' depending on desired layout
+                });
+                basicTabLink.addEventListener('click', function () {
+                    passwordRuleContainer.style.display = 'none';
+                });
+                // Initial check in case the important tab is active on load (though unlikely here)
+                if (document.querySelector('#important.active')) {
+                     passwordRuleContainer.style.display = 'block';
+                }
+            }
+
+
+            // --- Form Submission Logic ---
+            if (importantForm && saveImportantButton) {
+                 importantForm.addEventListener('submit', (event) => {
+                    const passwordValue = passwordInput ? passwordInput.value : "";
+                    const confirmPasswordValue = confirmPasswordInput ? confirmPasswordInput.value : "";
+                    const originPasswordInput = document.getElementById("originPassword");
+
+                    // Basic check: ensure original password is provided
+                    if (!originPasswordInput || originPasswordInput.value.trim() === "") {
+                         // Optionally display an error message specific to original password
+                         console.error("Original password is required.");
+                         event.preventDefault();
+                         return;
+                    }
+
+                    // Check if new password fields are filled, then validate match
+                    if (passwordValue || confirmPasswordValue) {
+                         if (confirmPasswordValue !== passwordValue) {
+                             // Display password mismatch error (adapt error display as needed)
+                             console.error("New passwords do not match.");
+                             // You might want to display this error more visibly to the user
+                             event.preventDefault();
+                             return;
+                         }
+                         // Add validation for password rules if needed before submission
+                         const isLengthValid = passwordValue.length >= 8;
+                         const isUpperValid = /[A-Z]/.test(passwordValue);
+                         const isLowerValid = /[a-z]/.test(passwordValue);
+                         const isNumberValid = /[0-9]/.test(passwordValue);
+                         if (!(isLengthValid && isUpperValid && isLowerValid && isNumberValid)) {
+                             console.error("New password does not meet the rules.");
+                             // Display rule error more visibly
+                             event.preventDefault();
+                             return;
+                         }
+                    }
+
+
+                    showSpinner();
+                    saveImportantButton.disabled = true;
+
+                    // Check for success message to redirect (adjust based on actual backend response handling)
+                    const successMessageElement = document.getElementById('importantSuccessMessage');
+                    const successMessage = successMessageElement ? successMessageElement.textContent : null; // Or check data attribute if used
+                    if (successMessage) {
+                        // Redirect after a delay ONLY if the backend indicates success *before* submission
+                        // This logic might need adjustment based on how success is handled (e.g., after page reload)
+                        // setTimeout(() => {
+                        //     window.location.href = '/logout';
+                        // }, 3000);
+                    }
+                 });
+            }
+
+            if (baseForm && saveBaseButton) {
+                baseForm.addEventListener('submit', () => {
+                    showSpinner();
+                    saveBaseButton.disabled = true;
+                 });
+            }
+
+            // --- Tab Change Layout Handling ---
+            function handleTabLayout() {
+                if (!profileLayoutWrapper || !passwordRuleContainer) return;
+
+                // Check which tab link is currently active
+                const isBasicActive = basicTabLink.classList.contains('active');
+                const isImportantActive = importantTabLink.classList.contains('active');
+
+                if (isImportantActive) {
+                    // Important tab is active: remove class, show password rules
+                    profileLayoutWrapper.classList.remove('basic-settings-active');
+                    // Ensure password rules are visible (respecting initial 'display: none')
+                    // Only show if it was previously hidden by this script or CSS for basic tab
+                     if (passwordRuleContainer.dataset.hiddenByScript === 'true' || window.getComputedStyle(passwordRuleContainer).display === 'none') {
+                         passwordRuleContainer.style.display = 'block'; // Or restore original display if needed ('flex', 'grid', etc.)
+                         delete passwordRuleContainer.dataset.hiddenByScript;
+                     }
+
+                } else if (isBasicActive) {
+                    // Basic tab is active: add class, hide password rules
+                    profileLayoutWrapper.classList.add('basic-settings-active');
+                    if (window.getComputedStyle(passwordRuleContainer).display !== 'none') {
+                        passwordRuleContainer.style.display = 'none';
+                        passwordRuleContainer.dataset.hiddenByScript = 'true'; // Mark as hidden by script
+                    }
+                } else {
+                     // Fallback or initial state if needed
+                     profileLayoutWrapper.classList.remove('basic-settings-active');
+                }
+            }
+
+            // Add event listeners for tab clicks (using Bootstrap's shown.bs.tab event for reliability)
+            if (basicTabLink && importantTabLink) {
+                 // Use jQuery with Bootstrap events if available, otherwise fallback
+                 if (typeof $ === 'function') {
+                     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                         // Update the active class reference before calling handler
+                         document.querySelectorAll('.profile-tabs .nav-link').forEach(link => link.classList.remove('active'));
+                         e.target.classList.add('active'); // e.target is the clicked tab link
+                         handleTabLayout();
+                     });
+                 } else {
+                     // Fallback if jQuery is not loaded (less reliable for Bootstrap events)
+                     basicTabLink.addEventListener('click', handleTabLayout);
+                     importantTabLink.addEventListener('click', handleTabLayout);
+                 }
+
+                 // Initial check on page load
+                 handleTabLayout();
+            }
+
+
+            // --- Form Submission Logic ---
+            if (importantForm && saveImportantButton) {
+                 importantForm.addEventListener('submit', (event) => {
+                    const passwordValue = passwordInput ? passwordInput.value : "";
+                    const confirmPasswordValue = confirmPasswordInput ? confirmPasswordInput.value : "";
+                    const originPasswordInput = document.getElementById("originPassword");
+
+                    // Basic check: ensure original password is provided
+                    if (!originPasswordInput || originPasswordInput.value.trim() === "") {
+                         console.error("Original password is required.");
+                         event.preventDefault();
+                         return;
+                    }
+
+                    // Check if new password fields are filled, then validate match
+                    if (passwordValue || confirmPasswordValue) {
+                         if (confirmPasswordValue !== passwordValue) {
+                             console.error("New passwords do not match.");
+                             event.preventDefault();
+                             return;
+                         }
+                         // Add validation for password rules if needed before submission
+                         const isLengthValid = passwordValue.length >= 8;
+                         const isUpperValid = /[A-Z]/.test(passwordValue);
+                         const isLowerValid = /[a-z]/.test(passwordValue);
+                         const isNumberValid = /[0-9]/.test(passwordValue);
+                         if (!(isLengthValid && isUpperValid && isLowerValid && isNumberValid)) {
+                             console.error("New password does not meet the rules.");
+                             event.preventDefault();
+                             return;
+                         }
+                    }
+
+                    showSpinner();
+                    saveImportantButton.disabled = true;
+
+                    // Success message check logic might need adjustment based on backend flow
+                    // const successMessageElement = document.getElementById('importantSuccessMessage');
+                    // const successMessage = successMessageElement ? successMessageElement.textContent : null;
+                    // if (successMessage) {
+                    //     setTimeout(() => { window.location.href = '/logout'; }, 3000);
+                    // }
+                 });
+            }
+
+             if (baseForm && saveBaseButton) {
+                baseForm.addEventListener('submit', () => {
+                    showSpinner();
+                    saveBaseButton.disabled = true;
+                 });
+            }
+
+        }); // End DOMContentLoaded
+
+
+        // --- Helper Functions ---
+        function updateStatus(element, isValid) {
+            if (!element) return;
+            const statusElement = element.querySelector('.status');
+            if (statusElement) {
+                if (isValid) {
+                    statusElement.className = "status correct";
+                    element.style.color = 'green'; // Or use CSS classes
+                } else {
+                    statusElement.className = "status incorrect";
+                    element.style.color = 'red'; // Or use CSS classes
+                }
+            }
         }
-    });
-    document.getElementById("save-base-button").addEventListener('click', () => {
-        this.disabled = true;
-        showSpinner();
-        const successMessageElement = document.getElementById('successMessage');
-        const successMessage = successMessageElement ? successMessageElement.dataset.success : null;
-        if (successMessage) {
-            hideSpinner();
-        }else {
-            hideSpinner();
+
+        function showSpinner() {
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) spinner.style.display = 'flex';
         }
-    });
 
-
-
-
-    document.getElementById("password").addEventListener("input", function(e) {
-        const value = e.target.value;
-
-        updateStatus(document.getElementById("rule-upper"), /[A-Z]/.test(value));
-        updateStatus(document.getElementById("rule-lower"), /[a-z]/.test(value));
-        updateStatus(document.getElementById("rule-number"), /[0-9]/.test(value));
-        updateStatus(document.getElementById("rule-length"), value.length >= 8);
-    });
-
-    function updateStatus(element, isValid) {
-        const statusElement = element.querySelector('.status');
-        if (isValid) {
-            statusElement.className = "status correct";
-            element.style.color = 'green';
-        } else {
-            statusElement.className = "status incorrect";
-            element.style.color = 'red';
+        function hideSpinner() {
+            // This might be called after AJAX response or if submission fails client-side
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) spinner.style.display = 'none';
+            // Re-enable buttons if needed
+            const saveImportantButton = document.getElementById("save-important-button");
+            const saveBaseButton = document.getElementById("save-base-button");
+            if (saveImportantButton) saveImportantButton.disabled = false;
+            if (saveBaseButton) saveBaseButton.disabled = false;
         }
-    }
-
-
-    let passwordCard = document.getElementById('password-rule');
-    document.getElementById("important-tab").addEventListener('click', function () {
-        passwordCard.style.display = 'block';
-    });
-    document.getElementById("basic-tab").addEventListener('click', function () {
-        passwordCard.style.display = 'none';
-    });
-
-
-
-    document.getElementById("save-button").addEventListener('click', () => {
-        showSpinner();
-        this.disabled = true;
-    });
-
-    function showSpinner() {
-        document.getElementById('loading-spinner').style.display = 'flex';
-    }
-    function hideSpinner() {
-        document.getElementById('loading-spinner').style.display = 'none';
-    }
-</script>
-
-
-<div id="loading-spinner" class="loading-spinner-container">
-    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    </script>
 </body>
 </html>

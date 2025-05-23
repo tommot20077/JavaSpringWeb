@@ -78,8 +78,7 @@
     font-family: "sans-serif";
 }
 
-/* 字号设置 */
-/* 默认字号 */
+
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {
     content: "14px";

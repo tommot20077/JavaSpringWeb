@@ -4,6 +4,7 @@
 
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"> <!-- Added viewport -->
         <title th:text="${post.title}">文章標題</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
@@ -69,25 +70,29 @@
         </nav>
 
 
-        <div class="container mt-4">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-top">
-                    <div>
-                        <h1 class="card-title" th:text="${post.title}">文章標題</h1>
-                        <p class="card-subtitle mb-2 card-subtitle-author"
-                           th:text="|作者: ${post.author.username} |"
-                           th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
-                        <p class="card-subtitle mb-2 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
-                        <p class="card-subtitle mb-2 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p>
-                    </div>
-                    <div th:if="${session.currentUserId == post.author.getId()}">
-                        <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-primary">編輯文章</a>
+        <div class="container mt-5 pt-4"> <!-- Added pt-4 for spacing below fixed navbar -->
+            <div class="card article-detail-card"> <!-- Added class for specific styling -->
+                <div class="card-header article-detail-header"> <!-- Removed d-flex etc. Handled by CSS or inner divs -->
+                    <h1 class="card-title article-title" th:text="${post.title}">文章標題</h1>
+                    <!-- New container for subtitles and edit button -->
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div> <!-- Subtitles group -->
+                            <p class="card-subtitle mb-1 card-subtitle-author"
+                               th:text="|作者: ${post.author.username} |"
+                               th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
+                            <p class="card-subtitle mb-1 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
+                            <p class="card-subtitle mb-0 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p> <!-- Changed mb-2 to mb-0 -->
+                        </div>
+                        <!-- Edit button (conditionally rendered) -->
+                        <div th:if="${session.currentUserId == post.author.getId()}">
+                            <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-outline-primary btn-sm">編輯文章</a> <!-- Changed style -->
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body article-detail-body"> <!-- Added class -->
                     <div id="content-display"
                          class="content-quill-container mb-4"
-                         style="background-color: #ffefe6; border-radius: 10px; padding: 20px;"
+                         style="background-color: #f3f3f3; border-radius: 10px; padding: 20px;"
                          th:attr="data-post-id=${post.getArticleId}">
                         <script>
                             document.addEventListener('DOMContentLoaded', function () {
@@ -172,7 +177,7 @@
 
             <hr>
             <h2>評論區</h2>
-            <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #ffefe6; border-radius: 10px; padding: 20px;">
+            <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #f3f3f3; border-radius: 10px; padding: 20px;">
                 <script>
                     const myElement = document.getElementById('myElement');
                     const postID = myElement.getAttribute('data-post-id');
@@ -484,7 +489,7 @@
                     </script>
                 </div>
             </div>
-            <button class="btn btn-primary" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
+            <button class="btn btn-primary mt-2" id="save-comment-button" th:attr="postID=${post.getArticleId}">保存</button>
         </div>
         <script>
             var globalImageUrl = null;
@@ -495,6 +500,14 @@
                 const toastElement = document.createElement('div');
                 toastElement.classList.add('alert', toastClass);
                 toastElement.textContent = message;
+
+                // Add progress bar
+                const progressBar = document.createElement('div');
+                progressBar.classList.add('toast-progress-bar');
+                progressBar.style.animationDuration = '5s'; // Match timeout duration (5000ms)
+                toastElement.appendChild(progressBar);
+                // ---
+
                 toastContainer.appendChild(toastElement);
                 setTimeout(() => toastElement.remove(), 5000);
             }
