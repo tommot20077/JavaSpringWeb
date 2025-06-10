@@ -12,15 +12,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <style>
-        .btn-outline-success {
-            background-color: #ffbc47;
-            border-color: #ffbc47;
-        }
-        .btn-outline-success:hover {
-            color: #fff;
-            background-color: #f79f0b;
-            border-color: #f79f0b;
-        }
         .alert {
             color: #ea1111;
         }
@@ -41,7 +32,7 @@
             </li>
 
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -67,10 +58,10 @@
 <div th:classappend="${not #strings.isEmpty(keyword) ? 'search-container-top' : 'search-container-center'}" class="search-container">
     <form th:action="@{/search}" method="get" class="search-form">
         <input class="form-control search-input" type="text" placeholder="輸入搜索關鍵字..." aria-label="搜索" name="keyword" th:value="${keyword}">
-        <select class="form-control search-select" name="type">
-            <option value="users" th:selected="${type == 'users'}">用戶</option>
-            <option value="posts" th:selected="${type == 'posts' or #strings.isEmpty(type)}">文章</option>
-        </select>
+                        <select class="form-control search-select" name="type">
+                            <option value="users" th:selected="${type != null and type == 'users'}">用戶</option>
+                            <option value="posts" th:selected="${type == null or type == 'posts'}">文章</option>
+                        </select>
         <button class="btn btn-primary search-button" type="submit">搜尋</button>
     </form>
 </div>

@@ -2,26 +2,27 @@
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>註冊成功</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/login_success.css"> <!-- Link login_success.css for styles -->
     <style>
-
-        .container {
-            padding-top: 50px;
-            max-width: 800px;
-            margin: auto;
+        /* Styles for body centering, can be moved to common.css if universally applied to such pages */
+        html, body {
+            height: 100%;
+            margin: 0;
         }
-        .card {
-            margin-top: 20px;
+        body {
+            display: flex;
+            flex-direction: column;
+            padding-top: 56px; /* Account for fixed navbar */
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-background, #1a1a1a); /* Match theme background */
         }
-        @media (max-width: 767px) {
-            .container {
-                padding-top: 20px;
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-        }
+        /* .success-container styles are expected to be in login_success.css */
     </style>
 </head>
 <body>
@@ -32,14 +33,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -48,7 +46,6 @@
                     <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
-
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -61,20 +58,20 @@
         </ul>
     </div>
 </nav>
-<div class="container">
-    <div class="card text-center">
-        <div class="card-body">
-            <h2 class="card-title">用戶帳號註冊成功</h2>
-            <p class="card-text">您現在可以通過點擊下方按鈕，登入您的帳戶。</p>
-            <p class="card-text">如果您在註冊時提供了電子郵件地址，我們已向該地址發送了一封驗證郵件。</p>
-            <p class="card-text">如果您沒有收到，請檢查您的垃圾郵件夾，並將我們的郵件標記為「非垃圾郵件」以確保未來的通訊順暢。</p>
-            <a href="login" class="btn btn-primary">點擊進入登入頁面</a>
-        </div>
-    </div>
+
+<!-- Using success-container class from login_success.html for consistent styling and animation -->
+<div class="success-container">
+    <h1><i class="fas fa-check-circle text-success"></i> 用戶帳號註冊成功</h1>
+    <p>您現在可以通過點擊下方按鈕，登入您的帳戶。</p>
+    <p>如果您在註冊時提供了電子郵件地址，我們已向該地址發送了一封驗證郵件。</p>
+    <p>如果您沒有收到，請檢查您的垃圾郵件夾，並將我們的郵件標記為「非垃圾郵件」以確保未來的通訊順暢。</p>
+    <a href="/login" class="btn btn-primary">點擊進入登入頁面</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.15.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Correct Popper for BS4 -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Font Awesome JS is not strictly needed if CSS handles icons, but included if login_success.html uses it -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script> -->
 </body>
 </html>

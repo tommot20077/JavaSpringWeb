@@ -8,8 +8,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/common.css">
     <link rel="stylesheet" href="/profile.css"> <!-- New CSS for profile page styling -->
-    <link rel="stylesheet" href="/password-card.css"> <!-- Keep for password rules styling initially -->
-
+    <!-- Font Awesome for icons if needed, assuming common.css or other global include -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"> -->
+    <script src="/interaction.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -21,15 +22,7 @@
                 aria-controls="navbarNavDropdown"
                 aria-expanded="false"
                 aria-label="Toggle navigation">
-            <!-- Standard Bootstrap Toggler Icon (or keep custom if preferred and styled in common.css) -->
             <span class="navbar-toggler-icon"></span>
-            <!-- If using custom icon styled in common.css:
-            <span class="navbar-toggler-icon-custom">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </span>
-             -->
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ml-auto">
@@ -38,11 +31,11 @@
                 </li>
                 <li class="nav-item dropdown" th:if="${userLoggedIn}">
                     <a class="nav-link dropdown-toggle"
-                       href="#"
-                       id="navbarDropdownMenuLink"
-                       role="button"
-                       data-toggle="dropdown"
-                       aria-haspopup="true"
+                       href="#" 
+                       id="navbarDropdownMenuLink" 
+                       role="button" 
+                       data-toggle="dropdown" 
+                       aria-haspopup="true" 
                        aria-expanded="false">
                         歡迎 [[${session.currentUsername}]]!
                     </a>
@@ -178,7 +171,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Popper for Bootstrap 4 -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -195,17 +188,45 @@
             const importantTabLink = document.getElementById('important-tab');
             const basicTabLink = document.getElementById('basic-tab');
             const profileLayoutWrapper = document.querySelector('.profile-layout-wrapper'); // Get the wrapper
+            const passwordRuleLIs = passwordRuleContainer ? passwordRuleContainer.querySelectorAll('ul li') : [];
+
+            function resetPasswordRulesUI() {
+                passwordRuleLIs.forEach(li => {
+                    const statusSpan = li.querySelector('.status');
+                    if (statusSpan) {
+                        statusSpan.className = 'status'; // Reset to default, CSS handles neutral styling
+                    }
+                });
+            }
+
+            // Initial reset of password rules UI
+            if (passwordRuleContainer) {
+                resetPasswordRulesUI();
+            }
+
+            function handlePasswordInputChange() {
+                const newPasswordValue = passwordInput.value;
+                const confirmNewPasswordValue = confirmPasswordInput ? confirmPasswordInput.value : "";
+
+                if (newPasswordValue === "" && (confirmPasswordInput ? confirmNewPasswordValue === "" : true)) {
+                    resetPasswordRulesUI();
+                } else {
+                    // Only validate if there's actual input in the new password field
+                    updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(newPasswordValue));
+                    updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(newPasswordValue));
+                    updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(newPasswordValue));
+                    updateStatus(document.getElementById("ps-rule-length"), newPasswordValue.length >= 8);
+                }
+            }
 
             // --- Password Rule Validation ---
             if (passwordInput) {
-                passwordInput.addEventListener("input", function(e) {
-                    const value = e.target.value;
-                    updateStatus(document.getElementById("ps-rule-upper"), /[A-Z]/.test(value));
-                    updateStatus(document.getElementById("ps-rule-lower"), /[a-z]/.test(value));
-                    updateStatus(document.getElementById("ps-rule-number"), /[0-9]/.test(value));
-                    updateStatus(document.getElementById("ps-rule-length"), value.length >= 8);
-                });
+                passwordInput.addEventListener("input", handlePasswordInputChange);
             }
+            if (confirmPasswordInput) { // Also listen to confirm for resetting if both become empty
+                confirmPasswordInput.addEventListener("input", handlePasswordInputChange);
+            }
+
 
             // --- Show/Hide Password Rules based on Tab ---
             if (importantTabLink && basicTabLink && passwordRuleContainer) {
@@ -391,16 +412,16 @@
 
 
         // --- Helper Functions ---
-        function updateStatus(element, isValid) {
+        function updateStatus(element, isValid) { // element is the <li>
             if (!element) return;
-            const statusElement = element.querySelector('.status');
-            if (statusElement) {
+            const statusSpan = element.querySelector('.status'); // Get the <span> inside <li>
+            if (statusSpan) {
                 if (isValid) {
-                    statusElement.className = "status correct";
-                    element.style.color = 'green'; // Or use CSS classes
+                    statusSpan.className = "status correct";
+                    // CSS will handle li text color via :has(.status.correct)
                 } else {
-                    statusElement.className = "status incorrect";
-                    element.style.color = 'red'; // Or use CSS classes
+                    statusSpan.className = "status incorrect";
+                    // CSS will handle li text color via :has(.status.incorrect)
                 }
             }
         }

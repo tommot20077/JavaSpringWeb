@@ -1,0 +1,283 @@
+/* Login Success Page Styles */
+
+/* 全頁面佈局 */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-black);
+    position: relative;
+}
+
+/* 動態背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 40%, rgba(82, 231, 248, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(112, 174, 251, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+/* 成功容器 */
+.success-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    animation: fadeInScale 0.8s ease-out;
+}
+
+/* 內容卡片 */
+.success-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(600px, 90vw);
+    height: 400px;
+    background: linear-gradient(135deg, rgba(94, 255, 238, 0.1) 0%, rgba(74, 144, 226, 0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    z-index: -1;
+}
+
+/* 成功圖標 */
+.success-container h1 {
+    font-size: 3rem;
+    color: var(--color-white);
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.success-container h1 i {
+    font-size: 4rem;
+    color: var(--color-success);
+    animation: checkmarkPop 0.6s ease-out 0.3s both;
+}
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0) rotate(-180deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* 文字內容 */
+.success-container p {
+    color: var(--color-light-gray);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+/* 驗證狀態區塊 */
+.success-container > div {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    animation: slideUp 0.6s ease-out 0.6s both;
+}
+
+.success-container > div p {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* 已驗證狀態 */
+.success-container > div:has(p:contains("已驗證信箱")) {
+    border-color: rgba(76, 175, 80, 0.3);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.success-container > div:has(p:contains("已驗證信箱")) p::before {
+    content: '✓';
+    color: var(--color-success);
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* 未驗證狀態 */
+.success-container > div:has(p:contains("請驗證信箱")) {
+    border-color: rgba(255, 152, 0, 0.3);
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.success-container > div:has(p:contains("請驗證信箱")) p::before {
+    content: '!';
+    color: var(--color-warning);
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* 主頁按鈕 */
+.success-container .btn-primary {
+    background: var(--gradient-accent);
+    color: var(--color-white);
+    padding: 1rem 3rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.success-container .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.success-container .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(74, 144, 226, 0.4);
+}
+
+.success-container .btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.success-container .btn-primary::after {
+    content: '→';
+    margin-left: 0.25rem;
+    transition: transform var(--transition-base);
+}
+
+.success-container .btn-primary:hover::after {
+    transform: translateX(4px);
+}
+
+/* 動畫 */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 光環效果 */
+.success-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .success-container h1 {
+        font-size: 2.5rem;
+        flex-direction: column;
+    }
+
+    .success-container h1 i {
+        font-size: 3rem;
+    }
+
+    .success-container p {
+        font-size: 1.1rem;
+    }
+
+    .success-container .btn-primary {
+        padding: 0.875rem 2.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .success-container h1 {
+        font-size: 2rem;
+    }
+
+    .success-container > div {
+        padding: 1rem 1.5rem;
+    }
+}

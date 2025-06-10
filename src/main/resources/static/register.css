@@ -1,291 +1,422 @@
+/* Modern Registration/Login Styles */
 
+/* 全頁背景 */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
-    background-color: #F2F2F2;
+    background: var(--color-black);
     display: flex;
     flex-direction: column;
-    color: #333;
+    position: relative;
 }
 
+/* 動態背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+            radial-gradient(circle at 20% 50%, rgba(74,144,226,0.2) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(147,51,234,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(255,255,255,0.03) 0%, transparent 50%);
+    z-index: 0;
+    animation: backgroundShift 20s ease-in-out infinite;
+}
+
+@keyframes backgroundShift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-20px, -20px) scale(1.05); }
+    66% { transform: translate(20px, -10px) scale(0.95); }
+}
+
+/* 導航欄樣式 */
 .navbar {
-    background-color: #FFFFFF;
-    border-bottom: 1px solid #E0E0E0;
-    padding: 0.75rem 1.5rem;
-    width: 100%;
-    box-sizing: border-box;
-
+    background: rgba(26,26,26,0.8) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
 }
 
-.navbar-brand {
-    color: #1C1C1C !important;
-    font-weight: bold;
-    text-decoration: none;
-}
-.navbar-brand:hover {
-    color: #0056b3 !important;
-}
-
+/* 主內容區域 */
 .main-content-wrapper {
     flex-grow: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    margin-top: 60px;
-    box-sizing: border-box;
+    padding: 2rem;
+    margin-top: 80px;
+    position: relative;
+    z-index: 1;
 }
 
 .content-area {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 30px;
-    padding: 0 15px;
-    box-sizing: border-box;
+    gap: 3rem;
+    align-items: start;
 }
 
+/* 註冊/登入容器 */
 .register-container {
-    background-color: #FFFFFF;
-    padding: 30px;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    width: 100%;
-    box-sizing: border-box;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInLeft 0.8s ease-out;
 }
 
+/* 光暈效果 */
+.register-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(74,144,226,0.1) 0%, transparent 50%);
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+}
+
+/* 表單標題 */
 .form-header {
     text-align: center;
-    margin-bottom: 25px;
-    color: #1C1C1C;
-    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
 }
 
+.form-header h1,
+.form-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-white);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.form-header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-accent);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+}
+
+/* 表單組 */
 .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+    z-index: 1;
 }
 
 label {
     display: block;
-    color: #4A4A4A;
+    color: var(--color-light-gray);
     font-weight: 500;
-    margin-bottom: .5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
+/* 輸入框樣式 */
 .form-control {
     width: 100%;
-    border: 1px solid #D0D0D0;
-    border-radius: 4px;
-    padding: 10px 12px;
-    color: #1C1C1C;
-    background-color: #F9F9F9;
-    box-sizing: border-box;
+    background: rgba(26,26,26,0.5);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    color: var(--color-white);
+    font-size: 1rem;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.form-control:hover {
+    border-color: rgba(255,255,255,0.2);
 }
 
 .form-control:focus {
-    border-color: #888888;
-    box-shadow: 0 0 0 0.2rem rgba(136,136,136,.25);
-    background-color: #FFFFFF;
+    background: rgba(26,26,26,0.7);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px rgba(74,144,226,0.1);
+    outline: none;
 }
 
-.form-footer {
+.form-control::placeholder {
+    color: var(--color-gray);
+}
+
+/* 錯誤訊息 */
+.error {
+    background: rgba(244,67,54,0.1);
+    border: 1px solid rgba(244,67,54,0.3);
+    color: #ff6b6b;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
     text-align: center;
-    margin-top: 25px;
+    font-weight: 500;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* 按鈕組 */
+.form-footer {
+    margin-top: 2.5rem;
     display: flex;
+    gap: 1rem;
     justify-content: center;
-    gap: 15px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .btn {
-    padding: .6rem 1.2rem;
-    border-radius: .25rem;
-    text-decoration: none;
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
     font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    border: 1px solid transparent;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+    min-width: 140px;
 }
 
 .btn-primary {
-    color: #FFFFFF;
-    background-color: #1D1D1F; /* Near black */
-    border-color: #1D1D1F;
+    background: var(--gradient-accent);
+    color: var(--color-white);
+    border: none;
+    box-shadow: var(--shadow-md);
 }
 
-.btn-primary:hover {
-    background-color: #4A4A4A; /* Lighter gray hover */
-    border-color: #4A4A4A;
-    color: #FFFFFF; /* Keep text white */
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(74,144,226,0.4);
 }
+
 .btn-primary:disabled {
-    background-color: #6c757d;
-    border-color: #6c757d;
+    opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
 }
-
 
 .btn-secondary {
-    color: #1C1C1C;
-    background-color: #E9ECEF;
-    border-color: #CED4DA;
+    background: transparent;
+    color: var(--color-white);
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
 .btn-secondary:hover {
-    color: #1C1C1C;
-    background-color: #D3D9DF;
-    border-color: #B6BEC5;
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
 }
 
-
+/* 密碼規則面板 */
 #password-rule {
-    background-color: #FFFFFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-    width: 100%;
-    box-sizing: border-box;
-    align-self: flex-start;
+    background: linear-gradient(135deg, rgba(74,144,226,0.05) 0%, rgba(147,51,234,0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 2rem;
+    position: sticky;
+    top: 100px;
+    animation: fadeInRight 0.8s ease-out;
 }
 
 #password-rule h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
+    color: var(--color-white);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
     text-align: center;
-    color: #333;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #D0D0D0;
-    padding-bottom: 10px;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 #password-rule ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 #password-rule li {
-    margin-bottom: 10px;
-    font-size: 0.9rem;
+    padding: 0.75rem 0;
+    color: var(--color-gray);
     display: flex;
     align-items: center;
+    transition: all var(--transition-fast);
+    font-size: 0.95rem;
 }
 
-#password-rule li .status {
-    margin-right: 8px;
-    flex-shrink: 0;
-    width: 16px;
-    text-align: center;
+#password-rule li.valid {
+    color: var(--color-success);
+}
+
+.status {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid currentColor;
+    transition: all var(--transition-base);
+}
+
+.status.correct {
+    background: var(--color-success);
+    border-color: var(--color-success);
 }
 
 .status.correct::before {
-    content: '✔';
-    color: green;
+    content: '✓';
+    color: var(--color-white);
     font-weight: bold;
 }
 
 .status.incorrect::before {
-    content: '✘';
-    color: red;
+    content: '×';
+    color: currentColor;
     font-weight: bold;
 }
 
-.error {
-    color: #721C24;
-    background-color: #F8D7DA;
-    border: 1px solid #F5C6CB;
-    padding: .75rem 1.25rem;
-    margin-bottom: 1rem;
-    border-radius: .25rem;
-    text-align: center;
-}
-
-@media (max-width: 992px) {
-    .content-area {
-        grid-template-columns: 1fr;
-        max-width: 700px;
-        gap: 20px;
-    }
-
-    #password-rule {
-        margin-top: 0;
-
-    }
-    .main-content-wrapper {
-        align-items: flex-start;
-        padding-top: 80px;
-    }
-}
-
-@media (max-width: 576px) {
-    .form-header {
-        font-size: 1.6rem;
-    }
-    .register-container, #password-rule {
-        padding: 20px;
-    }
-    .content-area {
-        padding: 0 10px;
-    }
-    .form-footer {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .btn {
-        width: 100%;
-        padding: .75rem 1rem;
-    }
-    .main-content-wrapper {
-        padding-top: 70px;
-    }
-}
-
+/* 載入動畫 */
 .loading-spinner-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgb(255 255 255 / 73%);
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    display: none;
 }
 
-.lds-ring {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
+/* 動畫 */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
-.lds-ring div {
-    box-sizing: border-box;
-    display: block;
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    margin: 8px;
-    border: 8px solid #1C1C1C;
-    border-radius: 50%;
-    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: #272727 transparent transparent transparent;
-}
-.lds-ring div:nth-child(1) { animation-delay: -0.45s; }
-.lds-ring div:nth-child(2) { animation-delay: -0.3s; }
-.lds-ring div:nth-child(3) { animation-delay: -0.15s; }
 
-@keyframes lds-ring {
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes rotate {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* 響應式設計 */
+@media (max-width: 992px) {
+    .content-area {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+
+    #password-rule {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-content-wrapper {
+        padding: 1rem;
+    }
+
+    .register-container {
+        padding: 2rem;
+    }
+
+    .form-header h1,
+    .form-header h2 {
+        font-size: 2rem;
+    }
+
+    .form-footer {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    #password-rule {
+        padding: 1.5rem;
+    }
+}
+
+/* 特殊效果 */
+.glow-on-hover {
+    transition: all var(--transition-base);
+}
+
+.glow-on-hover:hover {
+    box-shadow: 0 0 30px rgba(74,144,226,0.3);
+}
+
+/* 成功訊息樣式 */
+.success-message {
+    background: rgba(76,175,80,0.1);
+    border: 1px solid rgba(76,175,80,0.3);
+    color: var(--color-success);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

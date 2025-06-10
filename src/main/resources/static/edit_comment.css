@@ -1,0 +1,435 @@
+/* Edit Comment Page Styles */
+
+/* 頁面背景 */
+body {
+    background: var(--color-black);
+    position: relative;
+    padding-top: 80px;
+}
+
+/* 主容器 */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* 編輯容器 */
+.comment-edit-container {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 3rem;
+    margin-top: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 標題樣式 */
+.article-controller {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.article-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-white);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+/* 編輯器容器 */
+.editor-container {
+    background: rgb(115 115 115 / 20%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+/* 工具欄樣式 */
+#toolbar-container {
+    background: rgba(26,26,26,0.5);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* 編輯器樣式 */
+#editor {
+    background: rgba(26,26,26,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    color: var(--color-white);
+}
+
+#editor .ql-editor {
+    color: var(--color-white);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 1.5rem;
+    min-height: 300px;
+}
+
+/* Quill 編輯器樣式覆蓋 */
+.ql-snow {
+    border: none !important;
+}
+
+.ql-toolbar.ql-snow {
+    background: transparent;
+    border: none;
+}
+
+.ql-container.ql-snow {
+    border: none;
+}
+
+/* 按鈕組 */
+.bottom-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.bottom-group .btn {
+    min-width: 120px;
+}
+
+/* 按鈕樣式增強 */
+.btn-primary {
+    background: var(--gradient-accent);
+    border: none;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(74,144,226,0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--color-white);
+    border: 2px solid rgba(255,255,255,0.2);
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    border: none;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(244,67,54,0.4);
+}
+
+/* 確認對話框 */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 9998;
+}
+
+.confirm-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    display: none;
+    z-index: 9999;
+    min-width: 400px;
+    text-align: center;
+}
+
+.confirm-card-body p {
+    color: var(--color-white);
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+}
+
+.confirm-card-body .btn {
+    margin: 0 0.5rem;
+}
+
+/* 載入動畫 */
+.loading-spinner-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .comment-edit-container {
+        padding: 2rem;
+        margin-top: 1rem;
+    }
+
+    .article-title {
+        font-size: 2rem;
+    }
+
+    .editor-container {
+        padding: 1.5rem;
+    }
+
+    #editor {
+        min-height: 200px;
+    }
+
+    .bottom-group {
+        flex-direction: column;
+    }
+
+    .bottom-group .btn {
+        width: 100%;
+    }
+
+    .confirm-card {
+        min-width: 90%;
+        padding: 1.5rem;
+    }
+}
+
+/* 深色模式優化 */
+.ql-snow .ql-toolbar button:hover,
+.ql-snow.ql-toolbar button:hover,
+.ql-snow .ql-toolbar button:focus,
+.ql-snow.ql-toolbar button:focus,
+.ql-snow .ql-toolbar button.ql-active,
+.ql-snow.ql-toolbar button.ql-active,
+.ql-snow .ql-toolbar .ql-picker-label:hover,
+.ql-snow.ql-toolbar .ql-picker-label:hover,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active,
+.ql-snow .ql-toolbar .ql-picker-item:hover,
+.ql-snow.ql-toolbar .ql-picker-item:hover,
+.ql-snow .ql-toolbar .ql-picker-item.ql-selected,
+.ql-snow.ql-toolbar .ql-picker-item.ql-selected {
+    color: var(--color-accent);
+}
+
+/* Quill Toolbar Icon Colors - Default State */
+.ql-snow .ql-toolbar button .ql-stroke,
+.ql-snow.ql-toolbar button .ql-stroke {
+    stroke: #d3d3d3; /* Light gray for strokes */
+    fill: none;
+}
+.ql-snow .ql-toolbar button .ql-thin,
+.ql-snow.ql-toolbar button .ql-thin {
+    stroke: #d3d3d3; /* Light gray for thin strokes */
+    fill: none;
+}
+.ql-snow .ql-toolbar button .ql-fill,
+.ql-snow.ql-toolbar button .ql-fill {
+    fill: #d3d3d3; /* Light gray for fills */
+}
+/* For icons like the clean button that might not have ql-stroke/ql-fill classes on paths directly under button > svg */
+.ql-snow .ql-toolbar button svg > path {
+    stroke: #d3d3d3;
+}
+.ql-snow .ql-toolbar button svg g path { /* For more complex SVGs with groups */
+    stroke: #d3d3d3;
+    fill: none; /* Assuming most complex icons are stroke based */
+}
+.ql-snow .ql-toolbar button svg .ql-fill ~ path { /* If ql-fill is present, other paths might need explicit fill */
+    fill: #d3d3d3;
+}
+
+
+/* Quill Toolbar Icon Colors - Hover/Active State */
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button.ql-active .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: var(--color-accent);
+}
+.ql-snow .ql-toolbar button:hover .ql-thin,
+.ql-snow.ql-toolbar button:hover .ql-thin,
+.ql-snow .ql-toolbar button.ql-active .ql-thin,
+.ql-snow.ql-toolbar button.ql-active .ql-thin {
+    stroke: var(--color-accent);
+}
+.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow .ql-toolbar button.ql-active .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: var(--color-accent);
+}
+.ql-snow .ql-toolbar button:hover svg > path,
+.ql-snow .ql-toolbar button.ql-active svg > path {
+    stroke: var(--color-accent);
+}
+.ql-snow .ql-toolbar button:hover svg g path,
+.ql-snow .ql-toolbar button.ql-active svg g path {
+    stroke: var(--color-accent);
+}
+.ql-snow .ql-toolbar button:hover svg .ql-fill ~ path,
+.ql-snow .ql-toolbar button.ql-active svg .ql-fill ~ path {
+    fill: var(--color-accent);
+}
+
+
+/* Picker label and dropdown arrow color */
+.ql-snow .ql-toolbar .ql-picker-label {
+    color: #d3d3d3 !important; /* Light gray for text, !important to override Quill's default */
+}
+.ql-snow .ql-toolbar .ql-picker-label:hover,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active {
+    color: var(--color-accent) !important;
+}
+
+/* Ensure SVGs within picker labels (like dropdown arrows) also get colored */
+.ql-snow .ql-toolbar .ql-picker-label svg .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label svg .ql-stroke {
+    stroke: #d3d3d3 !important;
+}
+.ql-snow .ql-toolbar .ql-picker-label:hover svg .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label:hover svg .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active svg .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active svg .ql-stroke {
+    stroke: var(--color-accent) !important;
+}
+
+/* Picker options colors */
+.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+    background-color: #2a2a2a; /* Dark background for dropdown */
+    border-color: #444;
+    border-radius: 4px; /* Optional: softer edges */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: subtle shadow */
+}
+.ql-snow .ql-picker-options .ql-picker-item {
+    color: #d3d3d3; /* Light gray for items */
+}
+.ql-snow .ql-picker-options .ql-picker-item:hover {
+    color: var(--color-accent);
+    background-color: #383838; /* Slightly lighter dark for hover */
+}
+.ql-snow .ql-picker-options .ql-picker-item.ql-selected {
+    color: var(--color-accent) !important; /* Ensure selected item stands out */
+    font-weight: bold; /* Optional: make selected item bold */
+}
+
+
+/* Placeholder 樣式 */
+.ql-editor.ql-blank::before {
+    color: var(--color-gray);
+    font-style: normal;
+}
+
+/* Auto-save Controller and Toggle Switch Styles */
+.autoSave-controller {
+    display: flex;
+    align-items: center;
+    color: var(--color-light-gray, #ccc); /* Fallback color */
+}
+
+.autoSave-controller a { /* Styling for the "自動更新" text */
+    margin-right: 10px;
+    font-size: 1rem; /* Slightly larger font size */
+    color: inherit; /* Inherit color from parent */
+    text-decoration: none;
+    line-height: 26px; /* Match height of the toggle switch for better vertical alignment */
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Width of the slider track */
+    height: 26px; /* Height of the slider track */
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-medium-gray, #555); /* Track color when off */
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 26px; /* Fully rounded track */
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px; /* Height of the slider knob */
+    width: 20px; /* Width of the slider knob */
+    left: 3px; /* Position from left when off */
+    bottom: 3px; /* Position from bottom */
+    background-color: var(--color-white, white); /* Knob color */
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%; /* Circular knob */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .switch-slider {
+    background-color: var(--color-accent, #2196F3); /* Track color when on */
+}
+
+input:focus + .switch-slider {
+    box-shadow: 0 0 1px var(--color-accent, #2196F3); /* Optional focus outline */
+}
+
+input:checked + .switch-slider:before {
+    -webkit-transform: translateX(24px); /* Move knob to the right when on */
+    -ms-transform: translateX(24px);
+    transform: translateX(24px);
+}
+/* End of Auto-save Controller and Toggle Switch Styles */

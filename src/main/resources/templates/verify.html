@@ -5,66 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>信箱驗證</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/login_success.css"> <!-- For potential animation/container styling reuse -->
     <style>
         html, body {
             height: 100%;
-            background-color: #fff;
-            color: #333;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
         }
         body {
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Keep navbar at top */
+            background: var(--color-black); /* Dark background from common.css */
+            color: var(--color-light-gray);
         }
-        .container {
-            flex: 1;
+        .main-content-wrapper { /* New wrapper for centering content */
+            flex: 1; /* Takes remaining vertical space */
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 400px;
-            max-width: 500px;
-            margin: 5% auto 50px auto;
-            padding: 20px;
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            padding: 2rem;
+            padding-top: 76px; /* Account for fixed navbar height + some space */
         }
-        .message-header h1 {
-            font-size: 2.0rem;
-            margin-bottom: 0.5em;
+        .verify-display-container { /* New styled container */
+            text-align: center;
+            padding: 2.5rem;
+            background: rgba(40, 40, 40, 0.6); /* Darker glassmorphism */
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 600px;
+            width: 90%;
         }
-        .verified-message {
-            color: #28a745;
+        .verify-display-container h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
         }
-        .error-message {
-            color: #dc3545;
+        .verify-display-container h1 .fas { /* Icon styling */
+            margin-right: 10px;
         }
-        .message-content p {
-            font-size: 1.2rem;
+        .verified-message { /* Style for success message */
+            color: var(--color-success, #2ecc71); /* Use success color from common.css or fallback */
         }
-        .message-footer a {
-            color: #fff;
-            margin: 0.5em;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.2s;
+        .verified-message .fa-check-circle {
+            color: var(--color-success, #2ecc71);
         }
-        .btn-primary {
-            background-color: #616161;
-            border-color: #616161;
+        .error-message { /* Style for error message */
+            color: var(--color-error, #e74c3c); /* Use error color from common.css or fallback */
         }
-        .btn-outline-primary {
-            background-color: #616161;
-            border-color: #616161;
-            color: #333;
+        .error-message .fa-times-circle {
+            color: var(--color-error, #e74c3c);
         }
-        .btn-primary:hover,
-        .btn-outline-primary:hover {
-            background-color: #555;
-            border-color: #555;
-            color: #fff;
+        .verify-display-container p {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-light-gray);
+        }
+        .verify-display-container .btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .verify-display-container .btn-primary {
+            background: var(--gradient-accent); /* From common.css */
+            border: none;
+            color: var(--color-white);
+        }
+        .verify-display-container .btn-primary:hover {
+            opacity: 0.9;
+        }
+        .verify-display-container .btn-secondary { /* For "Return to Home" */
+            background: var(--color-gray-dark);
+            border: 1px solid var(--color-gray-medium);
+            color: var(--color-white);
+        }
+        .verify-display-container .btn-secondary:hover {
+            background: var(--color-gray-medium);
         }
     </style>
 </head>
@@ -76,12 +94,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
                 <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
@@ -92,7 +107,6 @@
                     <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
-
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -105,23 +119,28 @@
         </ul>
     </div>
 </nav>
-<div class="container text-center">
-    <div class="message-header">
-        <h1 th:if="${verified}" class="verified-message">驗證成功!</h1>
-        <h1 th:if="${!verified}" class="error-message">驗證失敗</h1>
-    </div>
 
-    <div class="message-content">
+<div class="main-content-wrapper">
+    <div class="verify-display-container"> <!-- New styled container -->
+        <div th:if="${verified}">
+            <h1 class="verified-message"><i class="fas fa-check-circle"></i> 驗證成功!</h1>
+        </div>
+        <div th:if="${!verified}">
+            <h1 class="error-message"><i class="fas fa-times-circle"></i> 驗證失敗</h1>
+        </div>
+
         <p th:text="${message}"></p>
-    </div>
 
-    <div class="message-footer">
-        <a th:if="${verified}" href="/login" class="btn btn-primary">點此登入</a>
-        <a th:if="${!verified}" href="/" class="btn btn-outline-primary">返回首頁</a>
+        <div>
+            <a th:if="${verified}" href="/login" class="btn btn-primary">點此登入</a>
+            <a th:if="${!verified}" href="/" class="btn btn-secondary">返回首頁</a>
+        </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Font Awesome JS should be loaded, ensure it's included (e.g. via common.css or a global script) -->
 </body>
 </html>

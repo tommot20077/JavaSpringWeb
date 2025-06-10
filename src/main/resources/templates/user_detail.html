@@ -16,9 +16,10 @@
 
     <!-- JS Libraries -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script> <!-- Correct Popper path -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Popper for Bootstrap 4 -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script> <!-- Added Font Awesome JS -->
+    <script src="/auto-load.js"></script>
     <!-- Removed highlight.js and katex as they are not in article.html -->
 
 </head>
@@ -33,11 +34,7 @@
             aria-expanded="false"
             aria-label="Toggle navigation">
         <!-- Using custom icon bars like article.html -->
-        <span class="navbar-toggler-icon-custom">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </span>
+        <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
@@ -45,7 +42,7 @@
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -92,39 +89,34 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
          <h2 class="mb-0 article-list-heading">用戶文章</h2>
          <!-- Added View Toggle Buttons -->
-         <div class="view-toggle-buttons d-none d-md-block"> <!-- Buttons container, hidden on sm/xs -->
-             <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary" title="List View">
+         <div class="view-toggle-buttons"> <!-- Buttons container, made visible on all screens -->
+             <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex" title="List View">
                  <i class="fas fa-list"></i>
              </button>
-             <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active" title="Card View">
+             <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active d-none d-md-inline-flex" title="Card View">
                  <i class="fas fa-th-large"></i>
              </button>
          </div>
     </div>
-    <div class="row view-mode-card" id="article-list-row"> <!-- Default to card view, add ID -->
+    <div class="view-mode-card" id="article-list-row"> <!-- Default to card view, add ID -->
         <th:block th:if="${postPage != null}" th:each="post,iterStat : ${postPage.content}">
-            <!-- Article Item Card -->
-            <div class="col-md-4 mb-3 article-item">
-                <div class="card position-relative h-100"> <!-- Added position-relative and h-100 -->
-                    <!-- Rotated Badge -->
-                    <div class="badge-container">
-                        <span th:if="${post.published}" class="badge badge-rotated badge-success">已發布</span>
-                        <span th:if="${!post.published}" class="badge badge-rotated badge-secondary">未發布</span>
-                    </div>
-                    <div class="card-body d-flex flex-column"> <!-- Added flex classes -->
-                        <h5 class="card-title truncated-title"
-                            th:text="${post.title.length() > 40 ? #strings.substring(post.title, 0, 40) + '...' : post.title}"
-                            th:attr="data-full-title=${post.title}"
-                            th:title="${post.title}">文章標題</h5> <!-- Added th:title for default tooltip -->
-                        <div class="card-meta mt-auto"> <!-- Added mt-auto -->
-                            <!-- Author is implicit -->
+            <!-- Article Item Card (Modified to match article.html) -->
+            <div class="col-md-4 mb-3 article-item"> <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title truncated-title" th:if="${post.isDeleted}" th:text="'已刪除文章'" data-full-title="已刪除文章">已刪除文章</h5>
+                        <h5 class="card-title truncated-title" th:unless="${post.isDeleted}" th:text="${post.title}" th:attr="data-full-title=${post.title}">文章標題</h5>
+                        <div class="card-meta">
+                            <p class="author-text">
+                                文章作者: <a th:href="@{/user/{id}(id=${post.author.id})}" th:text="${post.author.username}">未知</a>
+                            </p>
                             <div class="card-dates">
-                                <p class="card-text" th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}"></p>
-                                <p class="card-text" th:text="'最後更新時間: '+${formattedPostUpdateTimes[iterStat.index]}"></p>
+                                <p th:text="'創建時間: '+${formattedPostCreationTimes[iterStat.index]}"></p>
+                                <p th:text="'最後更新時間: '+${formattedPostUpdateTimes[iterStat.index]}"></p>
                             </div>
                         </div>
-                        <a target="_blank" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary mt-3">閱讀全文 <!-- Added mt-3 -->
-                            <i class="fas fa-angle-right"></i></a>
+                        <a target="_blank" th:if="!${post.isDeleted}" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary">閱讀全文
+                            <i class="fas fa-angle-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>

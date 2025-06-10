@@ -1,299 +1,497 @@
+/* Modern Article Detail Styles */
+
+/* 頁面背景增強 */
 body {
-    background-color: #f8f8f8;
-    color: #333;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    padding-top: 56px;
+    background: var(--color-black);
+    padding-top: 80px;
 }
 
+/* 文章容器 */
 .container {
-    max-width: 980px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
+/* 文章主卡片 */
 .article-detail-card {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 4rem;
+    position: relative;
 }
 
+/* 文章頭部 - 英雄區域 */
 .article-detail-header {
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(74,144,226,0.1) 0%, rgba(147,51,234,0.1) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px 24px 0 0;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
 }
 
+.article-detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+    animation: float 20s ease-in-out infinite;
+}
+
+/* 文章標題 */
 .article-title {
-    color: #1d1d1f;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    white-space: normal;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-white);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* 文章元信息 */
+.article-meta-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.article-meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .card-subtitle {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.card-subtitle-author {
-    color: #555;
-}
-
-.card-subtitle-time {
-    color: #555;
-}
-
-.article-detail-body {
-    padding: 1.5rem;
-    background-color: #e9e9e9
-}
-
-.content-quill-container {
-    background-color: #ffffff !important;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px !important;
-    padding: 1rem !important;
-}
-
-#editor {
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    min-height: 100px;
-    height: auto;
-}
-
-#currentPageSelect {
-    width: auto;
-    text-align-last: center;
-    -moz-text-align-last: center;
-    font-size: 1em;
-    height: 47px;
-    padding-top: .5em;
-    padding-bottom: .5em;
-    display: inline-block;
-}
-
-.pagination .page-link, .pagination label {
+    color: var(--color-light-gray);
+    font-size: 0.95rem;
+    margin: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
 }
 
-.pagination .page-item {
-    height: 100%;
+.card-subtitle-author a {
+    color: var(--color-accent);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
 }
 
-.page-link select {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
+.card-subtitle-author a:hover {
+    color: var(--color-accent-light);
+    text-decoration: underline;
 }
 
+/* 編輯按鈕 */
+.btn-outline-primary {
+    background: transparent;
+    color: var(--color-accent);
+    border: 2px solid var(--color-accent);
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.btn-outline-primary:hover {
+    background: var(--color-accent);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* 文章內容區域 */
+.article-detail-body {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0 0 24px 24px;
+    padding: 3rem;
+    margin-top: -1px;
+}
+
+/* Quill 編輯器內容樣式 */
+.content-quill-container {
+    background: rgba(26,26,26,0.5) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    min-height: 400px;
+}
+
+.content-quill-container .ql-editor {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-pale-gray);
+}
+
+.content-quill-container .ql-editor h1,
+.content-quill-container .ql-editor h2,
+.content-quill-container .ql-editor h3 {
+    color: var(--color-white);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content-quill-container .ql-editor p {
+    margin-bottom: 1.5rem;
+}
+
+.content-quill-container .ql-editor blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    color: var(--color-light-gray);
+    font-style: italic;
+}
+
+.content-quill-container .ql-editor pre {
+    background: var(--color-charcoal);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+}
+
+.content-quill-container .ql-editor code {
+    background: rgba(74,144,226,0.1);
+    color: var(--color-accent-light);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+}
+
+.content-quill-container .ql-editor img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 2rem 0;
+    box-shadow: var(--shadow-lg);
+}
+
+/* 評論區標題 */
+h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 3rem 0 2rem 0;
+    text-align: center;
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+}
+
+/* 評論顯示區域 */
+.comment-quill-container {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* 評論卡片 */
+.comment-wrapper {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.comment-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: var(--gradient-accent);
+    transition: left 0.6s ease;
+}
+
+.comment-wrapper:hover::before {
+    left: 0;
+}
+
+.comment-wrapper:hover {
+    transform: translateX(4px);
+    border-color: rgba(74,144,226,0.3);
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+/* 評論頭部 */
 .comment-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0;
-    font-size: 32px
+    margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
-.comment-serial-number, .comment-author, .comment-Time-number {
-    padding: 5px 10px;
-    white-space: nowrap;
+.comment-author a {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
 
+.comment-author a:hover {
+    color: var(--color-accent-light);
 }
 
 .comment-serial-number {
-    font-weight: bold;
-    padding: 5px 10px;
-    margin-left: auto;
-    border-radius: 10px;
-    margin-bottom: 0;
-}
-
-.comment-author, .comment-Time-number {
-    margin-right: auto;
+    background: rgba(74,144,226,0.1);
+    color: var(--color-accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .comment-Time-number {
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 20px;
-}
-
-.comment-content {
-
-    border: 1px solid #cccccc;
-    border-bottom: none;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 0;
-}
-
-h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1d1d1f;
-    margin-top: 2rem;
+    color: var(--color-gray);
+    font-size: 0.875rem;
     margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e0e0e0;
+    display: flex; /* Added for flex layout */
+    justify-content: space-between; /* Pushes time text to left, button to right */
+    align-items: center; /* Vertically aligns items */
+    /* text-align: left; /* No longer strictly needed if span/div wraps time text */
 }
 
-.comment-quill-container {
-    background-color: #ffffff !important;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px !important;
-    padding: 1rem !important;
+.comment-Time-number > .comment-edit-button { /* Target the button specifically if needed */
+    margin-left: auto; /* Ensures it stays to the right if space-between is not enough */
+    flex-shrink: 0; /* Prevent button from shrinking */
 }
 
-.comment-wrapper {
-    background-color: #f8f8f8;
-    border: 1px solid #e0e0e0;
-    box-shadow: none;
-    margin-bottom: 20px;
-    border-radius: 6px;
-    padding: 1rem;
+/* 評論內容 */
+.comment-content {
+    background: rgba(26,26,26,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
 }
 
-.comment-wrapper:hover {
-    background-color: #f0f0f0;
+.comment-content .ql-editor {
+    color: var(--color-pale-gray);
+    line-height: 1.6;
 }
 
+/* 評論編輯器 */
 .editor-container {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2rem;
     margin-top: 2rem;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 #toolbar-container {
-    border-bottom: 1px solid #e0e0e0;
+    background: rgba(26,26,26,0.5);
+    border-radius: 12px;
+    padding: 1rem;
     margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
-@media (max-width: 767.98px) {
-    body {
-        padding-top: 56px;
-    }
+#editor {
+    background: rgba(26,26,26,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    min-height: 150px;
+    color: var(--color-white);
+}
 
+#editor .ql-editor {
+    color: var(--color-white);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 1.5rem;
+}
+
+/* 分頁控制 */
+#pagination-control {
+    background: rgba(255,255,255,0.03);
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+#currentPageSelect {
+    background: rgba(26,26,26,0.8);
+    color: var(--color-white);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* 空評論狀態 */
+#comments-display:empty::after {
+    content: '暫無評論，來發表第一條評論吧！';
+    display: block;
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-gray);
+    font-size: 1.125rem;
+}
+
+/* 載入動畫優化 */
+.loadingio-spinner-dual-ball-l2u3038qtw8 {
+    margin: 3rem auto;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
     .container {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .article-detail-header, .article-detail-body {
         padding: 1rem;
     }
 
+    .article-detail-header {
+        padding: 2rem;
+        border-radius: 16px 16px 0 0;
+    }
+
     .article-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 
-    .card-subtitle {
-        font-size: 0.85rem;
+    .article-detail-body {
+        padding: 2rem;
+        border-radius: 0 0 16px 16px;
     }
 
+    .content-quill-container {
+        padding: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    .comment-wrapper {
+        padding: 1rem;
+    }
+
+    .editor-container {
+        padding: 1.5rem;
+    }
+
+    .comment-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }
 
+/* 列印樣式 */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
 
-@keyframes ldio-4pqo44ipw4-o {
-    0% {
-        opacity: 1;
-        transform: translate(0, 0)
+    .navbar,
+    .editor-container,
+    #pagination-control,
+    .btn {
+        display: none !important;
     }
-    49.99% {
-        opacity: 1;
-        transform: translate(80px, 0)
+
+    .article-detail-card,
+    .comment-wrapper {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
     }
-    50% {
+}
+
+/* 動畫增強 */
+@keyframes slideInFromBottom {
+    from {
         opacity: 0;
-        transform: translate(80px, 0)
+        transform: translateY(30px);
     }
-    100% {
-        opacity: 0;
-        transform: translate(0, 0)
-    }
-}
-
-@keyframes ldio-4pqo44ipw4 {
-    0% {
-        transform: translate(0, 0)
-    }
-    50% {
-        transform: translate(80px, 0)
-    }
-    100% {
-        transform: translate(0, 0)
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.ldio-4pqo44ipw4 div {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    top: 60px;
-    left: 20px;
+.comment-wrapper {
+    animation: slideInFromBottom 0.5s ease-out;
 }
 
-.ldio-4pqo44ipw4 div:nth-child(1) {
-    background: #fe514c;
-    animation: ldio-4pqo44ipw4 1s linear infinite;
-    animation-delay: -0.5s;
+/* 焦點樣式增強 */
+.comment-wrapper:focus-within,
+.editor-container:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
-.ldio-4pqo44ipw4 div:nth-child(2) {
-    background: #ffb80c;
-    animation: ldio-4pqo44ipw4 1s linear infinite;
-    animation-delay: 0s;
+/* Quill Toolbar Icon Colors - Item 4 */
+#toolbar-container .ql-formats button svg {
+    filter: invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(150%) contrast(100%); /* General filter for lighter icons */
 }
 
-.ldio-4pqo44ipw4 div:nth-child(3) {
-    background: #fe514c;
-    animation: ldio-4pqo44ipw4-o 1s linear infinite;
-    animation-delay: -0.5s;
+#toolbar-container .ql-formats button:hover svg {
+    filter: invert(90%) sepia(10%) saturate(100%) hue-rotate(180deg) brightness(160%) contrast(100%); /* Slightly brighter on hover */
 }
 
-.loadingio-spinner-dual-ball-l2u3038qtw8 {
-    width: 200px;
-    height: 200px;
-    display: inline-block;
-    overflow: hidden;
-    background: none;
+/* Specific overrides if filter is not enough or for specific icons */
+#toolbar-container .ql-stroke {
+    stroke: var(--color-light-gray, #e0e0e0) !important;
 }
 
-.ldio-4pqo44ipw4 {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform: translateZ(0) scale(1);
-    backface-visibility: hidden;
-    transform-origin: 0 0;
+#toolbar-container .ql-fill {
+    fill: var(--color-light-gray, #e0e0e0) !important;
 }
 
-.ldio-4pqo44ipw4 div {
-    box-sizing: content-box;
+#toolbar-container .ql-picker-label svg {
+    stroke: var(--color-light-gray, #e0e0e0) !important;
 }
 
-.btn-outline-primary {
-    background-color: #f8f8f8;
-    color: #1D1D1F; /* Near black text */
-    border: 1px solid #1D1D1F; /* Near black border */
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+/* Ensure select dropdown arrows are also light */
+#toolbar-container .ql-picker-label::before {
+    color: var(--color-light-gray, #e0e0e0) !important;
 }
-.btn-outline-primary:hover {
-    background-color: #1D1D1F; /* Near black background on hover */
-    color: #ffffff; /* White text on hover */
-    border-color: #1D1D1F; /* Keep border color */
+#toolbar-container .ql-picker.ql-expanded .ql-picker-label::before {
+    color: var(--color-light-gray, #e0e0e0) !important;
+}
+/* Ensure select dropdown text color is light */
+#toolbar-container .ql-picker-label {
+    color: var(--color-light-gray, #e0e0e0) !important;
+}
+#toolbar-container .ql-picker-options .ql-picker-item {
+    color: var(--color-black, #333); /* Options in dropdown can be dark on light background */
+}
+#toolbar-container .ql-picker-options {
+    background-color: var(--color-light-gray, #e0e0e0); /* Background for dropdown options */
 }

@@ -7,18 +7,108 @@
 
         <link rel="stylesheet" href="/common.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"> <!-- Added Font Awesome -->
         <link rel="stylesheet" href="/register.css">
+        <link rel="stylesheet" href="/login_success.css"> <!-- Added for animations -->
+        <style>
+            /* Ensure body takes full height and uses flex for centering */
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+                padding-top: 56px; /* For fixed navbar */
+                align-items: center; /* Center flex items horizontally */
+                justify-content: flex-start; /* Align content to the start (top) */
+                background-color: var(--color-background, #1a1a1a);
+                min-height: 100vh; /* Ensure body takes full viewport height */
+                box-sizing: border-box; /* Include padding in height calculation */
+            }
+            /* .main-content-wrapper and .content-area might be redundant if body handles centering */
+            /* We'll apply animation target class to register-container or a new wrapper */
+            .register-form-animated-container { /* New class for animation target, similar to success-container */
+                /* Styles from login_success.css for .success-container will be applied if this class is used by it */
+                /* Or, copy relevant animation and container styles here or to register.css */
+                /* For now, assuming login_success.css targets a generic animated container or .success-container */
+                /* We will wrap .content-area with this */
+                animation: fadeInScaleUp 0.8s ease-out forwards;
+                opacity: 0;
+                transform: scale(0.95);
+                background: rgba(35, 35, 35, 0.7); /* Darker glassmorphism base */
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-radius: 20px;
+                padding: 2rem; /* Add padding to the animated container */
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+                max-width: 900px; /* Adjust as needed, to fit form + rules */
+                width: 90%;
+                margin-top: 2rem; /* Added margin for spacing below navbar */
+                margin-bottom: 2rem; /* Added margin for spacing at the bottom */
+            }
 
+            .form-and-rules-flex-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2rem;
+                justify-content: center;
+                width: 100%;
+            }
+
+            @media (max-width: 768px) {
+                .register-form-animated-container {
+                    padding: 1rem; /* Reduce padding on smaller screens */
+                }
+                .form-and-rules-flex-wrapper {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1rem; /* Optionally reduce gap for vertical stacking */
+                }
+                .register-container,
+                #password-rule {
+                    flex-basis: auto; /* Reset flex-basis for column layout */
+                    width: 100%;    /* Take full width of the flex wrapper */
+                    box-sizing: border-box; /* Ensure padding/border are included in width */
+                    min-width: 0; /* Allow flex items to shrink below their content size */
+                }
+            }
+
+            @keyframes fadeInScaleUp {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95) translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+        </style>
     </head>
     <body>
-        <nav class="navbar fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top"> <!-- Ensured full navbar classes -->
             <a class="navbar-brand" href="/">我的Blog Web</a>
+            <!-- It's good practice to include a toggler for responsiveness, even if items are few -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavRegister" aria-controls="navbarNavRegister" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavRegister">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">登入</a>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
-        <div class="main-content-wrapper">
-            <div class="content-area">
-                <div class="register-container">
-                    <div class="form-header"><h1>註冊帳號</h1></div>
+        <!-- Removed main-content-wrapper and content-area, body now handles centering -->
+        <!-- Added new animated container -->
+        <div class="register-form-animated-container">
+            <div class="form-and-rules-flex-wrapper"> <!-- Flex wrapper for form and rules -->
+                <div class="register-container" style="flex: 1 1 400px;"> <!-- Form part, removed min-width -->
+                    <div class="form-header"><h1><i class="fas fa-user-plus mr-2"></i>註冊帳號</h1></div>
                     <div th:if="${errorMessage}" id="errorMessage" class="error" th:text="${errorMessage}"></div>
 
                     <form method="post" action="#" th:action="@{/register}" th:object="${user}">
@@ -55,8 +145,8 @@
                     </form>
                 </div>
 
-                <div id="password-rule">
-                    <h4>規則</h4>
+                <div id="password-rule" style="flex: 1 1 300px;"> <!-- Rules part, removed min-width -->
+                    <h4><i class="fas fa-clipboard-list mr-2"></i>規則</h4>
                     <ul>
                         <li id="ac-rule-special"><span class="status"></span>使用名稱不可有特殊字元</li>
                         <li id="ac-rule-length"><span class="status"></span>使用名稱長度必須至少 4 個字元</li>
@@ -66,15 +156,15 @@
                         <li id="ps-rule-number"><span class="status"></span>密碼必須包含至少一個數字</li>
                     </ul>
                 </div>
-            </div>
-        </div>
+            </div> <!-- End flex wrapper for form and rules -->
+        </div> <!-- End animated container -->
 
         <div id="loading-spinner" class="loading-spinner-container">
             <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Popper for Bootstrap 4 -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {

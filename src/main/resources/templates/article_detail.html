@@ -74,18 +74,20 @@
             <div class="card article-detail-card"> <!-- Added class for specific styling -->
                 <div class="card-header article-detail-header"> <!-- Removed d-flex etc. Handled by CSS or inner divs -->
                     <h1 class="card-title article-title" th:text="${post.title}">文章標題</h1>
-                    <!-- New container for subtitles and edit button -->
+                                                                <!-- New container for subtitles and edit button -->
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div> <!-- Subtitles group -->
                             <p class="card-subtitle mb-1 card-subtitle-author"
                                th:text="|作者: ${post.author.username} |"
                                th:href="@{/user/{id}(id=${post.author.getId()})}">作者名稱</p>
                             <p class="card-subtitle mb-1 card-subtitle-time" th:text="|發表時間: ${formattedCreationTime} |">發表時間</p>
-                            <p class="card-subtitle mb-0 card-subtitle-time" th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p> <!-- Changed mb-2 to mb-0 -->
+                            <p class="card-subtitle mb-0 card-subtitle-time"
+                               th:text="|更新時間: ${formattedUpdateTime} |">更新時間</p> <!-- Changed mb-2 to mb-0 -->
                         </div>
                         <!-- Edit button (conditionally rendered) -->
                         <div th:if="${session.currentUserId == post.author.getId()}">
-                            <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}" class="btn btn-outline-primary btn-sm">編輯文章</a> <!-- Changed style -->
+                            <a th:href="@{/article/{articleId}/edit(articleId=${post.getArticleId()})}"
+                               class="btn btn-outline-primary btn-sm">編輯文章</a> <!-- Changed style -->
                         </div>
                     </div>
                 </div>
@@ -175,6 +177,39 @@
                 </div>
             </div>
 
+                                          <!-- Related Articles Section -->
+                                          <!--
+                                          <div class="mt-5">
+                                              <h4>相關文章</h4>
+                                              <div class="row" th:if="${relatedPosts != null and !relatedPosts.isEmpty()}">
+                                                  <th:block th:each="post,iterStat : ${relatedPosts}">
+                                                      <div class="col-md-6 col-lg-4 mb-3">
+                                                          <div class="card h-100">
+                                                              <div class="card-body">
+                                                                  <h5 class="card-title" th:if="${post.isDeleted}" th:text="'已刪除文章'">已刪除文章</h5>
+                                                                  <h5 class="card-title" th:unless="${post.isDeleted}" th:text="${post.title}">文章標題</h5>
+                                                                  <div class="card-meta">
+                                                                      <p class="author-text mb-2">
+                                                                          文章作者: <a th:href="@{/user/{id}(id=${post.author.id})}" th:text="${post.author.username}">未知</a>
+                                                                      </p>
+                                                                      <div class="card-dates">
+                                                                          <p class="mb-1" th:text="'創建時間: '+${formattedRelatedPostCreationTimes[iterStat.index]}"></p>
+                                                                          <p class="mb-2" th:text="'最後更新時間: '+${formattedRelatedPostUpdateTimes[iterStat.index]}"></p>
+                                                                      </div>
+                                                                  </div>
+                                                                  <a target="_blank" th:if="!${post.isDeleted}" th:href="@{/article/{id}(id=${post.articleId})}" class="btn btn-primary btn-sm">閱讀全文
+                                                                      <i class="fas fa-angle-right"></i>
+                                                                  </a>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </th:block>
+                                              </div>
+                                              <div th:if="${relatedPosts == null or relatedPosts.isEmpty()}" class="text-center text-muted">
+                                                  <p>暫無相關文章</p>
+                                              </div>
+                                          </div>
+                              -->
             <hr>
             <h2>評論區</h2>
             <div id="comments-display" class="comment-quill-container mb-4" style="background-color: #f3f3f3; border-radius: 10px; padding: 20px;">
@@ -194,8 +229,8 @@
                         const commentsDisplay = document.getElementById('comments-display');
                         commentsDisplay.innerHTML =
                             `<div class="loadingio-spinner-dual-ball-l2u3038qtw8"><div class="ldio-4pqo44ipw4">
-                     <div></div><div></div><div></div>
-                     </div></div>`;
+                                                   <div></div><div></div><div></div>
+                                                   </div></div>`;
                         commentsDisplay.style.cssText = "text-align: center; padding: 20px; font-size: 1.5em;";
 
 
@@ -246,8 +281,9 @@
                                                 editButton.href = `/comment/edit/` + commentId;
                                                 editButton.classList.add('btn');
                                                 editButton.classList.add('btn-primary');
+                                                editButton.classList.add('comment-edit-button'); // Add class for styling
                                                 editButton.textContent = "編輯";
-                                                editButton.style.cssText = "float: right;";
+                                                // editButton.style.cssText = "float: right;"; // Removed float
                                                 publishedTimeDiv.appendChild(editButton);
                                             }
 
@@ -262,14 +298,21 @@
                                             const commentDiv = document.createElement('div');
                                             commentDiv.classList.add('comment-content');
 
-                                            const hrLine = document.createElement('hr');
+                                            const hrLine = document.createElement('hr'); // This line seems unused, consider removing if not styled.
                                             hrLine.classList.add('hr-line');
+
+                                            // New container for comment info
+                                            const commentInfoAreaDiv = document.createElement('div');
+                                            commentInfoAreaDiv.classList.add('comment-info-area');
 
                                             commentTopDiv.appendChild(authorDiv);
                                             commentTopDiv.appendChild(commentSerialNumberDiv);
-                                            wrapperDiv.appendChild(commentTopDiv);
-                                            wrapperDiv.appendChild(publishedTimeDiv);
-                                            wrapperDiv.appendChild(commentDiv);
+
+                                            commentInfoAreaDiv.appendChild(commentTopDiv);
+                                            commentInfoAreaDiv.appendChild(publishedTimeDiv); // publishedTimeDiv now includes edit button
+
+                                            wrapperDiv.appendChild(commentInfoAreaDiv); // Add info area first
+                                            wrapperDiv.appendChild(commentDiv); // Then add comment content div
 
                                             commentsDisplay.appendChild(wrapperDiv);
 
@@ -309,14 +352,21 @@
                                             commentDiv.classList.add('comment-content');
                                             commentDiv.textContent = "該評論已被刪除";
 
-                                            const hrLine = document.createElement('hr');
+                                            const hrLine = document.createElement('hr'); // This line seems unused, consider removing if not styled.
                                             hrLine.classList.add('hr-line');
+
+                                            // New container for comment info
+                                            const commentInfoAreaDiv = document.createElement('div');
+                                            commentInfoAreaDiv.classList.add('comment-info-area');
 
                                             commentTopDiv.appendChild(authorDiv);
                                             commentTopDiv.appendChild(commentSerialNumberDiv);
-                                            wrapperDiv.appendChild(commentTopDiv);
-                                            wrapperDiv.appendChild(publishedTimeDiv);
-                                            wrapperDiv.appendChild(commentDiv);
+
+                                            commentInfoAreaDiv.appendChild(commentTopDiv);
+                                            commentInfoAreaDiv.appendChild(publishedTimeDiv);
+
+                                            wrapperDiv.appendChild(commentInfoAreaDiv); // Add info area first
+                                            wrapperDiv.appendChild(commentDiv); // Then add comment content div
 
                                             commentsDisplay.appendChild(wrapperDiv);
 
@@ -398,57 +448,57 @@
 
             <div class="editor-container">
                 <div id="toolbar-container">
-            <span class="ql-formats">
-                    <select class="ql-font">
-                        <option value="Arial">Arial</option>
-                        <option value='Times-New-Roman'>Times New Roman</option>
-                        <option value="sans-serif">Sans Serif</option>
-                        <option value='SimHei'>黑體</option>
-                        <option value='SimSun'>宋體</option>
-                        <option value='Microsoft-YaHei'>微軟雅黑體</option>
-                        <option value='KaiTi'>楷體</option>
-                        <option value="FangSong">仿宋體</option>
-                    </select>
-                    <select class="ql-size">
-                        <option value="16px">14px</option>
-                        <option value="16px">16px</option>
-                        <option value="18px">18px</option>
-                        <option value="20px">20px</option>
-                        <option value="22px">22px</option>
-                        <option value="26px">26px</option>
-                        <option value="28px">28px</option>
-                        <option value="30px">30px</option>
-                    </select>
-                </span> <span class="ql-formats">
-                <button class="ql-bold"></button>
-                <button class="ql-italic"></button>
-                <button class="ql-underline"></button>
-                <button class="ql-strike"></button>
-            </span> <span class="ql-formats">
-                <select class="ql-color"></select>
-                <select class="ql-background"></select>
-            </span> <span class="ql-formats">
-                <button class="ql-script" value="sub"></button>
-                <button class="ql-script" value="super"></button>
-            </span> <span class="ql-formats">
-                <button class="ql-header" value="1"></button>
-                <button class="ql-header" value="2"></button>
-                <button class="ql-blockquote"></button>
-                <button class="ql-code-block"></button>
-            </span> <span class="ql-formats">
-                <button class="ql-list" value="ordered"></button>
-                <button class="ql-list" value="bullet"></button>
-                <button class="ql-indent" value="-1"></button>
-                <button class="ql-indent" value="+1"></button>
-            </span> <span class="ql-formats">
-                <button class="ql-direction" value="rtl"></button>
-                <select class="ql-align"></select>
-            </span> <span class="ql-formats">
-                <button class="ql-link"></button>
-                <button class="ql-image"></button>
-            </span> <span class="ql-formats">
-                <button class="ql-clean"></button>
-            </span>
+                                          <span class="ql-formats">
+                                                  <select class="ql-font">
+                                                      <option value="Arial">Arial</option>
+                                                      <option value='Times-New-Roman'>Times New Roman</option>
+                                                      <option value="sans-serif">Sans Serif</option>
+                                                      <option value='SimHei'>黑體</option>
+                                                      <option value='SimSun'>宋體</option>
+                                                      <option value='Microsoft-YaHei'>微軟雅黑體</option>
+                                                      <option value='KaiTi'>楷體</option>
+                                                      <option value="FangSong">仿宋體</option>
+                                                  </select>
+                                                  <select class="ql-size">
+                                                      <option value="16px">14px</option>
+                                                      <option value="16px">16px</option>
+                                                      <option value="18px">18px</option>
+                                                      <option value="20px">20px</option>
+                                                      <option value="22px">22px</option>
+                                                      <option value="26px">26px</option>
+                                                      <option value="28px">28px</option>
+                                                      <option value="30px">30px</option>
+                                                  </select>
+                                              </span> <span class="ql-formats">
+                                              <button class="ql-bold"></button>
+                                              <button class="ql-italic"></button>
+                                              <button class="ql-underline"></button>
+                                              <button class="ql-strike"></button>
+                                          </span> <span class="ql-formats">
+                                              <select class="ql-color"></select>
+                                              <select class="ql-background"></select>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-script" value="sub"></button>
+                                              <button class="ql-script" value="super"></button>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-header" value="1"></button>
+                                              <button class="ql-header" value="2"></button>
+                                              <button class="ql-blockquote"></button>
+                                              <button class="ql-code-block"></button>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-list" value="ordered"></button>
+                                              <button class="ql-list" value="bullet"></button>
+                                              <button class="ql-indent" value="-1"></button>
+                                              <button class="ql-indent" value="+1"></button>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-direction" value="rtl"></button>
+                                              <select class="ql-align"></select>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-link"></button>
+                                              <button class="ql-image"></button>
+                                          </span> <span class="ql-formats">
+                                              <button class="ql-clean"></button>
+                                          </span>
                 </div>
 
                 <div id="editor" style="max-height: 500px; overflow-y: auto;">
@@ -611,3 +661,30 @@
 
     </body>
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 隱藏載入動畫
+        const hideSpinner = function () {
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        };
+
+        // 確保在內容載入後隱藏spinner
+        window.addEventListener('load', function () {
+            setTimeout(hideSpinner, 500); // 延遲500ms確保內容已渲染
+        });
+
+        // 如果5秒後還在載入，強制隱藏
+        setTimeout(hideSpinner, 5000);
+    });
+
+    // 修復文章頁面的視圖切換
+    document.addEventListener('DOMContentLoaded', function () {
+        const articleRow = document.getElementById('article-list-row');
+        if (articleRow && !articleRow.classList.contains('view-mode-card') && !articleRow.classList.contains('view-mode-list')) {
+            articleRow.classList.add('view-mode-card'); // 預設卡片視圖
+        }
+    });
+</script>

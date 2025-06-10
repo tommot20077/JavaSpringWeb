@@ -1,175 +1,509 @@
+/* Modern Article List Styles */
+
+/* 頁面背景 */
 body {
-    background-color: #f8f8f8;
-    color: #333;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--color-black);
+    position: relative;
 }
 
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at top left, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 主要內容區域 */
 .container.main-content-area {
-    background-color: #ffffff;
+    background: transparent;
+    margin-top: 100px;
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 2;
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: 0;
+    max-width: 1400px;
+    justify-content: center;
 }
 
-.mt-5 {
-    margin-top: 30px !important;
+/* 頁面標題區域 */
+.page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
 }
 
-.container.main-content-area .article-list-heading {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
+.article-list-heading {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--color-white);
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.03em;
+    position: relative;
+    display: inline-block;
+}
+
+.article-list-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+}
+
+/* 視圖切換按鈕 */
+.view-toggle-buttons {
+    display: inline-flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .view-toggle-buttons .btn {
-    margin-left: 5px;
+    padding: 0.5rem 0.75rem;
+    min-width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    color: var(--color-gray);
+    transition: all var(--transition-base);
+    border-radius: 8px;
 }
+
+.view-toggle-buttons .btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+}
+
 .view-toggle-buttons .btn.active {
-     background-color: #1D1D1F; /* Near black */
-     color: white;
-     cursor: default;
-}
-.view-toggle-buttons .btn:not(.active):hover {
-     background-color: #e2e6ea;
+    background: var(--gradient-accent);
+    color: var(--color-white);
+    box-shadow: var(--shadow-md);
 }
 
+#article-list-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+    transition: all var(--transition-base);
+    width: 100%;
+    opacity: 0;
+    animation: fadeInContainer 1s ease-out 0.5s forwards;
+}
 
-.card {
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+@keyframes fadeInContainer {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 卡片視圖 - 調整為更好的填充 */
+#article-list-row.view-mode-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+.view-mode-card .article-item {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 列表視圖樣式 */
+#article-list-row.view-mode-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+}
+
+.view-mode-list .article-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 1rem;
+}
+
+.view-mode-list .article-item .card {
+    flex-direction: row;
+    height: auto;
+    min-height: 180px;
+    display: flex;
+}
+
+.view-mode-list .article-item .card::before {
+    width: 250px;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.view-mode-list .article-item .card-body {
+    padding: 2rem;
+    width: calc(100% - 250px);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+/* 標題動畫效果 */
+/* 使用 line-clamp 而非 white-space */
+.view-mode-list .article-item .card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 懸停時展開 */
+.view-mode-list .article-item .card:hover .card-title {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    margin-bottom: 1.5rem;
+}
+
+.view-mode-list .badge-container {
+    width: 130px;
+}
+
+/* 文章卡片 - 現代化設計 */
+.article-item .card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all var(--transition-base);
+    position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+/* 圖片佔位區域 */
+.article-item .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%),
+    url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiIC8+PC9zdmc+');
+    background-size: cover, 40px 40px;
+    z-index: 0;
+    opacity: 0.8;
 }
 
-.card-body {
-    padding: 1.25rem;
+.article-item .card-body {
+    padding: 220px 2rem 2rem 2rem;
+    position: relative;
+    z-index: 1;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    min-height: 230px;
 }
 
-.card-title {
-    color: #1d1d1f;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    white-space: normal;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
+/* 懸停效果 */
+.article-item .card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(74, 144, 226, 0.5);
+}
+
+.article-item .card:hover::before {
+    opacity: 1;
+    filter: brightness(1.2);
+}
+
+/* 文章標題 */
+.article-item .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    min-height: auto;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 4.5em;
 }
 
+/* 文章元數據 */
 .card-meta {
     margin-top: auto;
-    padding-top: 1rem;
-    font-size: 0.85rem;
-    color: #555;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.card-meta .author-text {
+.author-text {
+    color: var(--color-light-gray);
+    font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
 
-.card-meta .card-dates p {
-    margin-bottom: 0.25rem;
-}
-
-.card-meta a {
-    color: #0066cc;
+.author-text a {
+    color: var(--color-accent);
+    font-weight: 500;
     text-decoration: none;
+    transition: all var(--transition-fast);
 }
 
-.card-meta a:hover {
+.author-text a:hover {
+    color: var(--color-accent-light);
     text-decoration: underline;
 }
 
-.btn-primary {
-    background-color: #1D1D1F; /* Near black */
-    border-color: #1D1D1F;
-    color: #FFFFFF; /* Ensure text is white */
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    margin-top: 1rem;
-    align-self: flex-start;
+.card-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-#article-list-row.view-mode-list .article-item {
-    flex: 0 0 100%;
+.card-dates p {
+    color: var(--color-gray);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* 閱讀更多按鈕 */
+.article-item .btn-primary {
+    align-self: flex-start;
+    margin-top: 1.5rem;
+    background: var(--gradient-accent);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.article-item .btn-primary i {
+    transition: transform var(--transition-base);
+}
+
+.article-item .btn-primary:hover i {
+    transform: translateX(4px);
+}
+
+/* 分頁樣式 */
+.pagination-container {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 16px;
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+/* 載入動畫 */
+.article-item {
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+    width: 100%;
     max-width: 100%;
 }
 
-#article-list-row.view-mode-card .article-item {
-    flex: 0 0 33.333333%;
-    max-width: 33.333333%;
+.article-item:nth-child(1) {
+    animation-delay: 0.1s;
 }
-@media (min-width: 992px) {
-    #article-list-row.view-mode-card .article-item {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
+
+.article-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.article-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.article-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.article-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.article-item:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+    #article-list-row.view-mode-card {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
 }
 
+@media (max-width: 992px) {
+    /* 中型螢幕修正 */
+    .view-mode-list .article-item .card::before {
+        width: 200px;
+    }
 
-.btn-primary:hover {
-    background-color: #4a4a4a; /* Lighter gray for hover */
-    border-color: #4a4a4a;
-    color: #FFFFFF; /* Keep text white */
+    .view-mode-list .article-item .card-body {
+        width: calc(100% - 200px);
+        padding: 1.5rem;
+    }
 }
 
-.btn-primary i {
-    margin-left: 5px;
-}
-
-@media (max-width: 767.98px) {
+@media (max-width: 768px) {
     .container.main-content-area {
-         padding: 1rem;
+        padding: 1rem;
+        margin-top: 80px;
     }
 
-    #article-list-row .article-item {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
+    .article-list-heading {
+        font-size: 2.5rem;
     }
 
-    .view-toggle-buttons {
-        display: none !important;
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
     }
 
-    .card-title {
-        min-height: auto;
+    #article-list-row {
+        /* Switch to flexbox for centering a single column of cards */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Horizontally center the .article-item children */
+        gap: 1.5rem; /* Adjust gap as needed, replaces grid-gap */
+        /* Remove grid-specific properties */
+        /* grid-template-columns: 1fr; */
+        /* justify-items: center; */
+        /* justify-content: center; */
+    }
+
+    /* 确保卡片在小屏幕时有最大宽度 */
+    .article-item {
+        width: 100%;
+        max-width: 400px; /* 限制最大宽度 */
+        /* margin-left: auto; /* Not needed when parent is flex with align-items: center */
+        /* margin-right: auto; /* Not needed when parent is flex with align-items: center */
+    }
+
+    /* 小螢幕下列表視圖調整 */
+    .view-mode-list .article-item .card {
+        flex-direction: column;
+    }
+
+    .view-mode-list .article-item .card::before {
+        width: 100%;
+        height: 150px;
+    }
+
+    .view-mode-list .article-item .card-body {
+        padding: 1.5rem;
+        width: 100%;
+    }
+
+    /* 小螢幕下標題動畫調整 */
+    .view-mode-list .article-item .card:hover .card-title {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+    }
+
+    /* 卡片模式調整 */
+    .article-item .card-body {
+        padding: 170px 1.5rem 1.5rem 1.5rem;
+    }
+
+    .article-item .card::before {
+        height: 150px;
     }
 }
 
-.pagination-container {
-    margin-top: 1.2rem;
-    margin-bottom: 1.2rem;
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--color-gray);
 }
 
-.pagination .page-item .page-link {
-    color: #1D1D1F; /* Near black for pagination links */
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #1D1D1F; /* Near black */
-    border-color: #1D1D1F;
-    color: #fff;
+/* 骨架載入效果 */
+.skeleton-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
 }
 
-.pagination .page-item.disabled .page-link {
-    color: #8e8e93; /* Keep lighter grey for disabled */
+.skeleton-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* 無障礙增強 */
+.article-item .card:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* 列印樣式 */
+@media print {
+    .view-toggle-buttons,
+    .pagination-container {
+        display: none;
+    }
+
+    .article-item .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
 }

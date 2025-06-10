@@ -11,9 +11,10 @@
         <link rel="stylesheet" href="/article.css"> <!-- Link the new CSS -->
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Popper for Bootstrap 4 -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script> <!-- Added Font Awesome JS -->
+        <script src="/auto-load.js"></script>
 
         <style>
             /* Styles moved to common.css */
@@ -29,11 +30,7 @@
                     aria-controls="navbarNavDropdown"
                     aria-expanded="false"
                     aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon-custom">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ml-auto">
@@ -45,6 +42,7 @@
                     <li class="nav-item dropdown" th:if="${userLoggedIn}">
                         <a class="nav-link dropdown-toggle"
                            id="dropdownMenuButton"
+                           href="#" role="button"
                            data-toggle="dropdown"
                            aria-haspopup="true"
                            aria-expanded="false"> 歡迎 [[${session.currentUsername}]]! </a>
@@ -72,16 +70,16 @@
             <!-- Container for Heading and Toggle Buttons -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                  <h2 class="mb-0 article-list-heading">文章列表</h2> <!-- Removed text-center -->
-                 <div class="view-toggle-buttons d-none d-md-block"> <!-- Buttons container, hidden on sm/xs -->
-                     <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary" title="List View">
+                 <div class="view-toggle-buttons"> <!-- Buttons container, made visible on all screens -->
+                     <button type="button" id="view-toggle-list" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex" title="List View">
                          <i class="fas fa-list"></i>
                      </button>
-                     <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active" title="Card View">
+                     <button type="button" id="view-toggle-card" class="btn btn-sm btn-outline-secondary active d-none d-md-inline-flex" title="Card View">
                          <i class="fas fa-th-large"></i>
                      </button>
                  </div>
             </div>
-            <div class="row" id="article-list-row"> <!-- Added ID here -->
+            <div class="" id="article-list-row"> <!-- Added ID here -->
                 <th:block th:each="post,iterStat : ${posts.content}">
                     <!-- Added article-item class -->
                     <div class="col-md-4 mb-3 article-item">

@@ -1,17 +1,85 @@
-<!DOCTYPE html>
+ˋ動ㄍㄥˋ動<!DOCTYPE html>
 <html lang="zh" th:with="userLoggedIn=${session.currentUsername != null}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>出錯了！</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/login_success.css"> <!-- For potential animation/container styling reuse -->
     <style>
-        .btn-danger {
-            background-color: #b83434;
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column; /* Keep navbar at top */
+            background: var(--color-black); /* Dark background from common.css */
+            color: var(--color-light-gray);
+        }
+        .main-content-wrapper { /* New wrapper */
+            flex: 1; /* Takes remaining vertical space */
+            display: flex;
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            padding: 2rem; /* Padding around the content */
+            padding-top: 76px; /* Account for fixed navbar height + some space */
+        }
+        .error-display-container { /* Replaces .container.error-container and .jumbotron */
+            text-align: center;
+            padding: 2.5rem;
+            background: rgba(40, 40, 40, 0.6); /* Darker glassmorphism */
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 700px;
+            width: 90%;
+        }
+        .error-display-container h1 {
+            font-size: 2.5rem; /* Adjusted size */
+            color: var(--color-error); /* Use error color from common.css if defined, or fallback */
+            margin-bottom: 1rem;
+        }
+        .error-display-container h1 .fas { /* Icon styling */
+            margin-right: 10px;
+            color: var(--color-error); /* Ensure icon matches text */
+        }
+        .error-display-container p {
+            font-size: 1.15rem; /* Adjusted size */
+            margin-bottom: 1rem;
+            color: var(--color-light-gray);
+        }
+        .error-display-container hr {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .error-display-container .btn {
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px; /* Consistent button radius */
+        }
+        .error-display-container .btn-danger { /* Customizing btn-danger for this context */
+            background: var(--color-error-dark, #c0392b); /* Fallback if var not defined */
+            border: none;
+            color: var(--color-white);
+        }
+        .error-display-container .btn-danger:hover {
+            background: var(--color-error-darker, #a93226);
+        }
+        .error-display-container .btn-secondary {
+            background: var(--color-gray-dark);
+            border: 1px solid var(--color-gray-medium);
+            color: var(--color-white);
+        }
+        .error-display-container .btn-secondary:hover {
+            background: var(--color-gray-medium);
         }
     </style>
-    <link rel="stylesheet" href="/common.css">
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -21,14 +89,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ml-auto">
-
-
             <li class="nav-item">
                 <a class="nav-link" href="/search">搜尋</a>
             </li>
-
             <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="dropdownMenuButton" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     歡迎 [[${session.currentUsername}]]!
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -37,7 +102,6 @@
                     <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                 </div>
             </li>
-
             <li class="nav-item" th:if="${!userLoggedIn}">
                 <a class="nav-link" href="/login">登入</a>
             </li>
@@ -50,21 +114,21 @@
         </ul>
     </div>
 </nav>
-<div class="container error-container">
-    <div class="jumbotron shadow p-4 rounded">
-        <h1 class="display-4"><i class="fas fa-exclamation-triangle text-danger"></i> 哎呀！出錯了！</h1>
+
+<div class="main-content-wrapper">
+    <div class="error-display-container"> <!-- Updated container -->
+        <h1><i class="fas fa-exclamation-triangle"></i> 哎呀！出錯了！</h1>
         <p class="lead">在處理您的請求時我們遇到了一些問題。請嘗試再次提交，或者稍後再試。</p>
-        <hr class="my-4">
+        <hr>
         <p>如果問題依然存在，請透過以下方式告知系統管理員：</p>
         <a class="btn btn-danger btn-lg" href="mailto:tommot20077@gmail.com" role="button">聯絡管理員</a>
-        <a class="btn btn-secondary btn-lg ml-2" href="/" role="button">返回首頁</a>
+        <a class="btn btn-secondary btn-lg" href="/" role="button">返回首頁</a>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script> <!-- Popper for Bootstrap 4 -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Font Awesome JS is now included via CDN in head or common setup, ensure it's loaded -->
 </body>
 </html>

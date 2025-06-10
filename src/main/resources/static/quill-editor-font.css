@@ -163,3 +163,7 @@
 .ql-size-30px {
     font-size: 30px;
 }
+
+.ql-snow .ql-picker {
+    color: #e0e0e0;
+}

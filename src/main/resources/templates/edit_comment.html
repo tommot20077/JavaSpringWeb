@@ -3,18 +3,20 @@
     <div id="myElement" th:attr="commentId=${comment.getCommentId}, postId=${comment.getPost.getArticleId()}"></div>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>編輯評論</title>
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quilljs-markdown@1.2.0/dist/quilljs-markdown-common-style.css">
         <link rel="stylesheet" href="/common.css">
+        <link rel="stylesheet" href="/edit_comment.css">
         <link rel="stylesheet" href="/quill-editor-font.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
@@ -22,34 +24,83 @@
 
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <style>
+            .article-controller {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start; /* Align to start for when it wraps */
+                margin-bottom: 1.5rem;
+                flex-wrap: wrap; /* Allow wrapping */
+            }
 
+            .autoSave-controller {
+                margin-top: 10px;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap; /* Allow toggles to wrap if needed */
+                gap: 10px; /* Add some gap between items if they wrap */
+            }
+
+            @media (max-width: 768px) { /* Bootstrap's md breakpoint */
+                .article-controller {
+                    flex-direction: column; /* Stack title and controls vertically */
+                    align-items: stretch; /* Stretch items to full width */
+                }
+                .article-title {
+                    margin-bottom: 1rem; /* Add some space below title when stacked */
+                }
+                .autoSave-controller {
+                    justify-content: flex-start; /* Align toggles to the start */
+                    width: 100%; /* Make controller take full width */
+                }
+                .autoSave-controller > span,
+                .autoSave-controller > label {
+                    margin-bottom: 0.5rem; /* Add some space below each toggle group */
+                }
+                 .bottom-group {
+                    flex-direction: column;
+                    align-items: stretch !important; /* Make buttons take full width */
+                }
+                .bottom-group > div,
+                .bottom-group > button {
+                    width: 100%;
+                    margin-bottom: 0.5rem; /* Space between stacked button groups */
+                }
+                 .bottom-group > div > .btn-primary,
+                 .bottom-group > div > .btn-secondary {
+                    width: 100%;
+                    display: block;
+                 }
+                .bottom-group > div > .btn-secondary {
+                    margin-left: 0 !important; /* Remove left margin when stacked */
+                    margin-top: 0.5rem; /* Add top margin for secondary button */
+                }
+                 .bottom-group > .btn-danger {
+                    margin-top: 0.5rem; /* Add space above delete button */
+                 }
+            }
+        </style>
 
     </head>
     <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background-color: #e39624">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background-color: #e39624">
             <a class="navbar-brand" href="/">我的Blog Web</a>
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNavDropdown"
-                    aria-controls="navbarNavDropdown"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ml-auto"> <!-- Changed ms-auto to ml-auto for BS4 consistency -->
                     <li class="nav-item">
                         <a class="nav-link" href="/search">搜尋</a>
                     </li>
                     <li class="nav-item dropdown" th:if="${userLoggedIn}">
-                        <a class="nav-link dropdown-toggle"
-                           id="dropdownMenuButton"
-                           data-bs-toggle="dropdown"
-                           aria-haspopup="true"
-                           aria-expanded="false"> 歡迎 [[${session.currentUsername}]]! </a>
+                        <a class="nav-link dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            歡迎 [[${session.currentUsername}]]!
+                        </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="/profile">更新資料</a> <a class="dropdown-item" href="/new_article">新增文章</a>
+                            <a class="dropdown-item" href="/profile">更新資料</a>
+                            <a class="dropdown-item" href="/new_article">新增文章</a>
+                            <a class="dropdown-item" th:href="@{/user/{id} (id=${session.currentUserId})}">我的主頁</a>
                         </div>
                     </li>
                     <li class="nav-item" th:if="${userLoggedIn}">
@@ -60,15 +111,18 @@
         </nav>
         <br><br><br>
         <div class="container">
-            <div class="article-controller">
-                <h2 class="article-title">編輯評論</h2>
-                <div class="autoSave-controller">
-                    <a>自動更新</a> <label for="autoSave-toggle" class="toggle-switch"> <input type="checkbox" id="autoSave-toggle">
-                    <span class="switch-slider round"></span> </label>
+            <div class="article-controller" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                <h2 class="article-title" style="margin-bottom: 0; margin-top: 0;">編輯評論</h2>
+                <div class="autoSave-controller" style="margin-top: 10px; display: flex; align-items: center;">
+                    <span style="margin-right: 5px; line-height: 26px; color: var(--color-light-gray, #ccc);">自動更新</span> 
+                    <label for="autoSave-toggle" class="toggle-switch">
+                        <input type="checkbox" id="autoSave-toggle">
+                        <span class="switch-slider round"></span>
+                    </label>
                 </div>
             </div>
-<div class="editor-container">
-                    <div id="toolbar-container">
+            <div class="editor-container">
+                <div id="toolbar-container">
                 <span class="ql-formats">
                     <select class="ql-font">
                         <option value="Arial">Arial</option>
@@ -120,13 +174,15 @@
                 </span> <span class="ql-formats">
                     <button class="ql-clean"></button>
                 </span>
-                    </div>
-                    <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
                 </div>
-<div class="bottom-group mt-3">
-                <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
-                <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary">返回評論文章</a>
-                <button type="button" class="btn btn-danger" id="delete-comment-button" style="float: right;">刪除評論</button>
+                <div id="editor" style="max-height: 500px; overflow-y: auto;"></div>
+            </div>
+            <div class="bottom-group mt-3" style="display: flex; justify-content: space-between; align-items: center;">
+                <div> <!-- Group for update and return buttons -->
+                    <button type="submit" class="btn btn-primary" id="save-comment-button">更新</button>
+                    <a th:href="@{/article/{articleId}(articleId=${POSTID})}" class="btn btn-secondary" style="margin-left: 10px;">返回評論文章</a>
+                </div>
+                <button type="button" class="btn btn-danger" id="delete-comment-button">刪除評論</button>
             </div>
         </div>
         <script>
